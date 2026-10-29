@@ -1503,7 +1503,8 @@ const DIRV={S:[0,-1],N:[0,1],E:[1,0],W:[-1,0]};
 const SEAM=0.35; // 필지 경계가 맞닿았다고 보는 거리(m). 연속지적도의 작은 어긋남을 흡수
 // 필지들을 하나의 대지로: 다른 필지와 맞닿은 변 조각은 안쪽 경계(띄움 거리 없음), 나머지는 바깥 경계
 function buildSegs(parts){
- const polys=parts.map(p=>{let P=p.poly.map(q=>q.slice()),R=(p.road||[]).slice();const n=P.length;if(pArea(P)<0){P.reverse();R=R.map(i=>(n-2-i+2*n)%n)}return{P,R}});
+ const polys=parts.map(p=>{let P=p.poly.map(q=>q.slice()),R=(p.road||[]).slice(),W=Object.assign({},p.roadWm||{}),N=Object.assign({},p.roadPn||{});const n=P.length;
+  if(pArea(P)<0){P.reverse();R=R.map(i=>(n-2-i+2*n)%n);const rm=o=>{const z={};for(const k in o)z[(n-2-(+k)+2*n)%n]=o[k];return z};W=rm(W);N=rm(N)}return{P,R,W,N}});
  const outer=[],inner=[];
  polys.forEach((A,ai)=>{const n=A.P.length;
   for(let i=0;i<n;i++){const a=A.P[i],b=A.P[(i+1)%n],dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy;if(L2<1e-6)continue;
@@ -1515,7 +1516,7 @@ function buildSegs(parts){
     let mate=-1;
     if(polys.length>1) polys.forEach((B,bi)=>{if(bi===ai||mate>=0)return;
      if([0.2,0.5,0.8].every(t=>{const x=p[0]+(q[0]-p[0])*t,y=p[1]+(q[1]-p[1])*t;return B.P.some((u,j)=>dSeg(x,y,u,B.P[(j+1)%B.P.length])<SEAM)}))mate=bi});
-    (mate>=0?inner:outer).push({a:p,b:q,road:A.R.includes(i),part:ai,mate});}
+    (mate>=0?inner:outer).push({a:p,b:q,road:A.R.includes(i),m:A.R.includes(i)&&A.W[i]?A.W[i]:null,rn:A.N[i]||null,part:ai,mate});}
   }});
  return {polys:polys.map(x=>x.P),outer,inner};
 }
@@ -1527,12 +1528,12 @@ function siteFrame(ST,I,dRoad,dAdj,daylight,aForce){
  const a0=S.polys.reduce((t,P)=>t+Math.abs(pArea(P)),0), k=Math.sqrt(I.area/a0), c0=pCen(S.polys.flat());
  const sc=p=>[(p[0]-c0[0])*k,(p[1]-c0[1])*k];
  const polys0=S.polys.map(P=>P.map(sc));
- const segs0=S.outer.map(s=>({a:sc(s.a),b:sc(s.b),road:s.road,part:s.part}));
+ const segs0=S.outer.map(s=>({a:sc(s.a),b:sc(s.b),road:s.road,m:s.m,rn:s.rn,part:s.part}));
  const inner0=S.inner.filter(s=>s.part<s.mate).map(s=>({a:sc(s.a),b:sc(s.b)}));
  const nrmS=s=>{const dx=s.b[0]-s.a[0],dy=s.b[1]-s.a[1],L=Math.hypot(dx,dy)||1;return[dy/L,-dx/L]};
  const lenS=s=>Math.hypot(s.b[0]-s.a[0],s.b[1]-s.a[1]);
  let auto=!ST.manualRoad&&segs0.some(s=>s.road);
- if(!auto){const v=DIRV[I.roadDir]||DIRV.S;segs0.forEach(s=>s.road=false);const sv=segs0.map(s=>{const m=nrmS(s);return m[0]*v[0]+m[1]*v[1]});
+ if(!auto){const v=DIRV[I.roadDir]||DIRV.S;segs0.forEach(s=>{s.road=false;s.m=null;s.rn=null});const sv=segs0.map(s=>{const m=nrmS(s);return m[0]*v[0]+m[1]*v[1]});
   let any=false;segs0.forEach((s,i)=>{if(sv[i]>0.6&&lenS(s)>0.5){s.road=true;any=true}});if(!any)segs0[sv.indexOf(Math.max(...sv))].road=true;}
  const rs0=segs0.filter(s=>s.road), mainS=rs0.reduce((b,s)=>lenS(s)>lenS(b)?s:b,rs0[0]), main=segs0.indexOf(mainS);
  const d=segs0.map(s=>s.road?dRoad:dAdj);
@@ -1661,23 +1662,24 @@ function insPlan(kind,Wo,D,tS,ti,fe,fi,uid,txt){
 //  - 높이 제한(층수·높이)이 있으면 그 높이로 자름. 둘 다 없으면 Infinity
 // 도로 모퉁이 건축선 (건축법 시행령 제31조①): 너비 8m 미만 도로가 120° 미만으로 만나는 모퉁이는
 // 도로경계선의 교차점에서 경계선을 따라 표의 거리만큼 물러난 두 점을 이은 선이 건축선. 너비가 4m 미만이면 4m로 물러난 선에서 4m 도로로 봄
-function cornerCuts(F,rs,roadW){if(!F||!(roadW<8))return[];const w=Math.max(roadW,4),out=[],S=F.segs,eqp=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1])<1e-3;
+function cornerCuts(F,rsOf,wOf,pairOK){if(!F)return[];const out=[],S=F.segs,eqp=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1])<1e-3;
  const un=(p,q)=>{const dx=q[0]-p[0],dy=q[1]-p[1],L=Math.hypot(dx,dy)||1;return[dx/L,dy/L]};
  S.forEach((si,i)=>{if(!si.road)return;S.forEach((sj,j)=>{if(i===j||!sj.road||!eqp(si.b,sj.a))return;
   const v=si.b,u1=un(v,si.a),u2=un(v,sj.b),cs=Math.max(-1,Math.min(1,u1[0]*u2[0]+u1[1]*u2[1])),ang=Math.acos(cs)*180/Math.PI;
-  if(!(ang<119.5))return;
-  const c=ang<90?(w>=6?4:2):(w>=6?3:2);
+  if(!(ang<119.5))return; if(pairOK&&!pairOK(si,sj))return; const w1=wOf(si),w2=wOf(sj); if(!(w1<8&&w2<8))return;
+  const a6=Math.max(w1,4)>=6,b6=Math.max(w2,4)>=6, c=ang<90?(a6&&b6?4:(a6||b6)?3:2):(a6&&b6?3:2);
   // 물러난 두 경계선의 교차점
-  const p1=[v[0]-si.n[0]*rs,v[1]-si.n[1]*rs],p2=[v[0]-sj.n[0]*rs,v[1]-sj.n[1]*rs],det=u1[0]*(-u2[1])-u1[1]*(-u2[0]);
+  const r1=rsOf(si),r2=rsOf(sj),p1=[v[0]-si.n[0]*r1,v[1]-si.n[1]*r1],p2=[v[0]-sj.n[0]*r2,v[1]-sj.n[1]*r2],det=u1[0]*(-u2[1])-u1[1]*(-u2[0]);
   let vp=v;if(Math.abs(det)>1e-9){const bx=p2[0]-p1[0],by=p2[1]-p1[1],t=(bx*(-u2[1])-by*(-u2[0]))/det;vp=[p1[0]+u1[0]*t,p1[1]+u1[1]*t]}
   const A=[vp[0]+u1[0]*c,vp[1]+u1[1]*c],B=[vp[0]+u2[0]*c,vp[1]+u2[1]*c],tri=[vp,A,B];
   const parts=F.polys.map(P=>clipConvex(P,tri)).filter(Boolean),area=parts.reduce((t,P)=>t+Math.abs(pArea(P)),0);
-  if(area>0.01)out.push({tri,a:A,b:B,c,ang,parts,area,narrow:roadW<4});});});
+  if(area>0.01)out.push({tri,a:A,b:B,c,ang,parts,area,w1,w2,narrow:w1<4||w2<4});});});
  return out}
 function envField(F,dRoad,dAdj,daylight,extra,Hcap,lightK,cuts,dCut){
- const key=[dRoad,dAdj,daylight,extra,Hcap,LAW_NEW,lightK||0,(cuts||[]).map(c=>c.c+'@'+c.a.map(v=>v.toFixed(2))).join(';'),dCut||0].join('|'); F.EC=F.EC||new Map(); if(F.EC.has(key)) return F.EC.get(key);
+ const d=F.segs.map(sg=>sg.road?(typeof dRoad==='function'?dRoad(sg):dRoad):dAdj);
+ const key=[d.map(v=>v.toFixed(3)).join(','),daylight,extra,Hcap,LAW_NEW,lightK||0,(cuts||[]).map(c=>c.c+'@'+c.a.map(v=>v.toFixed(2))).join(';'),dCut||0].join('|'); F.EC=F.EC||new Map(); if(F.EC.has(key)) return F.EC.get(key);
  const {Lc,Ln,segs,polys,inner}=F, s=Math.min(1,Math.max(0.1,Math.max(Lc,Ln)/160)), nx=Math.max(1,Math.ceil(Lc/s)), ny=Math.max(1,Math.ceil(Ln/s));
- const d=segs.map(sg=>sg.road?dRoad:dAdj), hh=s*0.7072, W=nx+1;
+ const hh=s*0.7072, W=nx+1;
  const nX=F.north[0],nY=F.north[1], VS=[];segs.forEach(sg=>[sg.a,sg.b].forEach(p=>{if(!VS.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<1e-6))VS.push(p)}));
  let G=null; if(daylight){G=new Float32Array(W*(ny+1));for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++)G[j*W+i]=F.gap(i*s,j*s,extra);}
  const H=new Float32Array(nx*ny);
@@ -1764,18 +1766,25 @@ const VW=(()=>{
   const my=111132.92-559.82*Math.cos(2*f)+1.175*Math.cos(4*f), mx=111412.84*Math.cos(f)-93.5*Math.cos(3*f);
   const toM=p=>[(p[0]-lo)*mx,(p[1]-la)*my]; const poly=RG.map(toM);
   // 둘레의 지목 '도' 필지와 맞닿은 변 = 도로 변
-  let road=[], roadNm={}, nbNames=[];
+  let road=[], roadNm={}, nbNames=[], roadWm={}, roadPn={};
   try{const xs=RG.map(p=>p[0]),ys=RG.map(p=>p[1]),e=0.0003;
    const nb=await feats(`geomFilter=BOX(${Math.min(...xs)-e},${Math.min(...ys)-e},${Math.max(...xs)+e},${Math.max(...ys)+e})`,200);
    nbNames=nb.map(x=>String((x.properties&&x.properties.jibun)||'').trim()).filter(Boolean);
    const roads=nb.filter(x=>x.properties&&x.properties.pnu!==pnu&&/도$/.test(String(x.properties.jibun||'').trim())).map(x=>({nm:String(x.properties.jibun).trim(),rp:ring(x.geometry).map(toM)}));
+   const others=nb.filter(x=>x.properties&&x.properties.pnu!==pnu&&!/도$/.test(String(x.properties.jibun||'').trim())).map(x=>({jm:String(x.properties.jibun||'').trim().slice(-1),rp:ring(x.geometry).map(toM)})), sgn=pArea(poly)>0?1:-1;
+   const across=(a,b)=>{const L=Math.hypot(b[0]-a[0],b[1]-a[1]),nr=[sgn*(b[1]-a[1])/L,-sgn*(b[0]-a[0])/L];
+    const v=[0.25,0.5,0.75].map(t=>{const p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];let best=null;
+     others.forEach(({jm,rp})=>{for(let j=0;j<rp.length;j++){const c=rp[j],d=rp[(j+1)%rp.length],ex=d[0]-c[0],ey=d[1]-c[1],den=nr[0]*ey-nr[1]*ex;if(Math.abs(den)<1e-9)continue;
+      const wx=c[0]-p[0],wy=c[1]-p[1],tt=(wx*ey-wy*ex)/den,u=(wx*nr[1]-wy*nr[0])/den;if(tt>0.3&&tt<40&&u>=0&&u<=1&&(!best||tt<best.t))best={t:tt,jm}}});return best});
+    const ws=v.filter(Boolean).map(x=>x.t).sort((x,y)=>x-y); if(!ws.length) return {w:null,ok:false,L};
+    const w=Math.round(ws[Math.floor(ws.length/2)]*10)/10, ok=ws.length===3&&ws[2]-ws[0]<=1&&L>=3&&!v.some(x=>/[구천하철제유공원]/.test(x.jm)); return {w,ok,L}};
    for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<0.3)continue;
     const pts=[0.2,0.4,0.6,0.8].map(t=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]);
     const hit=roads.find(({rp})=>pts.filter(([x,y])=>{let m=Infinity;for(let j=0;j<rp.length;j++)m=Math.min(m,dSeg(x,y,rp[j],rp[(j+1)%rp.length]));return m<1.2}).length>=2);
-    if(hit){road.push(i);roadNm[hit.nm]=(roadNm[hit.nm]||0)+L;}}
+    if(hit){road.push(i);roadNm[hit.nm]=(roadNm[hit.nm]||0)+L;roadPn[i]=hit.nm;roadWm[i]=across(a,b);}}
   }catch(e){nbNames=['(이웃 필지 조회 실패: '+e.message+')']}
   const [lc,lu]=await Promise.all([landChar(pnu),landUse(pnu)]);
-  return {pnu,addr:pr.addr||q,jibun:pr.jibun||'',RG,poly,road,roadNm,nbNames,area:lc?parseFloat(lc.lndpclAr):null,zone:lc?lc.prposArea1Nm:null,roadCls:lc?lc.roadSideCodeNm:null,zones:lu};
+  return {pnu,addr:pr.addr||q,jibun:pr.jibun||'',RG,poly,road,roadNm,roadWm,roadPn,nbNames,area:lc?parseFloat(lc.lndpclAr):null,zone:lc?lc.prposArea1Nm:null,roadCls:lc?lc.roadSideCodeNm:null,zones:lu};
  }
  // 주소 후보 (입력하는 동안)
  //  숫자(지번)가 있으면 지번 주소 → 없으면 도로명 주소
@@ -1894,8 +1903,20 @@ function computeOnce(I){
  const Lc=F.Lc, Ln=F.Ln, depth=Ln, front=F.front, roadDir=F.roadDir; out.dlExtra=apt?I.roadW/2:I.roadW;
  const NS=(roadDir==='S'||roadDir==='N');
  out.Ln=Ln; out.Lc=Lc; out.depth=depth; out.front=front; out.roadDir=roadDir;
- const cuts=cornerCuts(F,rs,I.roadW); out.cuts=cuts; out.cutA=cuts.reduce((t,c)=>t+c.area,0);
- const A=I.area-rs*front-out.cutA; out.A=A; // 건축선과 도로 사이 땅은 대지면적에서 뺌
+ // 지적도로 잰 폭을 그대로 쓰는 동안(도로 폭 칸을 고치지 않았을 때)은 도로 변마다 그 폭으로, 칸을 고치면 모든 도로를 그 값으로
+ const useM=!!(SITE&&SITE.autoW!=null&&Math.abs(I.roadW-SITE.autoW)<0.05&&F.auto); out.useM=useM;
+ const RWmap=useM?Object.fromEntries((SITE.roadWs||[]).map(r=>[r.nm,r])):{}, infoOf=sg=>sg.rn&&RWmap[sg.rn]?RWmap[sg.rn]:null;
+ // 잰 폭이 있으면 그 값, 재지 못한 도로는 4m 이상으로 보고 건축선을 물리지 않음('확인 필요'), 도로 폭 칸을 고치면 모든 도로에 그 값
+ const conf=useM&&SITE.roadConflict;
+ const mOf=sg=>{if(!useM||!sg.road||!sg.rn)return null;if(conf)return {ok:false};if(sg.m&&sg.m.ok)return {ok:true,w:sg.m.w};const r=infoOf(sg);return r?{ok:!!r.ok,w:r.w}:null};
+ const wOf=sg=>{const m=mOf(sg);return m?(m.ok?m.w:Math.max(4,I.roadW)):I.roadW}, rsOf=sg=>{const w=wOf(sg);return w<4?(4-w)/2:0};
+ out.wOf=wOf; out.rsOf=rsOf; out.infoOf=mOf; out.roadUnsure=useM?[...new Set(F.segs.filter(sg=>{const m=mOf(sg);return m&&!m.ok&&Math.hypot(sg.b[0]-sg.a[0],sg.b[1]-sg.a[1])>=3}).map(sg=>sg.rn))]:[];
+ out.roadMissing=!!(SITE&&!SITE.manualRoad&&!F.auto);
+ const rsList=F.segs.filter(sg=>sg.road).map(rsOf); out.rs=rsList.length?Math.max(...rsList):0;
+ const roadA=F.segs.filter(sg=>sg.road).reduce((t,sg)=>t+rsOf(sg)*Math.hypot(sg.b[0]-sg.a[0],sg.b[1]-sg.a[1]),0); out.roadA=roadA;
+ {const G={};F.segs.forEach(sg=>{if(!sg.road)return;const k=useM&&sg.rn?sg.rn:'도로';G[k]=G[k]||{nm:k,w:wOf(sg),L:0};G[k].L+=Math.hypot(sg.b[0]-sg.a[0],sg.b[1]-sg.a[1])});out.roads=Object.values(G).sort((x,y)=>y.L-x.L);}
+ const cuts=cornerCuts(F,rsOf,wOf,(si,sj)=>{const a=mOf(si),b=mOf(sj);if((a&&!a.ok)||(b&&!b.ok))return false;return !(si.rn&&sj.rn&&si.rn===sj.rn)}); out.cuts=cuts; out.cutA=cuts.reduce((t,c)=>t+c.area,0);
+ const A=I.area-roadA-out.cutA; out.A=A; // 건축선과 도로 사이 땅은 대지면적에서 뺌
  out.daylight=daylight;
  // 건폐율·용적률
  const bcrIn=[I.bcrZ,I.bcrD].filter(v=>v!=null&&v>0);
@@ -1908,7 +1929,7 @@ function computeOnce(I){
  let n=flMax; if(hMax) while(n>0&&topOf(n)+PARAPET>hMax+1e-6) n--;
  const capped=flMax<40||!!hMax, Hcap=capped?topOf(n)+PARAPET:null;
  // 외곽 볼륨 (최대 규모). 코어·예시 덩어리는 두지 않고, 이 안에서 건폐율·용적률을 맞춰 자유롭게 설계
- const E=envField(F,rs+lineSet,adj,daylight,out.dlExtra,Hcap,out.lightK,cuts,lineSet), st=E.s, ca=st*st;
+ const E=envField(F,sg=>rsOf(sg)+lineSet,adj,daylight,out.dlExtra,Hcap,out.lightK,cuts,lineSet), st=E.s, ca=st*st;
  // 높이 T 이상 올릴 수 있는 땅: 바깥면 면적, 외벽 두께만큼 줄인 면적(바닥면적은 내측 중심선 기준, 칸 둘레로 줄여 보수적), 크기
  const lvl=T=>{const {nx,ny,H}=E;let c=0,per=0,bx0=1e9,bx1=-1,by0=1e9,by1=-1;const ok=k=>H[k]>=T-1e-6;
   for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const k=j*nx+i;if(!ok(k))continue;c++;if(i<bx0)bx0=i;if(i>bx1)bx1=i;if(j<by0)by0=j;if(j>by1)by1=j;
@@ -1960,6 +1981,12 @@ function computeOnce(I){
  if(out.convCap) out.info.push(`이 용도지역에서는 500㎡ 이상 ${D.name}를 지을 수 없어, 500㎡ 미만(${D.conv.small})으로 줄여 계산했습니다.`);
  else if(D.conv) out.info.push(`${D.mix?'2층 이상 부분':'바닥면적 합계'} ${f0(mainA)}㎡ → <b>${small?D.conv.small:(D.conv.bigName||D.name)}</b>. ${D.conv.why}`);
  const myeon=!!(Z.rural&&isMyeon(I.addr)); out.myeon=myeon; const exW=myeon?' 면 지역이라 건축법 접도 규정은 적용되지 않지만, 개발행위허가의 진입도로 조건으로 같은 기준을 봅니다 (실무 기준).':'';
+ if(out.roadMissing) out.warn.push(`도로를 찾지 못했습니다. 둘레에 지목이 '도'인 필지가 없어, 도로가 '도로 방향' 칸(${({S:'남쪽',N:'북쪽',E:'동쪽',W:'서쪽'})[I.roadDir]||I.roadDir})에 폭 ${f1(I.roadW)}m로 있다고 가정했습니다. 사유지(지목 '대' 등) 위의 현황도로일 수 있으니 도로 방향과 폭을 실제에 맞게 고르세요 (확인 필요).`);
+ else if(conf) out.warn.push(`토지특성의 도로접면(${esc(conf.cls)})은 넓은 도로인데 지적도로 잰 폭은 ${f1(conf.w)}m라 서로 맞지 않습니다. 도로 일부가 지목 '도'가 아닌 땅일 수 있어 4m 이상으로 보고 건축선 후퇴와 가각을 넣지 않았습니다. 실제 폭을 도로 폭 칸에 넣으세요 (확인 필요).`);
+ else if(out.roadUnsure&&out.roadUnsure.length&&(SITE.roadGuess||0)>=8&&I.roadW>=8) out.info.push(`${out.roadUnsure.join(', ')}의 폭은 지적도로 재지 못해 토지특성 도로접면 분류로 짐작한 ${f1(I.roadW)}m로 넣었습니다 (확인 필요).`);
+ else if(out.roadUnsure&&out.roadUnsure.length) out.warn.push(`${out.roadUnsure.join(', ')}의 폭을 지적도로 확정하지 못해 4m 이상으로 보고 건축선 후퇴와 가각을 넣지 않았습니다. 실제 폭이 4m 미만이면 도로 폭 칸을 고치세요 (확인 필요).`);
+ if(useM&&!conf&&F.segs.some(sg=>sg.road&&wOf(sg)<4)) out.info.push('도로가 막다른 도로라면 필요한 너비가 4m가 아니라 길이에 따라 다릅니다 (길이 10m 미만 2m, 10m 이상 35m 미만 3m, 35m 이상 6m · 건축법 시행령 제3조의3). 이 도구는 4m로 보고 건축선 후퇴를 계산했습니다 (확인 필요).');
+ if(useM&&!conf&&(SITE.roadWs||[]).some(r=>r.ok)) out.info.push(`도로 폭은 지적도에서 대지 경계부터 도로 건너편 필지까지 잰 값입니다 (${(SITE.roadWs||[]).filter(r=>r.ok).map(r=>esc(r.nm)+' 약 '+f1(r.w)+'m').join(', ')}). 실제 현황 폭과 다를 수 있으니, 다르면 도로 폭 칸을 고치세요 (확인 필요).`);
  if(front<2) out.warn.push('대지가 도로에 2m 이상 접해야 건축할 수 있습니다 (건축법 제44조).'+exW);
  if(gfa>=2000&&(I.roadW<6||front<4)) out.warn.push('연면적 2천㎡ 이상은 너비 6m 이상 도로에 4m 이상 접해야 합니다 (건축법 시행령 제28조).'+exW);
  if(myeon) out.info.push('면 지역의 계획관리지역이라 건축법 제44조~제47조(접도·건축선)는 적용되지 않습니다(건축법 제3조②). 다만 건축허가 때 개발행위허가의 진입도로 조건을 함께 보므로, 이 도구는 접도와 건축선 후퇴를 같은 기준으로 계산합니다 (실무 기준).');
@@ -2073,7 +2100,7 @@ function render(){
  drawPlan(O,I);
  const gtxt=[];
  gtxt.push(`반투명 볼륨은 띄움 거리${O.daylight?', 정북 일조':''}${O.env.open?'':', 층수·높이 제한'}을 지키면서 건물이 들어갈 수 있는 <b>최대 범위</b>입니다. 이 안에서 건축면적 <b>${f0(O.fp)}㎡</b>, 연면적 <b>${f0(O.gfa)}㎡</b> 이하로 자유롭게 매스를 만드세요.`);
- if(O.cuts&&O.cuts.length) gtxt.push(`도로 모퉁이 ${O.cuts.length}곳은 교차각 ${O.cuts.map(c=>Math.round(c.ang)+'°').join('·')}, 도로 폭 ${f1(I.roadW)}m라 건축선을 교차점에서 ${O.cuts.map(c=>c.c+'m').join('·')}씩 물러난 두 점을 이은 선으로 봅니다(가각 전제, 건축법 시행령 제31조①). 잘린 ${f0(O.cutA)}㎡는 대지면적에서 뺍니다.${O.cuts.some(c=>c.narrow)?' 도로가 4m에 못 미쳐 4m로 물러난 선에서 쟀습니다 (확인 필요).':''}`);
+ if(O.cuts&&O.cuts.length) gtxt.push(`도로 모퉁이 ${O.cuts.length}곳은 교차각 ${O.cuts.map(c=>Math.round(c.ang)+'°').join('·')}, 도로 폭 ${O.cuts.map(c=>f1(c.w1)+'·'+f1(c.w2)+'m').join(', ')}이라 건축선을 교차점에서 ${O.cuts.map(c=>c.c+'m').join('·')}씩 물러난 두 점을 이은 선으로 봅니다(가각 전제, 건축법 시행령 제31조①). 잘린 ${f0(O.cutA)}㎡는 대지면적에서 뺍니다.${O.cuts.some(c=>c.narrow)?' 도로가 4m에 못 미쳐 4m로 물러난 선에서 쟀습니다 (확인 필요).':''}`);
  if(O.rs>0) gtxt.push(`도로 폭이 4m에 못 미쳐 건축선이 ${f1(O.rs)}m 물러나므로, 대지 ${f0(I.area)}㎡에서 도로에 내주는 ${f0(I.area-O.A)}㎡를 뺀 <b>${f0(O.A)}㎡</b>로 건폐율·용적률을 계산합니다.`);
  if(O.fpByRect) gtxt.push(`띄움 거리를 뺀 땅은 외벽 바깥면 기준 ${f0(O.land)}㎡, 외벽 두께를 빼면 바닥면적 기준 ${f0(O.landIn)}㎡입니다. 건폐율 한도 ${f0(O.fpCap)}㎡보다 작아 땅이 건축면적을 정합니다.`);
  if(O.gov.includes('far')) gtxt.push(`볼륨에는 ${O.env.open?'더':f0(O.envGFA)+'㎡까지'} 들어가지만 ${O.useCapHit?'용도별 면적 상한':'용적률 한도'} ${f0(O.farCap)}㎡가 연면적을 정합니다.`);
@@ -2184,8 +2211,8 @@ function clipConvex(P,C){const sa=pArea(C)>0?1:-1;let out=P;
    if(sp>=0)out.push(p);if((sp>=0)!==(sq>=0)){const t=sp/(sp-sq);out.push([p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t])}}}
  return out.length>2?out:null}
 // 도로 폭이 4m에 못 미쳐 물러난 건축선과 도로 사이 땅 (대지 안쪽만)
-function setbackPolys(O){const F=O.F,rs=O.rs;if(!F||!(rs>0))return[];const out=[];
- F.segs.forEach(sg=>{if(!sg.road)return;const a=sg.a,b=sg.b,m=sg.n,Q=[a,b,[b[0]-m[0]*rs,b[1]-m[1]*rs],[a[0]-m[0]*rs,a[1]-m[1]*rs]];
+function setbackPolys(O){const F=O.F;if(!F||!(O.rs>0))return[];const out=[];
+ F.segs.forEach(sg=>{const rs=sg.road?O.rsOf(sg):0;if(!(rs>0))return;const a=sg.a,b=sg.b,m=sg.n,Q=[a,b,[b[0]-m[0]*rs,b[1]-m[1]*rs],[a[0]-m[0]*rs,a[1]-m[1]*rs]];
   F.polys.forEach(P=>{const c=clipConvex(P,Q);if(c)out.push(c)})});return out}
 function redPolys(O){return setbackPolys(O).concat(...(O.cuts||[]).map(c=>c.parts))}
 // 정북 일조 사선: 대지경계선에서 진북 방향 거리 d가 되는 선을 그 거리에서 허용되는 높이에 띄워 그린 등고선과 세로선
@@ -2206,7 +2233,7 @@ function legend3(O,I){const el=$('lg3');if(!el)return;const sw=st=>`<i style="${
  const parts=[it('background:var(--accent);opacity:.25;outline:1px solid var(--accent)','외곽 볼륨 (최대 규모, 이 안에서 자유롭게)'),
   it('background:var(--site);outline:1.5px dashed var(--accent);outline-offset:-1px','지을 수 있는 땅'),
   it('background:var(--gap)',`비워 둘 땅: ${O.lineSet>0?`건축선에서 ${f1(O.lineSet)}m`:'도로 쪽은 건축선까지'} · 옆 대지 ${f1(O.adjEff)}m${O.lightD&&O.lightD>=O.adjEff?' (채광창 띄움 포함)':''}`)];
- if(O.rs>0||(O.cuts&&O.cuts.length)) parts.push(it('background:var(--setback);opacity:.6',`도로로 내줄 땅: ${[O.rs>0?`도로 폭 ${f1(I.roadW)}m라 건축선 ${f1(O.rs)}m 후퇴`:'',O.cuts&&O.cuts.length?`모퉁이 ${O.cuts.map(c=>c.c+'m').join('·')} 가각`:''].filter(Boolean).join(', ')} (${f0(I.area-O.A)}㎡, 대지면적에서 뺌)`));
+ if(O.rs>0||(O.cuts&&O.cuts.length)) parts.push(it('background:var(--setback);opacity:.6',`도로로 내줄 땅: ${[O.rs>0?(O.roads||[]).filter(r=>r.w<4).map(r=>`도로 폭 ${f1(r.w)}m라 건축선 ${f1((4-r.w)/2)}m 후퇴`).join(', '):'',O.cuts&&O.cuts.length?`모퉁이 ${O.cuts.map(c=>c.c+'m').join('·')} 가각`:''].filter(Boolean).join(', ')} (${f0(I.area-O.A)}㎡, 대지면적에서 뺌)`));
  if(O.daylight) parts.push(it('background:var(--cut);opacity:.45;outline:1px solid var(--cut)',`정북 일조 사선: 높이 10m까지 정북 방향 1.5m, 그 위는 높이의 1/2${O.dlExtra>0&&F_NROAD(O)?' (북쪽 도로는 건너편 경계까지)':''}`));
  if(O.lightK) parts.push(tx(`기울어진 옆면: 채광창 높이 제한 (옆 대지경계선까지 거리의 ${O.lightK}배)`));
  if(O.Hcap&&O.env&&!O.env.open) parts.push(tx(`평평한 윗면: ${O.dsCap?'다세대 한도 주택 4개 층':O.capBy==='h'?`높이 제한 ${f1(O.hMax)}m`:`층수 제한 ${O.flMax}층`} (난간까지 ${f1(O.Hcap)}m)`));
@@ -2216,13 +2243,13 @@ const F_NROAD=O=>O.F&&O.F.segs.some(sg=>sg.road&&sg.n&&O.F.north&&(sg.n[0]*O.F.n
 
 // ───────── 배치 평면 (위에서 본 모습) ─────────
 function drawPlanPoly(O,I){
- const svg=$('plan'), F=O.F, Lc=O.Lc, Ln=O.Ln, rw=Math.max(I.roadW,1.5), pad=rw+5;
+ const svg=$('plan'), F=O.F, Lc=O.Lc, Ln=O.Ln, rwS=sg=>Math.max(O.wOf?O.wOf(sg):I.roadW,1.5), rw=Math.max(1.5,...F.segs.filter(sg=>sg.road).map(rwS)), pad=Math.min(rw,14)+5;
  const W=Lc+2*pad, H=Ln+2*pad, sc=292/W; svg.setAttribute('viewBox',`0 0 ${(W*sc).toFixed(1)} ${(H*sc).toFixed(1)}`);
  const X=x=>(pad+x)*sc, Y=s=>(pad+Ln-s)*sc, pt=([x,s])=>`${X(x).toFixed(1)},${Y(s).toFixed(1)}`;
  const r=(x,y,w,h,st)=>`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" style="${st}"/>`;
  const t=(x,y,txt,st='',anchor='middle')=>`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" style="font:500 10.5px var(--f-body);fill:var(--muted);${st}">${txt}</text>`;
   let g='';
- F.segs.forEach(sg=>{if(!sg.road)return;const a=sg.a,b=sg.b,m=sg.n;g+=`<polygon points="${[a,b,[b[0]+m[0]*rw,b[1]+m[1]*rw],[a[0]+m[0]*rw,a[1]+m[1]*rw]].map(pt).join(' ')}" style="fill:var(--road)"/>`});
+ F.segs.forEach(sg=>{if(!sg.road)return;const a=sg.a,b=sg.b,m=sg.n,rw=Math.min(rwS(sg),14);g+=`<polygon points="${[a,b,[b[0]+m[0]*rw,b[1]+m[1]*rw],[a[0]+m[0]*rw,a[1]+m[1]*rw]].map(pt).join(' ')}" style="fill:var(--road)"/>`});
  F.polys.forEach(P=>{g+=`<polygon points="${P.map(pt).join(' ')}" style="fill:var(--gap);stroke:var(--gap);stroke-width:0.8"/>`});
  F.inner.forEach(sg=>{g+=`<line x1="${X(sg.a[0]).toFixed(1)}" y1="${Y(sg.a[1]).toFixed(1)}" x2="${X(sg.b[0]).toFixed(1)}" y2="${Y(sg.b[1]).toFixed(1)}" style="stroke:var(--muted);stroke-width:0.8;stroke-dasharray:3 2"/>`});
  F.segs.forEach(sg=>{g+=`<line x1="${X(sg.a[0]).toFixed(1)}" y1="${Y(sg.a[1]).toFixed(1)}" x2="${X(sg.b[0]).toFixed(1)}" y2="${Y(sg.b[1]).toFixed(1)}" style="stroke:var(--ink);stroke-width:1.2;stroke-linecap:round"/>`});
@@ -2231,16 +2258,20 @@ function drawPlanPoly(O,I){
    g+=r(X(i*st),Y((j+1)*st),(k-i)*st*sc+0.3,st*sc+0.3,'fill:var(--site)')+r(X(i*st),Y((j+1)*st),(k-i)*st*sc+0.3,st*sc+0.3,'fill:var(--accent);opacity:.22');i=k;}}}
  redPolys(O).forEach(P=>{g+=`<polygon points="${P.map(pt).join(' ')}" style="fill:var(--setback);opacity:.45"/>`});
  const lab=(x,y,txt,c,anc='middle')=>t(x,y,txt,`fill:${c};font-weight:600;font-size:10px;paint-order:stroke;stroke:var(--panel);stroke-width:3px`,anc);
- if(O.rs>0){F.segs.forEach(sg=>{if(!sg.road)return;const a=sg.a,b=sg.b,m=sg.n,A=[a[0]-m[0]*O.rs,a[1]-m[1]*O.rs],B=[b[0]-m[0]*O.rs,b[1]-m[1]*O.rs];
+ if(O.rs>0){F.segs.forEach(sg=>{const rs=sg.road?O.rsOf(sg):0;if(!(rs>0))return;const a=sg.a,b=sg.b,m=sg.n,A=[a[0]-m[0]*rs,a[1]-m[1]*rs],B=[b[0]-m[0]*rs,b[1]-m[1]*rs];
    g+=`<line x1="${X(A[0]).toFixed(1)}" y1="${Y(A[1]).toFixed(1)}" x2="${X(B[0]).toFixed(1)}" y2="${Y(B[1]).toFixed(1)}" style="stroke:var(--setback);stroke-width:1.2" clip-path="url(#siteclip)"/>`});
-  const sg=F.segs[F.main],a=sg.a,b=sg.b,m=sg.n,q=[a[0]*0.7+b[0]*0.3-m[0]*(O.rs+1.2),a[1]*0.7+b[1]*0.3-m[1]*(O.rs+1.2)];g+=lab(X(q[0]),Y(q[1])+3,`건축선 ${f1(O.rs)}m 후퇴`,'var(--setback)');}
+  const sg=F.segs.filter(s2=>s2.road&&O.rsOf(s2)>0).sort((p2,q2)=>Math.hypot(q2.b[0]-q2.a[0],q2.b[1]-q2.a[1])-Math.hypot(p2.b[0]-p2.a[0],p2.b[1]-p2.a[1]))[0],rs=O.rsOf(sg),a=sg.a,b=sg.b,m=sg.n,q=[a[0]*0.7+b[0]*0.3-m[0]*(rs+1.2),a[1]*0.7+b[1]*0.3-m[1]*(rs+1.2)];}
  (O.cuts||[]).forEach(c=>{g+=`<line x1="${X(c.a[0]).toFixed(1)}" y1="${Y(c.a[1]).toFixed(1)}" x2="${X(c.b[0]).toFixed(1)}" y2="${Y(c.b[1]).toFixed(1)}" style="stroke:var(--setback);stroke-width:1.2"/>`;
   const q=[(c.tri[0][0]+c.a[0]+c.b[0])/3,(c.tri[0][1]+c.a[1]+c.b[1])/3],mm=[(c.a[0]+c.b[0])/2,(c.a[1]+c.b[1])/2],dx=mm[0]-q[0],dy=mm[1]-q[1],L=Math.hypot(dx,dy)||1;
   g+=lab(X(mm[0]+dx/L*2.2),Y(mm[1]+dy/L*2.2)+3,`가각 ${c.c}m`,'var(--setback)');});
  if(O.daylight){const runs=L=>{const r=[];let cur=[];L.forEach(p=>{if(p)cur.push(p);else{if(cur.length>1)r.push(cur);cur=[]}});if(cur.length>1)r.push(cur);return r};
   [[1.5,'1.1','4 2','정북 일조 1.5m'],...(O.H>10?[[dl(O.H),'0.8','2 2',`높이 ${f1(O.H)}m → ${f1(dl(O.H))}m`]]:[])].forEach(([d,w,da,txt])=>{const RR=runs(F.locus(d,O.dlExtra));RR.forEach(R=>{g+=`<polyline points="${R.map(pt).join(' ')}" style="fill:none;stroke:var(--cut);stroke-width:${w};stroke-dasharray:${da}"/>`});
    const R=RR.reduce((b,r)=>r.length>(b?b.length:0)?r:b,null);if(R){const p=R[R.length-1];g+=t(X(p[0])-2,Y(p[1])-4,txt,'fill:var(--cut);font-weight:600;font-size:10px;paint-order:stroke;stroke:var(--panel);stroke-width:3px','end')}});}
- {const sg=F.segs[F.main],a=sg.a,b=sg.b,m=sg.n;const mx=(a[0]+b[0])/2+m[0]*rw/2,my=(a[1]+b[1])/2+m[1]*rw/2;g+=t(X(mx),Y(my)+4,'도로 '+f1(I.roadW)+'m','fill:var(--panel);font-weight:600');}
+ {const seen=new Set();F.segs.filter(sg=>sg.road).sort((p,q)=>Math.hypot(q.b[0]-q.a[0],q.b[1]-q.a[1])-Math.hypot(p.b[0]-p.a[0],p.b[1]-p.a[1])).forEach(sg=>{
+   const L=Math.hypot(sg.b[0]-sg.a[0],sg.b[1]-sg.a[1]),k=sg.rn||'_';if(seen.has(k)||L<3)return;seen.add(k);
+   const a=sg.a,b=sg.b,m=sg.n,rw=Math.min(rwS(sg),14),mx=(a[0]+b[0])/2+m[0]*rw/2,my=(a[1]+b[1])/2+m[1]*rw/2,inf=O.infoOf?O.infoOf(sg):null;
+   const txt=O.roadMissing?`도로 ${f1(I.roadW)}m (가정)`:inf?(inf.ok?`도로 약 ${f1(inf.w)}m`:'도로 폭 확인 필요'):`도로 ${f1(O.wOf?O.wOf(sg):I.roadW)}m`;
+   const rsg=O.rsOf?O.rsOf(sg):0,cw=W*sc,px=Math.max(56,Math.min(cw-56,X(mx))),py=Y(my)+(rsg>0?-2:4);g+=t(px,py,txt,'fill:var(--panel);font-weight:600');if(rsg>0)g+=t(px,py+12,`건축선 ${f1(rsg)}m 후퇴`,'fill:var(--panel);font-weight:600;font-size:9.5px');});}
  const deg=Math.atan2(F.north[0],F.north[1])*180/Math.PI, nx=X(Lc)+pad*sc-28, ny=Y(Ln)-pad*sc+26;
  const rad=deg*Math.PI/180;
  g+=`<g transform="translate(${nx.toFixed(1)},${ny.toFixed(1)}) rotate(${deg.toFixed(1)})"><line x1="0" y1="10" x2="0" y2="-6" style="stroke:var(--ink);stroke-width:1.6"/><path d="M0 -12 l-4 7 h8 z" style="fill:var(--ink)"/></g>`+t(nx+Math.sin(rad)*19,ny-Math.cos(rad)*19+4,'N','fill:var(--ink);font-weight:700');
@@ -2338,7 +2369,7 @@ function draw(O,I){
  const X=x=>x-Lc/2, Zs=s=>Ln/2-s;
  const box=(w,h,d,x,y,z,c,op)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:c,transparent:op<1,opacity:op??1,depthWrite:!(op<1)}));m.position.set(x,y,z);G.add(m);return m};
  const edges=(mesh,c)=>{const e=new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),new THREE.LineBasicMaterial({color:c}));e.position.copy(mesh.position);G.add(e)};
- const rw=Math.max(I.roadW,1); const F=O.F;
+ const rw=Math.max(I.roadW,1); const F=O.F, rwS=sg=>Math.min(14,Math.max(O.wOf?O.wOf(sg):I.roadW,1));
  const flat=(pts,y,c)=>{const sh=new THREE.Shape(pts.map(([x,s])=>new THREE.Vector2(X(x),s-Ln/2)));const m=new THREE.Mesh(new THREE.ShapeGeometry(sh),new THREE.MeshLambertMaterial({color:c,side:THREE.DoubleSide}));m.rotation.x=-Math.PI/2;m.position.y=y;G.add(m);return m};
  if(F){
   F.polys.forEach(P=>flat(P,-0.07,col('--gap')));
@@ -2347,7 +2378,7 @@ function draw(O,I){
     const x0=X(i*st),x1=X(k*st),z0=Zs(j*st),z1=Zs((j+1)*st);P.push(V3(x0,z0),V3(x1,z1),V3(x1,z0),V3(x0,z0),V3(x0,z1),V3(x1,z1));i=k;}}
    if(P.length){const gg=new THREE.BufferGeometry().setFromPoints(P);gg.computeVertexNormals();G.add(new THREE.Mesh(gg,new THREE.MeshLambertMaterial({color:col('--site'),side:THREE.DoubleSide})));}}
   redPolys(O).forEach(P=>flat(P,-0.02,col('--setback')));
-  F.segs.forEach(sg=>{if(!sg.road)return;const a=sg.a,b=sg.b,m=sg.n;flat([a,b,[b[0]+m[0]*rw,b[1]+m[1]*rw],[a[0]+m[0]*rw,a[1]+m[1]*rw]],-0.04,col('--road'))});
+  F.segs.forEach(sg=>{if(!sg.road)return;const a=sg.a,b=sg.b,m=sg.n,rw=rwS(sg);flat([a,b,[b[0]+m[0]*rw,b[1]+m[1]*rw],[a[0]+m[0]*rw,a[1]+m[1]*rw]],-0.04,col('--road'))});
   G.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(F.segs.flatMap(sg=>[new THREE.Vector3(X(sg.a[0]),0.02,Zs(sg.a[1])),new THREE.Vector3(X(sg.b[0]),0.02,Zs(sg.b[1]))])),new THREE.LineBasicMaterial({color:col('--ink')})));
   if(F.inner.length){const il=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(F.inner.flatMap(sg=>[new THREE.Vector3(X(sg.a[0]),0.03,Zs(sg.a[1])),new THREE.Vector3(X(sg.b[0]),0.03,Zs(sg.b[1]))])),new THREE.LineDashedMaterial({color:col('--muted'),dashSize:0.5,gapSize:0.35}));il.computeLineDistances();G.add(il);}
  } else {
@@ -2396,7 +2427,7 @@ function draw(O,I){
   const R0=Math.max(Lc,Ln)/2+3, c0=[Lc/2,Ln/2], t0=[c0[0]+F.north[0]*R0,c0[1]+F.north[1]*R0], t1=[c0[0]+F.north[0]*(R0+4),c0[1]+F.north[1]*(R0+4)];
   G.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(X(t0[0]),0.05,Zs(t0[1])),new THREE.Vector3(X(t1[0]),0.05,Zs(t1[1]))]),new THREE.LineBasicMaterial({color:ink})));
   const nl=label('북 N',cssVar('--ink'));nl.position.set(X(t1[0]+F.north[0]*1.5),0.8,Zs(t1[1]+F.north[1]*1.5));G.add(nl);
-  const rd=label('도로 '+f1(I.roadW)+'m',cssVar('--muted'));rd.position.set(X(mid[0]+u[0]*4+m[0]*(rw+LS)),0.6,Zs(mid[1]+u[1]*4+m[1]*(rw+LS)));G.add(rd);
+  {const inf=O.infoOf?O.infoOf(sg):null,rwm=rwS(sg);const rd=label(O.roadMissing?`도로 ${f1(I.roadW)}m (가정)`:inf?(inf.ok?`도로 약 ${f1(inf.w)}m`:'도로 폭 확인 필요'):'도로 '+f1(O.wOf?O.wOf(sg):I.roadW)+'m',cssVar('--muted'));rd.position.set(X(mid[0]+u[0]*4+m[0]*(rwm+LS)),0.6,Zs(mid[1]+u[1]*4+m[1]*(rwm+LS)));G.add(rd);}
  } else {
  // 크기 비교: 사람(1.7m)과 승용차(4.7 × 1.9 × 1.5m)를 도로 쪽에 세움
  {const skin=col('--ink');
@@ -2625,7 +2656,7 @@ $('vwbtn').addEventListener('click',async()=>{const msg=$('vwmsg');
  // 같은 원점의 m 좌표로
  const RGs=got.map(r=>r.RG), allP=RGs.flat(); const lo=allP.reduce((t,p)=>t+p[0],0)/allP.length, la=allP.reduce((t,p)=>t+p[1],0)/allP.length, f=la*Math.PI/180;
  const my=111132.92-559.82*Math.cos(2*f)+1.175*Math.cos(4*f), mx=111412.84*Math.cos(f)-93.5*Math.cos(3*f), toM=p=>[(p[0]-lo)*mx,(p[1]-la)*my];
- const parts=got.map(r=>({pnu:r.pnu,jibun:r.jibun||r.pnu,area:r.area,zone:r.zone,roadCls:r.roadCls,road:r.road,roadNm:r.roadNm,poly:r.RG.map(toM)}));
+ const parts=got.map(r=>({pnu:r.pnu,jibun:r.jibun||r.pnu,area:r.area,zone:r.zone,roadCls:r.roadCls,road:r.road,roadNm:r.roadNm,roadWm:r.roadWm||{},roadPn:r.roadPn||{},poly:r.RG.map(toM)}));
  // 서로 맞닿지 않은 필지가 있으면 합치지 않음
  if(parts.length>1){const S=buildSegs(parts), linked=new Set(); S.inner.forEach(s=>{linked.add(s.part);linked.add(s.mate)});
   const lone=parts.filter((p,i)=>!linked.has(i)); if(lone.length){msg.innerHTML=`<b>${lone.map(p=>esc(p.jibun)).join(', ')}</b>은(는) 다른 필지와 맞닿아 있지 않아 하나의 대지로 볼 수 없습니다. 맞닿은 필지만 넣어 주세요.`;render();return}}
@@ -2638,10 +2669,19 @@ $('vwbtn').addEventListener('click',async()=>{const msg=$('vwmsg');
  const A=parts.reduce((t,p)=>t+(p.area||0),0); if(A>0) $('area').value=Math.round(A*10)/10;
  if(zm.zone&&ZONES[zm.zone]){zsel.value=zm.zone;const Z=ZONES[zm.zone];
   $('bcrZ').value=zm.bcr??Z.bcr;$('bcrD').value='';$('far').value=zm.far??'';$('flMax').value=(zm.floors??Z.floors)||'';$('hMax').value=''}
- const ws=parts.filter(p=>p.road&&p.road.length).map(p=>roadWOf(p.roadCls)).filter(v=>v!=null); if(ws.length) $('roadW').value=Math.min(...ws);
+ const RW={};parts.forEach(p=>(p.road||[]).forEach(i=>{const nm=p.roadPn&&p.roadPn[i],m=p.roadWm&&p.roadWm[i];if(!nm||!m)return;(RW[nm]=RW[nm]||[]).push(m)}));
+ const RWm=Object.entries(RW).map(([nm,v])=>{const L=v.reduce((t,x)=>t+x.L,0),ok=v.filter(x=>x.ok&&x.w!=null).sort((x,y)=>x.w-y.w);
+  if(!ok.length) return {nm,w:null,ok:false,L}; const Lo=ok.reduce((t,x)=>t+x.L,0);let acc=0,med=ok[0].w;for(const x of ok){acc+=x.L;if(acc>=Lo/2){med=x.w;break}}return {nm,w:med,ok:true,L}}).sort((x,y)=>y.L-x.L);
+ const clsMin=c=>{c=c||'';return /광대/.test(c)?20:/중로/.test(c)?10:/소로/.test(c)?6:0};
+ const okMax=Math.max(0,...RWm.filter(r=>r.ok).map(r=>r.w)), cMin=Math.max(0,...parts.filter(p=>p.road&&p.road.length).map(p=>clsMin(p.roadCls)));
+ const conflict=okMax>0&&cMin>0&&okMax<cMin; if(conflict) RWm.forEach(r=>{r.ok=false;r.conflict=true});
+ const guess=(()=>{let ws=parts.filter(p=>p.road&&p.road.length).map(p=>roadWOf(p.roadCls)).filter(v=>v!=null);if(!ws.length)ws=parts.map(p=>roadWOf(p.roadCls)).filter(v=>v);return ws.length?Math.min(...ws):null})();
+ // 도로 폭 칸: 가장 긴 도로를 지적도로 잴 수 있으면 그 값, 못 재면 도로접면 분류로 짐작하되 4m 미만으로는 넣지 않음(재지 못한 폭으로 건축선을 물리지 않도록)
+ if(RWm.length){const m=RWm[0], w=m.ok?m.w:Math.max(4,guess||4); $('roadW').value=w; SITE.autoW=w; SITE.roadWs=RWm; SITE.roadGuess=guess; SITE.roadConflict=conflict?{cls:parts.map(p=>p.roadCls).filter(Boolean).join('/'),w:okMax}:null;}
+ else if(guess!=null) $('roadW').value=guess;
  const rn={}; parts.forEach(p=>Object.entries(p.roadNm||{}).forEach(([k,v])=>{if(!parts.some(q=>q.jibun===k))rn[k]=(rn[k]||0)+v}));
  const nb=[...new Set(got.flatMap(r=>r.nbNames||[]))];
- msg.innerHTML=`불러왔습니다: ${parts.map(p=>esc(p.jibun)).join(' + ')} · 대장 ${f0(A)}㎡ · ${zm.mode==='unsupported'?'아직 지원하지 않는 용도지역이 있어 용도지역을 바꾸지 않았습니다':esc(zm.zone)+(zm.mode==='avg'?' 기준 (건폐율·용적률 가중평균)':zm.mode==='strict'?' 기준 (더 엄격한 쪽)':'')} · 도로접면 ${esc(parts.map(p=>p.roadCls||'-').join('/'))} · ${Object.keys(rn).length?'도로 변: '+Object.entries(rn).map(([k,v])=>esc(k)+' '+f1(v)+'m').join(', ')+' (빠진 도로가 있으면 도로 방향을 고르세요)':'도로 변을 찾지 못해 도로 방향 입력으로 정합니다'}.${bad.length?` <b>못 찾은 주소: ${bad.map(esc).join(', ')}</b>.`:''}${DEBUG?' [이웃 필지 '+nb.length+'개: '+esc(nb.join(', '))+']':''} <b>건폐율·용적률·층수는 토지이음 값으로 고쳐 주세요.</b>`;
+ msg.innerHTML=`불러왔습니다: ${parts.map(p=>esc(p.jibun)).join(' + ')} · 대장 ${f0(A)}㎡ · ${zm.mode==='unsupported'?'아직 지원하지 않는 용도지역이 있어 용도지역을 바꾸지 않았습니다':esc(zm.zone)+(zm.mode==='avg'?' 기준 (건폐율·용적률 가중평균)':zm.mode==='strict'?' 기준 (더 엄격한 쪽)':'')} · 도로접면 ${esc(parts.map(p=>p.roadCls||'-').join('/'))} · ${Object.keys(rn).length?'도로 변: '+Object.entries(rn).map(([k,v])=>{const m=RWm.find(x=>x.nm===k);return esc(k)+' '+f1(v)+'m'+(m?(m.ok?` (지적도로 잰 폭 약 ${f1(m.w)}m)`:' (폭 확인 필요)'):'')}).join(', ')+' (빠진 도로가 있으면 도로 방향을 고르세요)':'도로 변을 찾지 못해 도로 방향 입력으로 정합니다'}.${bad.length?` <b>못 찾은 주소: ${bad.map(esc).join(', ')}</b>.`:''}${DEBUG?' [이웃 필지 '+nb.length+'개: '+esc(nb.join(', '))+']':''} <b>건폐율·용적률·층수는 토지이음 값으로 고쳐 주세요.</b>`;
  render();});
 // ───────── 주소 후보 목록 ─────────
 const SUG=(()=>{const box=document.createElement('div');box.className='sug';box.id='sug';box.setAttribute('role','listbox');box.hidden=true;document.body.appendChild(box);
