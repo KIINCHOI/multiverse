@@ -1480,7 +1480,11 @@ function regionOf(q){
 
 // ───────── 지역 조례 (2026. 10. 29. 다섯 도시 조례 대조, 법규 검토 문서 15~17절) ─────────
 // 다세대 채광 이격(건축법 시행령 제86조③, 조례): 창이 어느 면에 날지 정하기 전이라 도로 외 모든 면에 적용 (보수적)
-const LIGHT={서울:1,수원:2,대전:2,천안:4,아산:4};
+const LIGHT={서울:1,수원:2,대전:2,천안:4,아산:4}; // 다세대 채광창 이격 조례 거리 (시행령 제86조③ 단서). 모르는 지역은 법의 하한 1m
+// 대지 안의 공지 하한 (건축법 시행령 별표 2, 조례로 정함): [건축선, 인접 대지경계선]
+const KS={'다세대주택':[1,0.5],'연립주택':[2,1.5],'아파트':[2,2]};
+// 조례 값을 확인한 지역 (서울특별시 건축 조례 별표 4, 2025. 5. 19. 개정)
+const CITYGJ={서울:{apt:{'다세대주택':[1,1],'연립주택':[2,1.5],'아파트':[3,3]},hall:[1,1],src:'서울특별시 건축 조례 별표 4'}};
 function cityOf(q){q=(q||'').replace(/\s+/g,'');for(const c of ['서울','수원','대전','천안','아산']) if(q.includes(c)) return c; return null}
 function isMyeon(q){return /[가-힣]+면(\s|\d|$)/.test(q||'')}
 
@@ -1655,9 +1659,9 @@ function insPlan(kind,Wo,D,tS,ti,fe,fi,uid,txt){
 //  - 정북 일조: 칸 네 모서리에서 진북 방향으로 잰 대지경계선까지 거리 중 가장 짧은 값으로 판정
 //    10m 이하는 1.5m, 10m 초과는 높이의 1/2 (개정법 미리보기면 10~17m 5m)
 //  - 높이 제한(층수·높이)이 있으면 그 높이로 자름. 둘 다 없으면 Infinity
-function envField(F,dRoad,dAdj,daylight,extra,Hcap){
- const key=[dRoad,dAdj,daylight,extra,Hcap,LAW_NEW].join('|'); F.EC=F.EC||new Map(); if(F.EC.has(key)) return F.EC.get(key);
- const {Lc,Ln,segs,polys,inner}=F, s=Math.min(1,Math.max(0.2,Math.max(Lc,Ln)/160)), nx=Math.max(1,Math.ceil(Lc/s)), ny=Math.max(1,Math.ceil(Ln/s));
+function envField(F,dRoad,dAdj,daylight,extra,Hcap,lightK){
+ const key=[dRoad,dAdj,daylight,extra,Hcap,LAW_NEW,lightK||0].join('|'); F.EC=F.EC||new Map(); if(F.EC.has(key)) return F.EC.get(key);
+ const {Lc,Ln,segs,polys,inner}=F, s=Math.min(1,Math.max(0.1,Math.max(Lc,Ln)/160)), nx=Math.max(1,Math.ceil(Lc/s)), ny=Math.max(1,Math.ceil(Ln/s));
  const d=segs.map(sg=>sg.road?dRoad:dAdj), hh=s*0.7072, W=nx+1;
  const nX=F.north[0],nY=F.north[1], VS=[];segs.forEach(sg=>[sg.a,sg.b].forEach(p=>{if(!VS.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<1e-6))VS.push(p)}));
  let G=null; if(daylight){G=new Float32Array(W*(ny+1));for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++)G[j*W+i]=F.gap(i*s,j*s,extra);}
@@ -1667,6 +1671,7 @@ function envField(F,dRoad,dAdj,daylight,extra,Hcap){
   if(ok)for(let k=0;k<segs.length;k++){if(dSeg(x,y,segs[k].a,segs[k].b)<d[k]+hh){ok=false;break}}
   if(!ok){H[j*nx+i]=0;continue}
   let h=Hcap||Infinity;
+  if(lightK){let dm=Infinity;for(let k=0;k<segs.length;k++)if(!segs[k].road)dm=Math.min(dm,dSeg(x,y,segs[k].a,segs[k].b));h=Math.min(h,lightK*Math.max(0,dm-hh));}
   if(daylight){let g=Math.min(G[j*W+i],G[j*W+i+1],G[(j+1)*W+i],G[(j+1)*W+i+1]);
    // 꼭짓점 그림자: 진북 방향 선이 경계의 꼭짓점을 스치는 곳에서 거리가 끊기므로, 칸을 지나는 '꼭짓점에서 정남으로 그은 선'의 가장 북쪽 점도 확인 (보수적)
    const cx0=i*s,cx1=cx0+s,cy0=j*s,cy1=cy0+s;
@@ -1802,18 +1807,18 @@ const num=(id)=>{const v=parseFloat($(id).value);return isNaN(v)?null:v};
 // conv: 같은 건축물 바닥면적 합계 500㎡ 미만이면 제2종 근생으로 바뀌는 용도 (건축법 시행령 별표1 제4호)
 const CONV2={lim:500,park:200,zk:'근생2'};
 const UD={
- '단독주택':{fh:3.0,fh1:3.0,pil:false,sys:'wall',span:6,elevP:99,lineSet:1.0,adj:0.5,live:0.8,park:'house1',stair:4,zk:'단독',name:'단독주택'},
- '공동주택':{fh:2.9,fh1:3.3,pil:true,sys:'wall',span:6,elevP:5,lineSet:1.0,adj:1.0,live:0.8,park:'apt',stair:3,apt:true,zk:'공동',name:'공동주택'},
- '근린생활시설':{fh:3.6,fh1:3.6,pil:false,sys:'frame',span:7.2,elevP:3,lineSet:1.0,adj:0.5,live:0.8,park:200,stair:4,zk:'근생',name:'근린생활시설'},
- '업무시설':{fh:3.9,fh1:3.9,pil:false,sys:'frame',span:8,elevP:3,lineSet:1.0,adj:0.5,live:0.8,park:150,stair:4,zk:'업무',name:'업무시설(사무소)',conv:{...CONV2,small:'제2종 근린생활시설(사무소)',why:'사무소는 500㎡ 이상이면 업무시설이 되어 주차가 150㎡당 1대로 엄격해집니다.'}},
- '공연장':{fh:6.0,fh1:6.0,pil:false,sys:'frame',span:9,elevP:3,lineSet:1.0,adj:0.5,live:0.8,park:150,stair:1,stairA:200,zk:'공연장',name:'문화 및 집회시설(공연장)',hall:true,big1000:true,conv:{...CONV2,stairA:300,small:'제2종 근린생활시설(공연장)',why:'공연장은 500㎡ 이상이면 문화 및 집회시설이 되어 주차가 150㎡당 1대로 엄격해지고 관람실 출구 기준이 붙습니다.'}},
- '전시장':{fh:4.5,fh1:4.5,pil:false,sys:'frame',span:9,elevP:3,lineSet:1.0,adj:0.5,live:0.8,park:150,stair:4,zk:'전시장',name:'문화 및 집회시설(전시장)',expo:true},
- '학원':{fh:3.6,fh1:3.6,pil:false,sys:'frame',span:7.2,elevP:3,lineSet:1.0,adj:0.5,live:0.8,park:300,stair:2,zk:'학원',name:'교육연구시설(학원)',conv:{...CONV2,small:'제2종 근린생활시설(학원)',why:'학원은 500㎡ 이상이면 교육연구시설이 되어 주차가 300㎡당 1대로 오히려 느슨해지지만, 주거지역에서는 조례로 허용해야 지을 수 있습니다.'}},
- '연구소':{fh:3.9,fh1:3.9,pil:false,sys:'frame',span:8,elevP:3,lineSet:1.0,adj:0.5,live:0.8,park:300,stair:4,zk:'연구소',name:'교육연구시설(연구소)'},
- '노유자시설':{fh:3.3,fh1:3.3,pil:false,sys:'frame',span:7.2,elevP:3,lineSet:1.0,adj:0.5,live:0.8,park:300,stair:2,zk:'노유자',name:'노유자시설'},
- '숙박시설':{fh:3.0,fh1:4.5,pil:false,sys:'frame',span:7.2,elevP:3,lineSet:1.0,adj:0.5,live:0.8,park:200,stair:2,zk:'숙박',name:'숙박시설(일반숙박)'},
- '근생+공동주택':{fh:2.9,fh1:3.6,pil:false,sys:'wall',span:6,elevP:3,lineSet:1.0,adj:1.0,live:0.8,park:'mix',stair:3,apt:true,mix:true,upPark:'apt',zk:'공동',name:'복합건축물(1층 근생 + 공동주택)'},
- '근생+업무':{fh:3.9,fh1:3.6,pil:false,sys:'frame',span:8,elevP:3,lineSet:1.0,adj:0.5,live:0.8,park:'mix',stair:4,mix:true,upPark:150,zk:'업무',name:'복합건축물(1층 근생 + 업무시설)',conv:{...CONV2,zk:'근생2',bigName:'업무시설',small:'제2종 근린생활시설(사무소)',why:'2층 이상 사무소 부분이 500㎡ 이상이면 업무시설이 됩니다.'}}
+ '단독주택':{fh:3.0,fh1:3.0,pil:false,sys:'wall',span:6,elevP:99,lineSet:0,adj:0.5,live:0.8,park:'house1',stair:4,zk:'단독',name:'단독주택'},
+ '공동주택':{fh:2.9,fh1:3.3,pil:true,sys:'wall',span:6,elevP:5,lineSet:0,adj:0.5,live:0.8,park:'apt',stair:3,apt:true,zk:'공동',name:'공동주택'},
+ '근린생활시설':{fh:3.6,fh1:3.6,pil:false,sys:'frame',span:7.2,elevP:3,lineSet:0,adj:0.5,live:0.8,park:200,stair:4,zk:'근생',name:'근린생활시설'},
+ '업무시설':{fh:3.9,fh1:3.9,pil:false,sys:'frame',span:8,elevP:3,lineSet:0,adj:0.5,live:0.8,park:150,stair:4,zk:'업무',name:'업무시설(사무소)',conv:{...CONV2,small:'제2종 근린생활시설(사무소)',why:'사무소는 500㎡ 이상이면 업무시설이 되어 주차가 150㎡당 1대로 엄격해집니다.'}},
+ '공연장':{fh:6.0,fh1:6.0,pil:false,sys:'frame',span:9,elevP:3,lineSet:0,adj:0.5,live:0.8,park:150,stair:1,stairA:200,zk:'공연장',name:'문화 및 집회시설(공연장)',hall:true,big1000:true,conv:{...CONV2,stairA:300,small:'제2종 근린생활시설(공연장)',why:'공연장은 500㎡ 이상이면 문화 및 집회시설이 되어 주차가 150㎡당 1대로 엄격해지고 관람실 출구 기준이 붙습니다.'}},
+ '전시장':{fh:4.5,fh1:4.5,pil:false,sys:'frame',span:9,elevP:3,lineSet:0,adj:0.5,live:0.8,park:150,stair:4,zk:'전시장',name:'문화 및 집회시설(전시장)',expo:true},
+ '학원':{fh:3.6,fh1:3.6,pil:false,sys:'frame',span:7.2,elevP:3,lineSet:0,adj:0.5,live:0.8,park:300,stair:2,zk:'학원',name:'교육연구시설(학원)',conv:{...CONV2,small:'제2종 근린생활시설(학원)',why:'학원은 500㎡ 이상이면 교육연구시설이 되어 주차가 300㎡당 1대로 오히려 느슨해지지만, 주거지역에서는 조례로 허용해야 지을 수 있습니다.'}},
+ '연구소':{fh:3.9,fh1:3.9,pil:false,sys:'frame',span:8,elevP:3,lineSet:0,adj:0.5,live:0.8,park:300,stair:4,zk:'연구소',name:'교육연구시설(연구소)'},
+ '노유자시설':{fh:3.3,fh1:3.3,pil:false,sys:'frame',span:7.2,elevP:3,lineSet:0,adj:0.5,live:0.8,park:300,stair:2,zk:'노유자',name:'노유자시설'},
+ '숙박시설':{fh:3.0,fh1:4.5,pil:false,sys:'frame',span:7.2,elevP:3,lineSet:0,adj:0.5,live:0.8,park:200,stair:2,zk:'숙박',name:'숙박시설(일반숙박)'},
+ '근생+공동주택':{fh:2.9,fh1:3.6,pil:false,sys:'wall',span:6,elevP:3,lineSet:0,adj:0.5,live:0.8,park:'mix',stair:3,apt:true,mix:true,upPark:'apt',zk:'공동',name:'복합건축물(1층 근생 + 공동주택)'},
+ '근생+업무':{fh:3.9,fh1:3.6,pil:false,sys:'frame',span:8,elevP:3,lineSet:0,adj:0.5,live:0.8,park:'mix',stair:4,mix:true,upPark:150,zk:'업무',name:'복합건축물(1층 근생 + 업무시설)',conv:{...CONV2,zk:'근생2',bigName:'업무시설',small:'제2종 근린생활시설(사무소)',why:'2층 이상 사무소 부분이 500㎡ 이상이면 업무시설이 됩니다.'}}
 };
 const PARAPET=1.2; // 막힌 옥상 난간벽 (높이에 산입)
 // 정북 일조 이격: 10m 초과는 높이의 1/2 (보수적 기본값). 2026.11.12 개정 건축법 제61조는 10~17m를 '5m 이상 조례로 정하는 거리'로 바꾸므로, 조례 개정 확인 전까지는 1/2을 씀. ?law=new 는 5m 미리보기용
@@ -1834,6 +1839,14 @@ const f0=x=>Math.round(x).toLocaleString('ko-KR');
 function compute(I){
  // 바닥면적 1,000㎡ 이상 문화·집회시설은 대지 안의 공지 하한이 커지므로 한 번 더 계산 (건축법 시행령 별표 2)
  let O=computeOnce(I);
+ if(O.D.apt&&O.kind&&O.kind!=='다세대주택'&&!I.kindHint){
+  // 다세대 기준으로 계산했더니 연립·아파트 규모가 나온 경우: 그 기준으로 다시 계산한 것과, 다세대 한도(주택 4개 층·660㎡ 이하)로 묶은 것 중 큰 쪽
+  const O2=computeOnce({...I,kindHint:O.kind});
+  const O3=computeOnce({...I,kindHint:'다세대주택',flMax:Math.min(I.flMax||99,(I.pil?5:4)),gfaCap:659.9});
+  if(O3.gfa>=O2.gfa){O3.info.unshift(`${O.kind} 기준(대지 안의 공지가 더 크고 채광창 벽 높이 제한이 붙음)으로 지으면 ${f0(O2.gfa)}㎡라, 다세대 한도(주택 4개 층·주택 바닥면적 660㎡ 이하)로 지을 때의 최대 규모를 보여 줍니다.`);O=O3;}
+  else {O2.info.unshift(`주택 바닥면적이나 층수가 다세대를 넘어 <b>${O.kind}</b> 기준(대지 안의 공지, 채광창 벽은 인접 대지경계선까지 거리의 ${O2.lightK||2}배 높이까지)으로 계산했습니다. 다세대 한도로 지으면 ${f0(O3.gfa)}㎡입니다.`);O=O2;}}
+ if(O.D.hall&&!O.small&&!O.needBig&&!I.bigSet&&!I.hallSet&&CITYGJ[O.city]&&CITYGJ[O.city].hall){const h=CITYGJ[O.city].hall,Z=ZONES[I.zone];
+  O=computeOnce({...I,lineSet:Math.max(I.lineSet,h[0]),adj:Z.com?I.adj:Math.max(I.adj,h[1]),hallSet:true}); O.info.unshift(`문화 및 집회시설이라 대지 안의 공지가 건축선에서 ${h[0]}m, 인접 대지에서 ${Z.com?'(상업지역이라 제외)':h[1]+'m'} 이상입니다 (${CITYGJ[O.city].src}).`);}
  if(O.needBig&&!I.bigSet){const Z=ZONES[I.zone]; O=computeOnce({...I,lineSet:Math.max(I.lineSet,3),adj:Z.com?I.adj:Math.max(I.adj,1.5),bigSet:true}); O.bigApplied=true; O.info.unshift(`바닥면적 합계 1,000㎡ 이상 공연장이라 대지 안의 공지가 건축선에서 3m, 인접 대지에서 ${Z.com?'0.5':'1.5'}m 이상으로 커집니다 (건축법 시행령 별표 2). 이 값으로 다시 계산했습니다.`)}
  return O;
 }
@@ -1849,7 +1862,14 @@ function computeOnce(I){
  const off=(tIns+I.fin)/1000+tS/2000; out.off=off;
  // 대지 · 지역 조례 (다세대 공지·채광)
  const city=cityOf(I.addr); out.city=city; let lineSet=I.lineSet, adj=I.adj; out.lightD=0;
- if(apt){ if(city==='아산'){lineSet=Math.max(lineSet,1.5);adj=Math.max(adj,1.5)} const LD=LIGHT[city]??4; out.lightD=LD; adj=Math.max(adj,LD); }
+ const com=!!Z.com; out.lightK=0;
+ if(apt){ const kd=I.kindHint||'다세대주택', cg=CITYGJ[city], ks=(cg&&cg.apt[kd])||KS[kd]||KS['다세대주택']; out.kindHint=kd; out.gjSrc=cg?cg.src:null;
+  lineSet=Math.max(lineSet,ks[0]); if(!com) adj=Math.max(adj,ks[1]); // 상업지역은 스프링클러를 설치한 공동주택이면 인접 대지 공지 제외 (별표 2 제2호마목)
+  if(kd==='다세대주택'&&city==='아산'){lineSet=Math.max(lineSet,1.5);adj=Math.max(adj,1.5)}
+  // 채광창 이격 (시행령 제86조③1호, 일반상업·중심상업 제외): 창을 낼 면을 정하기 전이라 도로 외 모든 면에 창이 있다고 봄
+  if(I.zone!=='일반상업지역'){ if(kd==='다세대주택'){const LD=LIGHT[city]??1; out.lightD=LD; adj=Math.max(adj,LD);}
+   else out.lightK=(I.zone==='근린상업지역'||I.zone==='준주거지역')?4:2; } }
+ adj=Math.max(adj,0.5); // 민법 제242조 (경계에서 0.5m)
  out.lineSet=lineSet; out.adjEff=adj;
  const rs=I.roadW<4?(4-I.roadW)/2:0; out.rs=rs;
  const daylight=Z.res;
@@ -1871,7 +1891,7 @@ function computeOnce(I){
  let n=flMax; if(hMax) while(n>0&&topOf(n)+PARAPET>hMax+1e-6) n--;
  const capped=flMax<40||!!hMax, Hcap=capped?topOf(n)+PARAPET:null;
  // 외곽 볼륨 (최대 규모). 코어·예시 덩어리는 두지 않고, 이 안에서 건폐율·용적률을 맞춰 자유롭게 설계
- const E=envField(F,rs+lineSet,adj,daylight,out.dlExtra,Hcap), st=E.s, ca=st*st;
+ const E=envField(F,rs+lineSet,adj,daylight,out.dlExtra,Hcap,out.lightK), st=E.s, ca=st*st;
  // 높이 T 이상 올릴 수 있는 땅: 바깥면 면적, 외벽 두께만큼 줄인 면적(바닥면적은 내측 중심선 기준, 칸 둘레로 줄여 보수적), 크기
  const lvl=T=>{const {nx,ny,H}=E;let c=0,per=0,bx0=1e9,bx1=-1,by0=1e9,by1=-1;const ok=k=>H[k]>=T-1e-6;
   for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const k=j*nx+i;if(!ok(k))continue;c++;if(i<bx0)bx0=i;if(i>bx1)bx1=i;if(j<by0)by0=j;if(j>by1)by1=j;
@@ -1884,6 +1904,7 @@ function computeOnce(I){
  const lowA0=D.mix?plate(L1):0;
  if(D.conv&&URb[0]==='no'&&URs&&URs[0]!=='no'){const c=lowA0+D.conv.lim-0.1; if(c<farCap){farCap=c;out.useCapHit=true;out.convCap=true}}
  else if(URb[2]){const c=lowA0+(URb[3]?URb[2]-0.1:URb[2]); if(c<farCap){farCap=c;out.useCapHit=true}}
+ if(I.gfaCap) farCap=Math.min(farCap,lowA0+I.gfaCap);
  out.farCap=farCap;
  // 아래층부터 쌓되, 용적률 한도에 닿으면 멈춤 (남은 면적이 10㎡ 미만이면 그 층은 두지 않음: 보수적)
  const floors=[]; let cum=0, geo=0, cutByLight=false;
@@ -1940,6 +1961,9 @@ function computeOnce(I){
   CHK.forEach(([k,t])=>{if(zs.some(z=>z.includes(k)))out.info.push(t)});
   {const zz=Object.keys(ZONES).filter(z=>z!==I.zone&&zs.includes(z)); if(zz.length) out.info.push(`이 필지에는 ${I.zone} 말고도 ${zz.join('·')}이 함께 걸려 있습니다. 부분마다 기준이 다를 수 있어 이 도구의 한 덩어리 계산과 다릅니다 (국토계획법 제84조, 확인 필요).`);}
   if(zs.includes('성장관리계획구역')&&I.zone==='계획관리지역') out.info.push('성장관리계획구역: 성장관리계획이 수립된 계획관리지역은 용적률을 125%까지 완화할 수 있습니다. 실제 값과 조건은 그 계획의 지침을 확인하세요.');}
+{const lim=out.lightK?`채광창 벽은 인접 대지경계선까지 거리의 ${out.lightK}배 높이까지(시행령 제86조③1호)`:out.lightD?`다세대 채광창 벽은 인접 대지에서 ${f1(out.lightD)}m 이상(시행령 제86조③ 단서${city?', '+city+' 조례':', 지역을 몰라 법의 하한'})`:'';
+  if(apt) out.info.push(`대지 안의 공지: ${out.kindHint} 건축선 ${f1(out.lineSet)}m, 인접 대지 ${f1(out.adjEff)}m (${out.gjSrc?out.gjSrc:'건축법 시행령 별표 2의 하한. 실제 조례 거리는 확인 필요'})${lim?'. '+lim+'는 창을 낼 면을 정하기 전이라 도로 외 모든 면에 적용했습니다':''}.`);
+  else if(!I.bigSet&&!I.hallSet) out.info.push('대지 안의 공지: 이 용도·규모는 건축법 시행령 별표 2의 대상이 아니라 도로 쪽은 건축선까지, 옆 대지는 민법 제242조의 0.5m로 보았습니다. 조례로 따로 정한 건축물이면 건축선 1m·인접 대지 0.5m 이상입니다 (확인 필요).');}
  // 코어
  const walkLim=50, walkCenter=Wo/2+typ.dep/2, liv=typ.area*(D.live||0.8);
  const live=D.live||0.8;
@@ -2053,7 +2077,7 @@ function render(){
  <div class="tags">${T.law}${T.choice}${O.farIsCap?T.chk:''}</div>
  <details><summary>왜 이렇게 나오나요?</summary><div class="why">
  ${step('입력',`${O.F?`대지 ${f0(I.area)}㎡. 모양은 브이월드 연속지적도${O.F.nParts>1?`(필지 ${O.F.nParts}개를 합치고 서로 맞닿은 경계는 지움)`:''}를 대장 면적에 맞게 줄여 쓰고, 도로에 맞닿은 변 ${O.F.nRoad}개(합계 ${f1(O.front)}m)는 ${O.F.auto?'둘레의 도로(지목 도) 필지에서 찾았습니다':'도로 방향 입력으로 정했습니다'}. `:`대지 ${f0(I.area)}㎡, 도로에 접한 길이 ${f1(I.front)}m인 직사각형으로 봅니다.`} 띄움 거리를 뺀 땅을 ${f1(O.env.E.s*100)}cm 칸으로 나눠 칸마다 올릴 수 있는 높이를 구했습니다. 칸 전체가 기준을 지키도록 칸 반대각선만큼 더 띄웁니다. 도로 폭 ${f1(I.roadW)}m${O.rs>0?` → 4m에 못 미쳐 건축선이 ${f1(O.rs)}m 물러나고, 그 땅 ${f0(I.area-O.A)}㎡는 대지면적에서 빠집니다 (건축법 제46조, 시행령 제119조)`:''}.`)}
- ${step('가정',`층고 ${f1(I.fh)}m${pilS?`, 필로티층 ${f1(I.fh1)}m (주차 높이 2.1m와 전이보 고려)`:''}, 옥상 막힌 난간벽 ${PARAPET}m. 대지 안의 공지: 도로 쪽 건축선에서 ${f1(O.lineSet)}m, 이웃 대지에서 ${f1(O.adjEff)}m${O.wall.apt?` (${O.city?O.city+'시':'그 밖 지역'} 기준. 다세대 채광창 벽은 인접 대지에서 ${f1(O.lightD)}m 이상인데(건축법 시행령 제86조③·조례), 창을 어느 면에 낼지 정하기 전이라 도로 외 모든 면에 적용했습니다)`:''}. 이격은 외벽 바깥면(단열·마감 포함)부터 잽니다.`)}
+ ${step('가정',`층고 ${f1(I.fh)}m${pilS?`, 필로티층 ${f1(I.fh1)}m (주차 높이 2.1m와 전이보 고려)`:''}, 옥상 막힌 난간벽 ${PARAPET}m. 대지 안의 공지: 도로 쪽 건축선에서 ${f1(O.lineSet)}m, 이웃 대지에서 ${f1(O.adjEff)}m${O.wall.apt?` (${O.kindHint} 대지 안의 공지 하한, 건축법 시행령 별표 2${O.lightD?`. 다세대 채광창 벽은 인접 대지에서 ${f1(O.lightD)}m 이상(시행령 제86조③ 단서·${O.city?O.city+' 조례':'법의 하한'})`:''}${O.lightK?`. 채광창 벽은 인접 대지경계선까지 거리의 ${O.lightK}배 높이까지(제86조③1호)`:''}, 창을 어느 면에 낼지 정하기 전이라 도로 외 모든 면에 적용)`:' (건축법 시행령 별표 2 대상이 아니면 건축선까지, 옆 대지는 민법 제242조 0.5m)'}. 이격은 외벽 바깥면(단열·마감 포함)부터 잽니다.`)}
  ${step('규칙',`건폐율은 입력 중 작은 값 <code>${O.bcr}%</code>(${O.bcrFrom}), 용적률 <code>${O.far}%</code>, 층수 <code>${O.flMax<40?O.flMax+'층':'제한 없음'}</code>${O.hMax?`, 높이 <code>${O.hMax}m</code>`:''}. ${O.daylight?(LAW_NEW?'정북 일조: 높이 10m 이하 1.5m, 10~17m 5m, 17m 초과는 높이의 1/2 이상 (개정 건축법 제61조의 최소값 5m를 쓴 미리보기. 실제 거리는 조례가 정함).':'정북 일조: 높이 10m 이하 1.5m, 10m 초과는 높이의 1/2 이상. 2026. 11. 12. 시행 개정 건축법 제61조는 10~17m 구간을 "5m 이상으로 조례가 정하는 거리"로 바꾸는데, 지금 조례가 정한 높이의 1/2(5~8.5m)도 그 범위 안이라 조례를 고치기 전까지는 계속 적용될 수 있어 1/2로 계산합니다. 실제 적용은 허가권자에게 확인해야 합니다.'):''}`)}
  ${step('계산',`건축면적 = ${f0(O.A)} × ${O.bcr}% = <code>${f0(O.A*O.bcr/100)}㎡</code>${O.fpByRect?` → 지을 수 있는 땅(외벽 두께 제외)이 ${f0(O.fp)}㎡라 그만큼만 들어갑니다`:''}. 층마다 그 높이(맨 위면 난간까지)를 올릴 수 있는 땅과 건축면적 중 작은 값을 바닥면적으로 쌓으면 ${f0(O.envGFA)}㎡, 용적률 한도 ${f0(O.A)} × ${O.far}% = ${f0(O.farCap)}㎡ → 작은 값 <code>${f0(O.gfa)}㎡</code>. 바닥면적은 외단열이라 내측 내력벽 중심선으로 잽니다.`)}
  ${step('결과',`최대 건축면적 ${f0(O.fp)}㎡, 최대 연면적 ${f0(O.gfa)}㎡, 지상 ${O.n}층. 이 값과 볼륨 안이라면 매스 모양과 위치는 자유롭게 정하면 됩니다.`)}
@@ -2527,7 +2551,10 @@ $('vwbtn').addEventListener('click',async()=>{const msg=$('vwmsg');
  if(parts.length>1){const S=buildSegs(parts), linked=new Set(); S.inner.forEach(s=>{linked.add(s.part);linked.add(s.mate)});
   const lone=parts.filter((p,i)=>!linked.has(i)); if(lone.length){msg.innerHTML=`<b>${lone.map(p=>esc(p.jibun)).join(', ')}</b>은(는) 다른 필지와 맞닿아 있지 않아 하나의 대지로 볼 수 없습니다. 맞닿은 필지만 넣어 주세요.`;render();return}}
  const zm=zoneMerge(parts);
- setSite({id:parts.map(p=>p.pnu).join('+'),addr:base,parts,zm,roadCls:(parts.find(p=>p.road&&p.road.length)||parts[0]).roadCls,
+ // 줄여 친 주소("수유동 527-37")는 브이월드가 돌려준 전체 지번 주소로 바꿔 둠: 지역(조례·단열 지역) 판정이 주소 글자에 기대기 때문
+ {const el=$('addr'), full=String(got[0].addr||'').trim(); if(full&&/^\S+(특별시|광역시|특별자치시|특별자치도|도)\s/.test(full)) el.value=full;
+  el.dataset.pnu=got[0].pnu; el.dataset.sel=el.value.trim(); SUG.mark(el);}
+ setSite({id:parts.map(p=>p.pnu).join('+'),addr:$('addr').value,parts,zm,roadCls:(parts.find(p=>p.road&&p.road.length)||parts[0]).roadCls,
   zones:[...new Set(got.flatMap(r=>r.zones||[]))],src:'브이월드'});
  const A=parts.reduce((t,p)=>t+(p.area||0),0); if(A>0) $('area').value=Math.round(A*10)/10;
  if(zm.zone&&ZONES[zm.zone]){zsel.value=zm.zone;const Z=ZONES[zm.zone];
