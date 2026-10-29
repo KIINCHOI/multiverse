@@ -1,0 +1,142 @@
+<title>주소 연결 시험</title>
+<style>
+:root{--bg:#f3f4f0;--panel:#fff;--ink:#1c2420;--muted:#5d6862;--line:#d5dad4;--accent:#2c6153;--ok:#2c6153;--bad:#a8322a;--soft:#e9ece6;
+ --f:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--m:ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141917;--panel:#1c2320;--ink:#e4ebe7;--muted:#9aa8a1;--line:#33403a;--accent:#7cc4ad;--ok:#7cc4ad;--bad:#f08f86;--soft:#232c28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141917;--panel:#1c2320;--ink:#e4ebe7;--muted:#9aa8a1;--line:#33403a;--accent:#7cc4ad;--ok:#7cc4ad;--bad:#f08f86;--soft:#232c28;color-scheme:dark}
+html,body{background:var(--bg)}
+body{color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.6;padding:20px max(16px,env(safe-area-inset-left,0px)) 40px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-size:22px;margin:0}
+p{margin:0}
+.muted{color:var(--muted);font-size:13.5px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.grid{grid-template-columns:1fr}}
+label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+input{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%;box-sizing:border-box}
+button{font:inherit;font-weight:600;font-size:14px;color:#fff;background:var(--accent);border:0;border-radius:6px;padding:9px 16px;cursor:pointer;align-self:flex-start}
+:root[data-theme="dark"] button{color:#10201b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button{color:#10201b}}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12.5px}
+.ok{color:var(--ok);font-weight:700}.bad{color:var(--bad);font-weight:700}
+textarea{font-family:var(--m);font-size:12px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;width:100%;box-sizing:border-box;min-height:70px}
+.links a{color:var(--accent);font-weight:700;word-break:break-all}
+.step{display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:10px}
+.step b{font-size:14px}
+svg{width:100%;max-width:420px;height:auto;background:var(--soft);border-radius:6px;align-self:center}
+pre{font-family:var(--m);font-size:12px;background:var(--soft);border-radius:6px;padding:10px;white-space:pre-wrap;word-break:break-all;margin:0;max-height:320px;overflow:auto}
+</style>
+<div class="wrap">
+ <h1>주소 연결 시험</h1>
+ <p class="muted">MULTIVERSE Plan에 주소 자동 입력을 붙일 수 있는지 확인하는 시험 페이지입니다. 브이월드 인증키로 주소 → 필지번호(PNU) → 필지 경계·면적·용도지역·도로접면을 차례로 불러 보고, 각 단계가 이 화면에서 되는지 표시합니다. 인증키는 이 브라우저에만 남고 어디에도 저장되지 않습니다.</p>
+ <div class="box">
+  <div class="grid">
+   <label>브이월드 인증키<input id="key" autocomplete="off" spellcheck="false"></label>
+   <label>인증키에 등록한 서비스 URL (domain)<input id="dom" spellcheck="false"></label>
+  </div>
+  <label>주소 (지번)<input id="addr" value="충청남도 아산시 탕정면 매곡리 697-1"></label>
+  <button id="go" type="button">시험 시작</button>
+ </div>
+ <div class="box" id="bar">
+  <b>주소창 시험 (이 화면 안에서는 브이월드 연결이 막혀 있을 때)</b>
+  <p class="muted">이 화면은 바깥 사이트를 직접 부를 수 없어서, 브이월드 주소를 새 탭에서 열고 나온 글자를 아래에 붙여 넣는 방식으로 시험합니다. 위 칸에 인증키·서비스 URL·주소를 넣고 시작하세요. 만든 링크에는 인증키가 들어 있으니 다른 사람에게 보내지 마세요.</p>
+  <button id="mk" type="button">링크 만들기</button>
+  <div class="step"><b>1. 주소로 필지번호 찾기</b><div class="links" id="l1">—</div>
+   <p class="muted">새 탭에 글자가 나오면 전부 선택해 복사한 뒤 아래 칸에 붙여 넣으세요. 링크가 안 열리면 아래 회색 칸의 주소를 복사해 주소창에 넣으면 됩니다.</p>
+   <textarea id="u1" readonly></textarea>
+   <textarea id="p1" placeholder="1번 결과 글자 전체, 또는 필지번호(id) 19자리만 붙여 넣기"></textarea><div id="m1" class="muted"></div></div>
+  <div class="step"><b>2. 필지 경계 받기</b><div class="links" id="l2">—</div>
+   <textarea id="u2" readonly></textarea>
+   <textarea id="p2" placeholder="2번 결과를 여기에 붙여 넣기"></textarea><div id="m2" class="muted"></div>
+   <svg id="shape" viewBox="0 0 100 100" aria-label="필지 경계"></svg>
+   <pre id="local">아직 없음</pre></div>
+ </div>
+ <div class="box"><b>결과</b><table><thead><tr><th>단계</th><th>fetch</th><th>JSONP</th><th>내용</th></tr></thead><tbody id="res"></tbody></table></div>
+ <div class="box"><b>받은 값</b><pre id="raw">아직 없음</pre></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+try{$('key').value=localStorage.getItem('vw-key')||'';$('dom').value=localStorage.getItem('vw-dom')||location.hostname||'localhost'}catch(e){$('dom').value=location.hostname||'localhost'}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let jn=0;
+function jsonp(url){return new Promise((res,rej)=>{const cb='__vw'+(++jn);const s=document.createElement('script');const t=setTimeout(()=>{clean();rej(new Error('시간 초과 또는 차단'))},12000);
+ function clean(){clearTimeout(t);try{delete window[cb]}catch(e){window[cb]=undefined}s.remove()}
+ window[cb]=d=>{clean();res(d)};s.onerror=()=>{clean();rej(new Error('스크립트 로드 차단'))};s.src=url+'&callback='+cb;document.head.appendChild(s)})}
+async function viaFetch(url){const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+async function both(url){
+ const out={f:null,j:null,data:null};
+ try{out.data=await viaFetch(url);out.f='ok'}catch(e){out.f=e.message}
+ try{const d=await jsonp(url);out.j='ok';out.data=out.data||d}catch(e){out.j=e.message}
+ return out}
+function row(step,o,note){$('res').insertAdjacentHTML('beforeend',`<tr><td>${esc(step)}</td><td class="${o.f==='ok'?'ok':'bad'}">${o.f==='ok'?'됨':esc(o.f||'—')}</td><td class="${o.j==='ok'?'ok':'bad'}">${o.j==='ok'?'됨':esc(o.j||'—')}</td><td>${note}</td></tr>`)}
+$('go').onclick=async()=>{
+ const key=$('key').value.trim(), dom=$('dom').value.trim(), addr=$('addr').value.trim();
+ try{localStorage.setItem('vw-key',key);localStorage.setItem('vw-dom',dom)}catch(e){}
+ $('res').innerHTML='';const raw={};
+ if(!key){$('res').innerHTML='<tr><td colspan="4" class="bad">인증키를 넣어 주세요.</td></tr>';return}
+ const K=`key=${encodeURIComponent(key)}&domain=${encodeURIComponent(dom)}`;
+ // 1 주소 → 필지
+ const u1=`https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:4326&size=1&page=1&type=address&category=parcel&format=json&errorformat=json&query=${encodeURIComponent(addr)}&${K}`;
+ const r1=await both(u1); raw.search=r1.data;
+ const it=r1.data&&r1.data.response&&r1.data.response.result&&r1.data.response.result.items&&r1.data.response.result.items[0];
+ const pnu=it&&it.id, x=it&&it.point&&it.point.x, y=it&&it.point&&it.point.y;
+ row('① 주소 → 필지번호',r1,pnu?`PNU <b>${esc(pnu)}</b>`:esc(r1.data&&r1.data.response?(r1.data.response.status+' '+JSON.stringify(r1.data.response.error||'')):'응답 없음'));
+ if(!pnu){$('raw').textContent=JSON.stringify(raw,null,1);return}
+ // 2 필지 경계
+ const u2=`https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LP_PA_CBND_BUBUN&format=json&errorformat=json&geometry=true&attribute=true&crs=EPSG:4326&size=1&attrFilter=pnu:=:${pnu}&${K}`;
+ const r2=await both(u2); raw.parcel=r2.data;
+ const fc=r2.data&&r2.data.response&&r2.data.response.result&&r2.data.response.result.featureCollection;
+ const g=fc&&fc.features&&fc.features[0]&&fc.features[0].geometry;
+ row('② 필지 경계(연속지적도)',r2,g?`꼭짓점 ${esc(JSON.stringify(g.coordinates).split('],[').length)}개 받음`:esc(r2.data&&r2.data.response?r2.data.response.status:'응답 없음'));
+ // 3 토지특성 (면적, 용도지역, 도로접면, 형상)
+ const yr=new Date().getFullYear();
+ let r3=null,lc=null;
+ for(const sy of [yr,yr-1,yr-2]){const u3=`https://api.vworld.kr/ned/data/getLandCharacteristics?pnu=${pnu}&stdrYear=${sy}&format=json&numOfRows=10&pageNo=1&${K}`;r3=await both(u3);const f=r3.data&&r3.data.landCharacteristicss&&r3.data.landCharacteristicss.field;if(f&&f.length){lc=f[0];break}}
+ raw.landChar=r3&&r3.data;
+ row('③ 토지특성',r3,lc?`면적 <b>${esc(lc.lndpclAr)}㎡</b> · ${esc(lc.prposArea1Nm||'')} · 도로접면 <b>${esc(lc.roadSideCodeNm||'?')}</b> · 형상 ${esc(lc.tpgrphFrmCodeNm||'?')}`:'값 없음');
+ // 4 토지이용계획 (용도지역·지구 전체)
+ const u4=`https://api.vworld.kr/ned/data/getLandUseAttr?pnu=${pnu}&format=json&numOfRows=100&pageNo=1&${K}`;
+ const r4=await both(u4); raw.landUse=r4.data;
+ const lu=r4.data&&r4.data.landUses&&r4.data.landUses.field;
+ row('④ 용도지역·지구',r4,lu&&lu.length?esc(lu.map(f=>f.prposAreaDstrcCodeNm).filter(Boolean).join(', ')):'값 없음');
+ $('raw').textContent=JSON.stringify(raw,null,1).slice(0,20000);
+};
+// ---- 주소창 시험 ----
+const TRACE=[[16.05,34.87],[21.91,35.8],[23.76,32.4],[27.46,27.46],[14.81,2.78],[10.8,0],[0,13.27],[0.93,16.66],[13.27,32.71]];
+function kq(){const key=$('key').value.trim(),dom=$('dom').value.trim();try{localStorage.setItem('vw-key',key);localStorage.setItem('vw-dom',dom)}catch(e){}return `key=${encodeURIComponent(key)}&domain=${encodeURIComponent(dom)}`}
+function setLink(id,uid,url,label){$(id).innerHTML=`<a href="${esc(url)}" target="_blank" rel="noopener">${esc(label)}</a>`;$(uid).value=url}
+function link2(pnu){setLink('l2','u2',`https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LP_PA_CBND_BUBUN&format=json&errorformat=json&geometry=true&attribute=true&crs=EPSG:4326&size=1&attrFilter=pnu:=:${pnu}&${kq()}`,'필지 경계 열기 (PNU '+pnu+')')}
+$('mk').onclick=()=>{if(!$('key').value.trim()){$('l1').innerHTML='<span class="bad">인증키를 넣어 주세요.</span>';return}
+ setLink('l1','u1',`https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:4326&size=1&page=1&type=address&category=parcel&format=json&errorformat=json&query=${encodeURIComponent($('addr').value.trim())}&${kq()}`,'주소 검색 열기')};
+function parse(t){try{return JSON.parse(t)}catch(e){const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a>=0&&b>a){try{return JSON.parse(t.slice(a,b+1))}catch(e2){}}return null}}
+function errOf(d){const r=d&&d.response;if(!r)return '응답 형식을 알 수 없음';if(r.status==='OK')return '';return `${r.status} ${r.error?(r.error.code||'')+' '+(r.error.text||''):''}`}
+$('p1').oninput=()=>{const d=parse($('p1').value);if(!d||typeof d!=='object'){const m=$('p1').value.replace(/\s/g,'').match(/(?:^|[^0-9])(\d{19})(?:[^0-9]|$)/);if(m&&!/api\.vworld/.test($('p1').value)){$('m1').innerHTML='필지번호 '+m[1]+'로 2번 링크를 만들었습니다.';link2(m[1]);return}$('m1').textContent=/api\.vworld/.test($('p1').value)?'링크 주소가 들어갔습니다. 링크를 열었을 때 나온 글자(또는 필지번호 19자리)를 넣어 주세요.':'JSON으로 읽히지 않습니다. 전부 복사했는지 확인하세요.';return}
+ const e=errOf(d);if(e){$('m1').innerHTML='<span class="bad">브이월드 응답: '+esc(e)+'</span>';return}
+ const it=d.response.result&&d.response.result.items&&d.response.result.items[0];
+ if(!it||!it.id){$('m1').textContent='주소에 맞는 필지가 없습니다.';return}
+ $('m1').innerHTML='<span class="ok">인증키 작동 확인.</span> PNU '+esc(it.id)+' · '+esc((it.address&&it.address.parcel)||'');link2(it.id)};
+function toLocal(ring){const n=ring.length;let lo=0,la=0;ring.forEach(p=>{lo+=p[0];la+=p[1]});lo/=n;la/=n;const f=la*Math.PI/180;
+ const my=111132.92-559.82*Math.cos(2*f)+1.175*Math.cos(4*f),mx=111412.84*Math.cos(f)-93.5*Math.cos(3*f);
+ return ring.map(p=>[(p[0]-lo)*mx,(p[1]-la)*my])}
+function area(P){let a=0;for(let i=0;i<P.length;i++){const q=P[(i+1)%P.length];a+=P[i][0]*q[1]-q[0]*P[i][1]}return Math.abs(a)/2}
+function cen(P){let x=0,y=0;P.forEach(p=>{x+=p[0];y+=p[1]});return[x/P.length,y/P.length]}
+$('p2').oninput=()=>{const d=parse($('p2').value);if(!d){$('m2').textContent='JSON으로 읽히지 않습니다.';return}
+ const e=errOf(d);if(e){$('m2').innerHTML='<span class="bad">브이월드 응답: '+esc(e)+'</span>';return}
+ const fc=d.response.result&&d.response.result.featureCollection;const ft=fc&&fc.features&&fc.features[0];
+ if(!ft){$('m2').textContent='경계가 들어 있지 않습니다.';return}
+ let c=ft.geometry.coordinates;while(Array.isArray(c[0][0]))c=c[0];let ring=c.slice();
+ const a0=ring[0],z=ring[ring.length-1];if(a0[0]===z[0]&&a0[1]===z[1])ring.pop();
+ const L=toLocal(ring),A=area(L),pr=ft.properties||{};
+ $('m2').innerHTML=`<span class="ok">경계 받음.</span> 꼭짓점 ${ring.length}개 · 계산 면적 <b>${A.toFixed(1)}㎡</b> (대장 525㎡와 차이 ${(A-525).toFixed(1)}㎡) · ${esc(pr.addr||pr.jibun||'')}`;
+ const c1=cen(L),T0=TRACE,c2=cen(T0),T=T0.map(p=>[p[0]-c2[0],p[1]-c2[1]]),V=L.map(p=>[p[0]-c1[0],p[1]-c1[1]]);
+ const all=V.concat(T);let mx=0;all.forEach(p=>{mx=Math.max(mx,Math.abs(p[0]),Math.abs(p[1]))});const k=44/mx;
+ const pts=P=>P.map(p=>`${(50+p[0]*k).toFixed(2)},${(50-p[1]*k).toFixed(2)}`).join(' ');
+ $('shape').innerHTML=`<polygon points="${pts(T)}" fill="none" stroke="var(--muted)" stroke-dasharray="1.5 1" stroke-width=".5"/><polygon points="${pts(V)}" fill="var(--accent)" fill-opacity=".18" stroke="var(--accent)" stroke-width=".7"/><text x="3" y="96" font-size="3.6" fill="var(--muted)">실선: 브이월드 · 점선: 확인도면 추적(매곡리 697-1) · 위쪽이 북</text>`;
+ const mnx=Math.min(...V.map(p=>p[0])),mny=Math.min(...V.map(p=>p[1]));
+ $('local').textContent=JSON.stringify({pnu:pr.pnu||'',addr:pr.addr||'',area_calc:+A.toFixed(1),poly_m:V.map(p=>[+(p[0]-mnx).toFixed(2),+(p[1]-mny).toFixed(2)])});
+};
+</script>
