@@ -1515,16 +1515,18 @@ const VW=(()=>{
   const my=111132.92-559.82*Math.cos(2*f)+1.175*Math.cos(4*f), mx=111412.84*Math.cos(f)-93.5*Math.cos(3*f);
   const toM=p=>[(p[0]-lo)*mx,(p[1]-la)*my]; const poly=RG.map(toM);
   // 둘레의 지목 '도' 필지와 맞닿은 변 = 도로 변
-  let road=[];
-  try{const xs=RG.map(p=>p[0]),ys=RG.map(p=>p[1]),e=0.00025;
-   const nb=await feats(`geomFilter=BOX(${Math.min(...xs)-e},${Math.min(...ys)-e},${Math.max(...xs)+e},${Math.max(...ys)+e})`,100);
-   const roads=nb.filter(x=>x.properties&&x.properties.pnu!==pnu&&/\s?도$/.test(String(x.properties.jibun||'').trim())).map(x=>ring(x.geometry).map(toM));
+  let road=[], roadNm={}, nbNames=[];
+  try{const xs=RG.map(p=>p[0]),ys=RG.map(p=>p[1]),e=0.0003;
+   const nb=await feats(`geomFilter=BOX(${Math.min(...xs)-e},${Math.min(...ys)-e},${Math.max(...xs)+e},${Math.max(...ys)+e})`,200);
+   nbNames=nb.map(x=>String((x.properties&&x.properties.jibun)||'').trim()).filter(Boolean);
+   const roads=nb.filter(x=>x.properties&&x.properties.pnu!==pnu&&/도$/.test(String(x.properties.jibun||'').trim())).map(x=>({nm:String(x.properties.jibun).trim(),rp:ring(x.geometry).map(toM)}));
    for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<0.3)continue;
-    const pts=[0.25,0.5,0.75].map(t=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]);
-    if(roads.some(rp=>pts.filter(([x,y])=>{let m=Infinity;for(let j=0;j<rp.length;j++)m=Math.min(m,dSeg(x,y,rp[j],rp[(j+1)%rp.length]));return m<0.8}).length>=2)) road.push(i);}
-  }catch(e){}
+    const pts=[0.2,0.4,0.6,0.8].map(t=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]);
+    const hit=roads.find(({rp})=>pts.filter(([x,y])=>{let m=Infinity;for(let j=0;j<rp.length;j++)m=Math.min(m,dSeg(x,y,rp[j],rp[(j+1)%rp.length]));return m<1.2}).length>=2);
+    if(hit){road.push(i);roadNm[hit.nm]=(roadNm[hit.nm]||0)+L;}}
+  }catch(e){nbNames=['(이웃 필지 조회 실패: '+e.message+')']}
   const [lc,lu]=await Promise.all([landChar(pnu),landUse(pnu)]);
-  return {pnu,addr:pr.addr||q,jibun:pr.jibun||'',poly,road,area:lc?parseFloat(lc.lndpclAr):null,zone:lc?lc.prposArea1Nm:null,roadCls:lc?lc.roadSideCodeNm:null,zones:lu};
+  return {pnu,addr:pr.addr||q,jibun:pr.jibun||'',poly,road,roadNm,nbNames,area:lc?parseFloat(lc.lndpclAr):null,zone:lc?lc.prposArea1Nm:null,roadCls:lc?lc.roadSideCodeNm:null,zones:lu};
  }
  return {load};
 })();
@@ -2281,13 +2283,14 @@ $('vwbtn').addEventListener('click',async()=>{const q=$('addr').value.trim(),msg
   if(r.area) $('area').value=r.area;
   if(r.zone&&ZONES[r.zone]){zsel.value=r.zone;const Z=ZONES[r.zone];$('bcrZ').value=Z.bcr;$('bcrD').value='';$('far').value='';$('flMax').value=Z.floors||'';$('hMax').value=''}
   const w=roadWOf(r.roadCls); if(w!=null) $('roadW').value=w;
-  msg.innerHTML=`불러왔습니다: ${esc(r.jibun||r.pnu)} · 대장 ${r.area?f0(r.area)+'㎡':'면적 없음'} · ${esc(r.zone||'용도지역 없음')}${r.zone&&!ZONES[r.zone]?' (아직 지원하지 않는 용도지역이라 바꾸지 않았습니다)':''} · 도로접면 ${esc(r.roadCls||'-')}${r.road.length?'':' · 도로 변을 찾지 못해 도로 방향 입력으로 정합니다'}. <b>건폐율·용적률·층수는 토지이음 값으로 고쳐 주세요.</b>`;
+  msg.innerHTML=`불러왔습니다: ${esc(r.jibun||r.pnu)} · 대장 ${r.area?f0(r.area)+'㎡':'면적 없음'} · ${esc(r.zone||'용도지역 없음')}${r.zone&&!ZONES[r.zone]?' (아직 지원하지 않는 용도지역이라 바꾸지 않았습니다)':''} · 도로접면 ${esc(r.roadCls||'-')} · ${r.road.length?'도로 변: '+Object.entries(r.roadNm).map(([k,v])=>esc(k)+' '+f1(v)+'m').join(', ')+' (빠진 도로가 있으면 도로 방향을 고르세요)':'도로 변을 찾지 못해 도로 방향 입력으로 정합니다'}.${DEBUG?' [이웃 필지 '+r.nbNames.length+'개: '+esc(r.nbNames.join(', '))+']':''} <b>건폐율·용적률·층수는 토지이음 값으로 고쳐 주세요.</b>`;
  }catch(e){msg.textContent='불러오지 못했습니다: '+e.message+'. 입력칸에 직접 넣어 계산할 수 있습니다.'}
  $('vwbtn').disabled=false; render();});
 $('vwclr').addEventListener('click',()=>{setSite(null);$('vwmsg').textContent='직사각형 대지로 계산합니다.';render()});
 $('roadDir').addEventListener('change',()=>{if(SITE){SITE.road=[];SFC=null}});
 // 처음 화면: 아산 매곡리 697-1 (?ex=suyu 이면 서울 수유동 예시)
 const EXQ=(()=>{try{return new URLSearchParams(location.search).get('ex')}catch(e){return null}})();
+const DEBUG=(()=>{try{return new URLSearchParams(location.search).get('debug')==='1'}catch(e){return false}})();
 if(EXQ!=='suyu'){
  $('addr').value=EX_ASAN.addr; $('use').value='공동주택'; zsel.value='계획관리지역'; $('area').value=525; $('roadW').value=4; $('roadDir').value='S';
  $('bcrZ').value=40; $('bcrD').value=''; $('far').value=100; $('flMax').value=4; $('hMax').value='';
