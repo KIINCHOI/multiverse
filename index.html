@@ -61,6 +61,8 @@ input[type=checkbox]{width:auto}
 .sug{position:fixed;z-index:30;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.16);max-height:300px;overflow:auto;padding:4px 0}
 .sug[hidden]{display:none}
 .sgi{padding:7px 12px;cursor:pointer;display:flex;flex-direction:column;gap:1px;font-size:13.5px}
+.sgn{padding:7px 12px;font-size:12.5px;color:var(--muted);line-height:1.45}
+.sgi.area b{font-weight:600}
 .sgi small{color:var(--muted);font-size:12px}
 .sgi:hover,.sgi.on{background:var(--accent-soft)}
 input.picked{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
@@ -1449,7 +1451,7 @@ function isMyeon(q){return /[가-힣]+면(\s|\d|$)/.test(q||'')}
 
 // ───────── 대지 모양 (브이월드 연속지적도, 여러 필지 합치기) ─────────
 // SITE.parts[k].poly: 진북 기준 m 좌표(x 동쪽, y 북쪽, 모든 필지가 같은 원점), .road: 도로와 맞닿은 변 번호(변 i = 꼭짓점 i → i+1)
-let SITE=null, SFC=null;
+let SITE=null, SFC=null; // SFC: siteFrame 결과 캐시 (Map)
 const pArea=P=>{let a=0;for(let i=0;i<P.length;i++){const q=P[(i+1)%P.length];a+=P[i][0]*q[1]-q[0]*P[i][1]}return a/2};
 const pCen=P=>{let x=0,y=0;P.forEach(p=>{x+=p[0];y+=p[1]});return[x/P.length,y/P.length]};
 function inPoly(x,y,P){let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])c=!c}return c}
@@ -1476,8 +1478,8 @@ function buildSegs(parts){
 }
 // 대장 면적으로 줄인 모양을 돌린 좌표계에 놓고, 띄움 거리를 뺀 땅 안에 들어가는 가장 큰 직사각형을 찾음
 // 정북 일조가 걸리는 지역은 진북 고정. 래스터 격자 중심으로 판정하므로 결과는 실제보다 약간 작게 나옴
-function siteFrame(I,dRoad,dAdj,daylight){
- const key=[SITE.id,SITE.manualRoad?'m':'a',I.area,I.roadDir,dRoad,dAdj,daylight].join('|'); if(SFC&&SFC.key===key) return SFC.F;
+function siteFrame(I,dRoad,dAdj,daylight,aForce){
+ const key=[SITE.id,SITE.manualRoad?'m':'a',I.area,I.roadDir,dRoad,dAdj,daylight,aForce].join('|'); if(!SFC) SFC=new Map(); if(SFC.has(key)) return SFC.get(key); if(SFC.size>40) SFC.clear();
  const S=SITE.segs||(SITE.segs=buildSegs(SITE.parts));
  const a0=S.polys.reduce((t,P)=>t+Math.abs(pArea(P)),0), k=Math.sqrt(I.area/a0), c0=pCen(S.polys.flat());
  const sc=p=>[(p[0]-c0[0])*k,(p[1]-c0[1])*k];
@@ -1512,13 +1514,15 @@ function siteFrame(I,dRoad,dAdj,daylight){
   const rect=best.a>0?{x0:(best.c0+0.5)*g,x1:(best.c1+0.5)*g,y0:(best.r0+0.5)*g,y1:(best.r1+0.5)*g}:{x0:Lc/2,x1:Lc/2,y0:Ln/2,y1:Ln/2};
   return {polys,segs,inner,Lc,Ln,g,rect,area:best.a*g*g,ca,sa};
  }
- // 방향: 정북 일조 지역은 진북 고정. 그 밖은 바깥 변마다 돌려 보아 가장 큰 직사각형이 나오는 방향을 고르되, 주 도로 변 방향이 3% 안쪽이면 그쪽을 씀
+ // 방향: 바깥 변마다 돌려 보아 가장 큰 직사각형이 나오는 방향을 고르되, 주 도로 변(3m 이상) 방향이 3% 안쪽이면 그쪽을 씀
+ // 정북 일조 지역은 일조 거리까지 넣어 계산해 봐야 하므로 compute()가 후보 방향(cand)마다 aForce로 다시 부름
+ const cand=[...new Set([0,...segs0.filter(s=>lenS(s)>0.5).map(s=>+alphaOf(s).toFixed(4))])], aMain=lenS(mainS)>=3?+alphaOf(mainS).toFixed(4):null;
  let alpha=0;
- if(!daylight){const R0=Math.max(...polys0.flat().map(p=>Math.hypot(p[0],p[1])))*2, gq=Math.max(0.25,R0/160);
-  const cand=[...new Set(segs0.filter(s=>lenS(s)>0.5).map(s=>+alphaOf(s).toFixed(4)))];
-  const aMain=+alphaOf(mainS).toFixed(4); let best=null, mainA=0;
+ if(aForce!=null) alpha=aForce;
+ else if(!daylight){const R0=Math.max(...polys0.flat().map(p=>Math.hypot(p[0],p[1])))*2, gq=Math.max(0.25,R0/160);
+  let best=null, mainA=0;
   cand.forEach(a=>{const r=fit(a,gq).area; if(a===aMain) mainA=r; if(!best||r>best.r) best={a,r};});
-  alpha=(best&&mainA>=best.r*0.97)?aMain:(best?best.a:aMain);}
+  alpha=(best&&aMain!=null&&mainA>=best.r*0.97)?aMain:(best?best.a:0);}
  const Q=fit(alpha); const {polys,segs,inner,Lc,Ln,g,rect,ca,sa}=Q;
  segs.forEach(s=>s.n=nrmS(s));
  const rn=segs[main].n;
@@ -1527,8 +1531,31 @@ function siteFrame(I,dRoad,dAdj,daylight){
  const refTop=(x0,x1)=>{let m=Infinity;for(let x=x0;x<=x1+1e-9;x+=g){m=Math.min(m,topAt(x))}return m===Infinity?Ln:m};
  const front=segs.filter(s=>s.road).reduce((t,s)=>t+lenS(s),0);
  const north=[-sa,ca]; // 진북 방향 (이 좌표계에서)
- const F={polys,segs,inner,rect,Lc,Ln,alpha,front,roadDir,main,auto,g,refTop,north,nParts:polys.length,nv:polys.reduce((t,P)=>t+P.length,0),nRoad:segs.filter(s=>s.road).length};
- SFC={key,F}; return F;
+ // 정북 일조: 건물의 각 점에서 진북 방향으로 잰 대지경계선까지의 거리 (건축법 시행령 제86조① "정북방향으로의 인접 대지경계선으로부터")
+ // 진북 쪽이 도로면 그 반대편 경계선(공동주택은 도로 중심선)까지로 봄: extra = 도로 폭(또는 그 1/2)
+ const gap=(x,y,extra)=>{let best=Infinity;const nx=north[0],ny=north[1];
+  for(const sg of segs){const ex=sg.b[0]-sg.a[0],ey=sg.b[1]-sg.a[1],den=nx*ey-ny*ex;if(Math.abs(den)<1e-12)continue;
+   const qx=sg.a[0]-x,qy=sg.a[1]-y,t=(qx*ey-qy*ex)/den,u=(qx*ny-qy*nx)/den;
+   if(t>-1e-7&&u>=-1e-9&&u<=1+1e-9){const v=Math.max(0,t)+(sg.road?extra:0);if(v<best)best=v}}
+  return best};
+ // 건물 북쪽 면을 x0~x1 사이에 둘 때, 모든 점이 진북 방향으로 d 이상 떨어지는 가장 북쪽 y (양 옆면 아래쪽 점도 함께 확인)
+ const NLC=new Map();
+ const nlim=(d,x0,x1,extra)=>{const k=[d.toFixed(3),x0.toFixed(2),x1.toFixed(2),extra].join('|');if(NLC.has(k))return NLC.get(k);
+  const st=Math.max(g,(x1-x0)/80), xs=[];for(let x=x0;x<x1;x+=st)xs.push(x);xs.push(x1);
+  const ok=y=>{for(const x of xs)if(gap(x,y,extra)<d-1e-6)return false;for(let k2=0.5;k2<y-rect.y0;k2+=0.5){if(gap(x0,y-k2,extra)<d-1e-6||gap(x1,y-k2,extra)<d-1e-6)return false}return true};
+  let lo=rect.y0,hi=Ln+1,r;
+  if(!ok(lo)) r=lo; else if(ok(hi)) r=hi; else {for(let i=0;i<32;i++){const m=(lo+hi)/2;if(ok(m))lo=m;else hi=m}r=lo}
+  NLC.set(k,r);return r};
+ // 그림용: 대지 안에서 진북 방향 거리가 d가 되는 선 (x마다 가장 북쪽 점). 끊긴 곳은 null
+ const colY=x=>{const ys=[];segs.concat(inner).forEach(({a,b})=>{if((a[0]<=x&&b[0]>x)||(b[0]<=x&&a[0]>x))ys.push(a[1]+(x-a[0])*(b[1]-a[1])/(b[0]-a[0]))});ys.sort((p,q)=>p-q);return ys.length>=2?[ys[ys.length-2],ys[ys.length-1]]:null};
+ const LOC=new Map();
+ const locus=(d,extra)=>{const k=d.toFixed(3)+'|'+extra;if(LOC.has(k))return LOC.get(k);const out=[],N=140;
+  for(let i=0;i<=N;i++){const x=Lc*(0.002+0.996*i/N),c=colY(x);if(!c||c[1]-c[0]<0.05){out.push(null);continue}
+   let lo=c[0]+1e-4,hi=c[1]-1e-4;if(gap(x,lo,extra)<d){out.push(null);continue}if(gap(x,hi,extra)>=d){out.push(null);continue}
+   for(let j=0;j<30;j++){const m=(lo+hi)/2;if(gap(x,m,extra)>=d)lo=m;else hi=m}out.push([x,lo])}
+  LOC.set(k,out);return out};
+ const F={polys,segs,inner,rect,Lc,Ln,alpha,front,roadDir,main,auto,g,refTop,north,gap,nlim,locus,cand,aMain,nParts:polys.length,nv:polys.reduce((t,P)=>t+P.length,0),nRoad:segs.filter(s=>s.road).length};
+ SFC.set(key,F); return F;
 }
 // 여러 필지의 용도지역: 국토계획법 제84조① · 시행령 제94조(330㎡)
 function zoneMerge(parts){
@@ -1587,12 +1614,32 @@ const VW=(()=>{
   const [lc,lu]=await Promise.all([landChar(pnu),landUse(pnu)]);
   return {pnu,addr:pr.addr||q,jibun:pr.jibun||'',RG,poly,road,roadNm,nbNames,area:lc?parseFloat(lc.lndpclAr):null,zone:lc?lc.prposArea1Nm:null,roadCls:lc?lc.roadSideCodeNm:null,zones:lu};
  }
- // 주소 후보 (입력하는 동안): 지번 주소로 먼저, 없으면 도로명 주소로
- async function suggest(q){const pick=async cat=>{const d=await jsonp(`https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:4326&size=8&page=1&type=address&category=${cat}&format=json&errorformat=json&query=${encodeURIComponent(q)}&${K()}`);
-   const r=d&&d.response&&d.response.result;return (r&&r.items)||[]};
-  let items=(await pick('parcel')).map(x=>({pnu:x.id,label:(x.address&&x.address.parcel)||'',sub:(x.address&&x.address.road)||''}));
-  if(!items.length) items=(await pick('road')).map(x=>({pnu:null,label:(x.address&&x.address.parcel)||(x.address&&x.address.road)||'',sub:(x.address&&x.address.road)||''}));
-  return items.filter(x=>x.label);}
+ // 주소 후보 (입력하는 동안)
+ //  숫자(지번)가 있으면 지번 주소 → 없으면 도로명 주소
+ //  숫자가 없으면 시군구·읍면동 후보, 읍면동까지 들어 있으면 그 안의 리 후보도 (시·구·동을 차례로 고르는 방식)
+ async function suggest(q){
+  const S=async(type,cat,size)=>{const d=await jsonp(`https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:4326&size=${size}&page=1&type=${type}${cat?'&category='+cat:''}&format=json&errorformat=json&query=${encodeURIComponent(q)}&${K()}`);
+   const e=err(d); if(e) throw new Error(e); const r=d&&d.response; return {items:(r&&r.result&&r.result.items)||[],total:+(r&&r.record&&r.record.total)||0}};
+  if(/\d/.test(q)){
+   let r=await S('address','parcel',50), items=r.items.map(x=>({kind:'parcel',pnu:x.id,label:(x.address&&x.address.parcel)||'',sub:(x.address&&x.address.road)||''}));
+   if(!items.length){r=await S('address','road',50);items=r.items.map(x=>({kind:'parcel',pnu:null,label:(x.address&&x.address.parcel)||(x.address&&x.address.road)||'',sub:(x.address&&x.address.road)||''}))}
+   items=items.filter(x=>x.label);
+   return {items,more:Math.max(0,r.total-items.length)};
+  }
+  const [l2,l4]=await Promise.all([S('district','L2',5).catch(()=>({items:[]})),S('district','L4',10).catch(()=>({items:[]}))]);
+  const area=[...l2.items,...l4.items].map(x=>x.title).filter(Boolean);
+  // 리·동 후보: '이름 1'로 지번 1번지를 찾으면 같은 이름의 리·동이 전국에서 한 번씩 나옴 → 시도·시군구·읍면까지 붙은 이름만 추림
+  let ri=[]; const toks=q.trim().split(/\s+/), lt=toks[toks.length-1];
+  const base=lt.length>=2?q.trim():toks.slice(0,-1).join(' '); // 한 글자만 쳤으면 앞 단어(읍면동)로 찾고 첫 글자로 거름
+  if(base.length>=2){const qq=base+' 1';
+   const d=await jsonp(`https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:4326&size=1000&page=1&type=address&category=parcel&format=json&errorformat=json&query=${encodeURIComponent(qq)}&${K()}`).catch(()=>null);
+   const it=(d&&d.response&&d.response.result&&d.response.result.items)||[];
+   ri=[...new Set(it.map(x=>((x.address&&x.address.parcel)||'').replace(/\s+(산\s*)?\d[\d-]*$/,'')))].filter(t=>/[리동가]$/.test(t)&&t.split(' ').some(w=>w.startsWith(lt))&&toks.slice(0,-1).every(w=>t.includes(w)));}
+  const qn=q.replace(/\s+/g,' ').trim();
+  const items=[...new Set([...area,...ri])].filter(t=>!qn.startsWith(t)).slice(0,40).map(t=>({kind:'area',label:t,sub:/[리동가]$/.test(t)?'이어서 지번을 치세요 (예: 697-1)':'이어서 리·동 이름과 지번을 치세요 (예: 매곡리 697)'}));
+  const inArea=/(읍|면|동|가)(\s|$)/.test(q);
+  return {items,more:0,hint:items.length?'':inArea?'이어서 리 이름을 두 글자 이상 치세요 (예: 매곡리 697)':'읍·면·동 이름부터 쳐 보세요 (예: 탕정면 매곡리 697)'};
+ }
  return {load,suggest};
 })();
 // 도로접면(토지특성) → 도로 폭 가정: 구간의 아래쪽 값. 세로(가)는 8m 미만이라 4m로 가정(확인 필요), 세로(불)는 차가 못 다녀 2m
@@ -1645,6 +1692,11 @@ const f0=x=>Math.round(x).toLocaleString('ko-KR');
 function compute(I){
  // 바닥면적 1,000㎡ 이상 문화·집회시설은 대지 안의 공지 하한이 커지므로 한 번 더 계산 (건축법 시행령 별표 2)
  let O=computeOnce(I);
+ if(SITE&&O.F&&O.daylight&&I.aForce==null){
+  // 정북 일조 지역: 진북·대지 변 방향마다 계산해 연면적이 가장 큰 배치를 고름 (주 도로 변 방향이 3% 안쪽이면 그쪽)
+  const runs=O.F.cand.map(a=>computeOnce({...I,aForce:a})); let best=runs.reduce((b,r)=>r.gfa>b.gfa+1e-6?r:b,runs[0]);
+  const m=O.F.aMain!=null?runs[O.F.cand.indexOf(O.F.aMain)]:null; if(m&&m.gfa>=best.gfa*0.97) best=m;
+  O=best;}
  if(O.needBig&&!I.bigSet){const Z=ZONES[I.zone]; O=computeOnce({...I,lineSet:Math.max(I.lineSet,3),adj:Z.com?I.adj:Math.max(I.adj,1.5),bigSet:true}); O.bigApplied=true; O.info.unshift(`바닥면적 합계 1,000㎡ 이상 공연장이라 대지 안의 공지가 건축선에서 3m, 인접 대지에서 ${Z.com?'0.5':'1.5'}m 이상으로 커집니다 (건축법 시행령 별표 2). 이 값으로 다시 계산했습니다.`)}
  return O;
 }
@@ -1665,8 +1717,8 @@ function computeOnce(I){
  const rs=I.roadW<4?(4-I.roadW)/2:0; out.rs=rs;
  const daylight=Z.res;
  let Ln,Lc,depth,front=I.front,sS,sNlim,xW,xE,ref,roadDir=I.roadDir;
- if(SITE){ const F=siteFrame(I,rs+lineSet,adj,daylight); out.F=F; Lc=F.Lc; Ln=F.Ln; depth=Ln; front=F.front; roadDir=F.roadDir;
-  sS=F.rect.y0; sNlim=F.rect.y1; xW=F.rect.x0; xE=F.rect.x1; ref=daylight?F.refTop(xW,xE):Ln; }
+ if(SITE){ const F=siteFrame(I,rs+lineSet,adj,daylight,I.aForce); out.F=F; Lc=F.Lc; Ln=F.Ln; depth=Ln; front=F.front; roadDir=F.roadDir;
+  sS=F.rect.y0; sNlim=F.rect.y1; xW=F.rect.x0; xE=F.rect.x1; ref=daylight?F.refTop(xW,xE):Ln; out.dlExtra=apt?I.roadW/2:I.roadW; }
  else { depth=I.area/I.front; const ns=(I.roadDir==='S'||I.roadDir==='N'); Ln=ns?depth:I.front; Lc=ns?I.front:depth;
   // 이격: 도로 쪽 = 건축선 후퇴 + 대지 안의 공지(건축선에서), 나머지 = 인접대지경계선에서
   const sb={S:adj,N:adj,E:adj,W:adj}; sb[I.roadDir]=rs+lineSet; out.sb=sb;
@@ -1688,7 +1740,7 @@ function computeOnce(I){
  const fhOf=i=>i===1?I.fh1:I.fh; const topOf=i=>{let t=0;for(let k=1;k<=i;k++)t+=fhOf(k);return t};
  let n=flMax; if(hMax) while(n>0&&topOf(n)+PARAPET>hMax+1e-6) n--;
  // 바닥 모양: 맨 위층이 일조선에 걸리지 않는 깊이를 먼저 잡고, 폭 = 면적 ÷ 깊이
- const northLim=h=>Math.min(sNlim,daylight?ref-dl(h):Infinity);
+ const northLim=SITE?(h=>Math.min(sNlim,daylight?out.F.nlim(dl(h),xW,xE,out.dlExtra):Infinity)):(h=>Math.min(sNlim,daylight?ref-dl(h):Infinity));
  const availDo=Math.max(0,sNlim-sS);
  let fp=A*bcr/100; const fpRect=Math.max(0,(Wb-2*off))*Math.max(0,availDo-2*off);
  out.fpByRect=fpRect<fp; fp=Math.min(fp,fpRect); out.fp=fp;
@@ -1962,13 +2014,14 @@ function drawPlanPoly(O,I){
  if(O.env){const E=O.env,sn=E.prof[0][1]; g+=r(X(E.x0),Y(sn),(E.x1-E.x0)*sc,(sn-E.s0)*sc,'fill:none;stroke:var(--accent);stroke-width:1;stroke-dasharray:4 3');}
  g+=r(X(O.box.x0),Y(O.s1),(O.box.x1-O.box.x0)*sc,(O.s1-O.s0)*sc,'fill:var(--mass);stroke:var(--ink);stroke-width:1');
  g+=t(X((O.box.x0+O.box.x1)/2),Y((O.s0+O.s1)/2)+4,f1(O.box.x1-O.box.x0)+' × '+f1(O.s1-O.s0)+'m','fill:var(--ink);font-weight:600');
- if(O.daylight){const yy=Y(O.ref-dl(O.H)); g+=`<line x1="${X(0)}" y1="${yy}" x2="${X(Lc)}" y2="${yy}" style="stroke:var(--cut);stroke-width:1;stroke-dasharray:3 3"/>`+t(X(Lc)-2,yy-3,'맨 위 높이 일조 이격선','fill:var(--cut)','end');}
+ if(O.daylight){const runs=L=>{const r=[];let cur=[];L.forEach(p=>{if(p)cur.push(p);else{if(cur.length>1)r.push(cur);cur=[]}});if(cur.length>1)r.push(cur);return r};
+  [[1.5,'1.1','4 2']].concat(O.H>10?[[dl(O.H),'0.8','2 2']]:[]).forEach(([d,w,da])=>runs(F.locus(d,O.dlExtra)).forEach(R=>{g+=`<polyline points="${R.map(pt).join(' ')}" style="fill:none;stroke:var(--cut);stroke-width:${w};stroke-dasharray:${da}"/>`}));}
  {const sg=F.segs[F.main],a=sg.a,b=sg.b,m=sg.n;const mx=(a[0]+b[0])/2+m[0]*rw/2,my=(a[1]+b[1])/2+m[1]*rw/2;g+=t(X(mx),Y(my)+4,'도로 '+f1(I.roadW)+'m','fill:var(--panel);font-weight:600');}
  const deg=Math.atan2(F.north[0],F.north[1])*180/Math.PI, nx=X(Lc)+pad*sc-28, ny=Y(Ln)-pad*sc+26;
  const rad=deg*Math.PI/180;
  g+=`<g transform="translate(${nx.toFixed(1)},${ny.toFixed(1)}) rotate(${deg.toFixed(1)})"><line x1="0" y1="10" x2="0" y2="-6" style="stroke:var(--ink);stroke-width:1.6"/><path d="M0 -12 l-4 7 h8 z" style="fill:var(--ink)"/></g>`+t(nx+Math.sin(rad)*19,ny-Math.cos(rad)*19+4,'N','fill:var(--ink);font-weight:700');
  svg.innerHTML=g;
- $('plancap').innerHTML=`위에서 본 배치 (${F.alpha?'돌려 그린 그림, N이 북쪽':'위가 북쪽'}${F.nParts>1?`, 회색 점선은 합친 필지 경계`:''}) · 대지 <b>${f0(I.area)}㎡</b> 중 건물 바닥 <b>${f0(O.fp)}㎡ (${f0(O.fp/I.area*100)}%)</b> · 녹색 점선은 띄움 거리를 뺀 땅 안의 가장 큰 직사각형 ${f0(O.envFloor)}㎡`;
+ $('plancap').innerHTML=`위에서 본 배치 (${F.alpha?'돌려 그린 그림, N이 북쪽':'위가 북쪽'}${F.nParts>1?`, 회색 점선은 합친 필지 경계`:''}) · 대지 <b>${f0(I.area)}㎡</b> 중 건물 바닥 <b>${f0(O.fp)}㎡ (${f0(O.fp/I.area*100)}%)</b> · 녹색 점선은 띄움 거리를 뺀 땅 안의 가장 큰 직사각형 ${f0(O.envFloor)}㎡${O.daylight?` · 주황 점선은 대지경계선에서 <b>정북 방향으로</b> 잰 일조 거리 1.5m 선${O.H>10?`과 맨 위 높이(${f1(O.H)}m)의 ${f1(dl(O.H))}m 선`:''}`:''}`;
 }
 function drawPlan(O,I){
  if(O.F) return drawPlanPoly(O,I);
@@ -2110,7 +2163,21 @@ function draw(O,I){
   const el=label(E.open?'외곽 볼륨 (위로 이어짐)':'외곽 볼륨',cssVar('--accent'));el.position.set(X(E.x0)+LS*2,E.H+LS*0.9,Zs(E.prof[E.prof.length-1][1]));G.add(el);
  }
  // 일조 기준 (기준선에서 띄울 거리)
- if(O.daylight){
+ if(O.daylight&&F){
+  // 대지 모양이 있으면: 높이마다 '진북 방향 거리 = 일조 거리'가 되는 선을 쌓은 면 (대지 안쪽만)
+  const Hm=Math.max(O.H+4,14), lv=[[0,1.5],[10,1.5]];
+  for(let h=10;h<=Hm+1e-9;h+=1){const d=LAW_NEW?(h<17?5:h/2):h/2; if(LAW_NEW&&Math.abs(h-17)<1e-9) lv.push([17,5]); lv.push([h,d]);}
+  const Ls=lv.map(([h,d])=>F.locus(d,O.dlExtra)), P=[], ln=[], V=(p,h)=>new THREE.Vector3(X(p[0]),h,Zs(p[1]));
+  for(let k=0;k<lv.length-1;k++){const A=Ls[k],B=Ls[k+1],h0=lv[k][0],h1=lv[k+1][0];
+   for(let i=0;i<A.length-1;i++){if(!(A[i]&&A[i+1]&&B[i]&&B[i+1]))continue;const a1=V(A[i],h0),b1=V(A[i+1],h0),b2=V(B[i+1],h1),a2=V(B[i],h1);P.push(a1,b1,b2,a1,b2,a2)}}
+  [0,1].forEach(k=>{const A=Ls[k];for(let i=0;i<A.length-1;i++)if(A[i]&&A[i+1])ln.push(V(A[i],lv[k][0]),V(A[i+1],lv[k][0]))});
+  {const A=Ls[Ls.length-1];for(let i=0;i<A.length-1;i++)if(A[i]&&A[i+1])ln.push(V(A[i],lv[lv.length-1][0]),V(A[i+1],lv[lv.length-1][0]))}
+  if(P.length){const geo=new THREE.BufferGeometry(); geo.setFromPoints(P);
+   G.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:col('--cut'),transparent:true,opacity:0.18,side:THREE.DoubleSide,depthWrite:false})));
+   G.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(ln),new THREE.LineBasicMaterial({color:col('--cut')})));
+   const A=Ls[1].filter(Boolean), m=A[Math.floor(A.length*0.8)]||A[0];
+   if(m){const sp=label('정북 일조 기준',cssVar('--cut'));sp.position.set(X(m[0]),12,Zs(m[1]));G.add(sp);}}
+ } else if(O.daylight){
   const Hm=Math.max(O.H+4,14); const zR=Ln/2-O.ref; const xL=-Lc/2,xR=Lc/2;
   const v=(x,h,d)=>new THREE.Vector3(x,h,zR+d);
   const quad=(a,b,c,d)=>[a,b,c,a,c,d];
@@ -2399,27 +2466,44 @@ $('vwbtn').addEventListener('click',async()=>{const msg=$('vwmsg');
 // ───────── 주소 후보 목록 ─────────
 const SUG=(()=>{const box=document.createElement('div');box.className='sug';box.id='sug';box.setAttribute('role','listbox');box.hidden=true;document.body.appendChild(box);
  let cur=null,items=[],act=-1,timer=null,seq=0;
- function place(){if(!cur)return;const r=cur.getBoundingClientRect();box.style.left=r.left+'px';box.style.top=(r.bottom+2)+'px';box.style.width=Math.max(r.width,280)+'px'}
- function show(list){items=list;act=-1;if(!list.length){box.hidden=true;return}
-  box.innerHTML=list.map((x,i)=>`<div class="sgi" role="option" data-i="${i}"><b>${esc(x.label)}</b>${x.sub&&x.sub!==x.label?`<small>${esc(x.sub)}</small>`:''}</div>`).join('');place();box.hidden=false}
- function choose(i){const x=items[i];if(!x||!cur)return;cur.value=x.label;cur.dataset.sel=x.label;if(x.pnu)cur.dataset.pnu=x.pnu;else delete cur.dataset.pnu;mark(cur);box.hidden=true;clearTimeout(timer);seq++;
-  const note='✓ 필지 확인됨'+(x.pnu?'':' (도로명 주소라 불러오기 때 필지를 다시 찾습니다)');
-  if(cur.id==='addr'){$('vwmsg').textContent=note+': '+x.label+' — "주소로 대지 불러오기"를 누르세요.';render()}
-  else{const m=cur.closest('.axrow')&&cur.closest('.axrow').querySelector('.axmsg');if(m)m.textContent=note}}
+ function place(){if(!cur)return;const r=cur.getBoundingClientRect();box.style.left=r.left+'px';box.style.top=(r.bottom+2)+'px';box.style.width=Math.max(r.width,300)+'px'}
+ const note=t=>`<div class="sgn">${t}</div>`;
+ function status(t){items=[];act=-1;box.innerHTML=note(esc(t));place();box.hidden=false}
+ function show(res){items=res.items;act=-1;
+  if(!items.length){status(res.hint||'맞는 주소가 없습니다. 읍·면·동 이름을 앞에 붙여 보세요 (예: 탕정면 매곡리 697)');return}
+  box.innerHTML=items.map((x,i)=>`<div class="sgi${x.kind==='area'?' area':''}" role="option" data-i="${i}"><b>${esc(x.label)}</b>${x.sub&&x.sub!==x.label?`<small>${esc(x.sub)}</small>`:''}</div>`).join('')
+   +(res.more?note(`같은 지번이 ${res.more}곳 더 있습니다. 목록에 없으면 읍·면·동 이름을 앞에 붙이세요 (예: 탕정면 매곡리 697)`):'');
+  place();box.hidden=false}
+ function choose(i){const x=items[i];if(!x||!cur)return;
+  if(x.kind==='area'){cur.value=x.label+' ';delete cur.dataset.pnu;delete cur.dataset.sel;mark(cur);cur.focus();const L=cur.value.length;try{cur.setSelectionRange(L,L)}catch(e){}
+   run(cur);return}
+  cur.value=x.label;cur.dataset.sel=x.label;if(x.pnu)cur.dataset.pnu=x.pnu;else delete cur.dataset.pnu;mark(cur);box.hidden=true;clearTimeout(timer);seq++;
+  const nt='✓ 필지 확인됨'+(x.pnu?'':' (도로명 주소라 불러오기 때 필지를 다시 찾습니다)');
+  if(cur.id==='addr'){$('vwmsg').textContent=nt+': '+x.label+' — "주소로 대지 불러오기"를 누르세요.';render()}
+  else{const m=cur.closest('.axrow')&&cur.closest('.axrow').querySelector('.axmsg');if(m)m.textContent=nt}}
  function mark(el){const ok=el.dataset.pnu&&el.dataset.sel===el.value.trim();el.classList.toggle('picked',!!ok);el.title=ok?'후보에서 고른 필지 (필지번호 확인됨)':''}
- box.addEventListener('mousedown',e=>{const t=e.target.closest('.sgi');if(t){e.preventDefault();choose(+t.dataset.i)}});
+ function run(el){cur=el;clearTimeout(timer);const q=el.value.trim();
+  if(q.includes(','))return void(box.hidden=true);
+  if(!window.VW_KEY){if(q.length>=2)status('브이월드 인증키 파일(vworld-key.js)이 없어 주소 후보를 보여 줄 수 없습니다');return}
+  if(q.length<2||!/[가-힣]/.test(q)){box.hidden=true;return}
+  timer=setTimeout(async()=>{const my=++seq;if(cur===el)status('주소 후보를 찾는 중…');
+   try{const res=await VW.suggest(q);if(my===seq&&cur===el)show(res)}
+   catch(e){if(my===seq&&cur===el)status('주소 후보를 받지 못했습니다: '+e.message)}},400)}
+ box.addEventListener('mousedown',e=>{const t=e.target.closest('.sgi');e.preventDefault();if(t)choose(+t.dataset.i)});
  function attach(el){
   el.setAttribute('autocomplete','off');
-  el.addEventListener('input',()=>{mark(el);cur=el;clearTimeout(timer);const q=el.value.trim();
-   if(!window.VW_KEY||q.length<2||!/[가-힣]/.test(q)||q.includes(',')){box.hidden=true;return}
-   timer=setTimeout(async()=>{const my=++seq;try{const list=await VW.suggest(q);if(my===seq&&cur===el&&document.activeElement===el)show(list)}catch(e){box.hidden=true}},450)});
-  el.addEventListener('keydown',e=>{if(box.hidden)return;const n=items.length;
+  el.addEventListener('input',()=>{mark(el);run(el)});
+  el.addEventListener('compositionend',()=>run(el));
+  el.addEventListener('focus',()=>{if(cur===el&&items.length&&!el.classList.contains('picked')){place();box.hidden=false}});
+  el.addEventListener('keydown',e=>{if(box.hidden||!items.length){if(e.key==='Escape')box.hidden=true;return}const n=items.length;
    if(e.key==='ArrowDown'){e.preventDefault();act=(act+1)%n}else if(e.key==='ArrowUp'){e.preventDefault();act=(act-1+n)%n}
-   else if(e.key==='Enter'){if(act>=0){e.preventDefault();choose(act)}return}else if(e.key==='Escape'){box.hidden=true;return}else return;
+   else if(e.key==='Enter'){if(e.isComposing)return;if(act<0&&n>1)return;e.preventDefault();choose(act>=0?act:0);return}else if(e.key==='Escape'){box.hidden=true;return}else return;
    box.querySelectorAll('.sgi').forEach((d,i)=>d.classList.toggle('on',i===act))});
-  el.addEventListener('blur',()=>setTimeout(()=>{if(cur===el)box.hidden=true},150));
+  // 다른 창으로 옮겨 가 포커스를 잃은 경우(창 전환)는 목록을 그대로 둠
+  el.addEventListener('blur',()=>setTimeout(()=>{if(cur===el&&document.hasFocus()&&document.activeElement!==el)box.hidden=true},200));
  }
  addEventListener('scroll',place,{passive:true});addEventListener('resize',place);
+ document.addEventListener('mousedown',e=>{if(!box.hidden&&!box.contains(e.target)&&e.target!==cur)box.hidden=true});
  return {attach,mark};})();
 SUG.attach($('addr'));
 new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{const el=n.querySelector&&n.querySelector('.ax');if(el)SUG.attach(el)}))).observe($('addrx'),{childList:true});
