@@ -56,7 +56,7 @@ input[type=checkbox]{width:auto}
 #vwmsg{flex:1 1 260px}
 .addrx{display:flex;flex-direction:column;gap:6px}
 .addrx:empty{display:none}
-.axrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;align-items:center;max-width:640px}
+.axrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 6px;align-items:center}
 .axrow .axmsg{grid-column:1/-1}
 .sug{position:fixed;z-index:30;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.16);max-height:300px;overflow:auto;padding:4px 0}
 .sug[hidden]{display:none}
@@ -64,6 +64,9 @@ input[type=checkbox]{width:auto}
 .sgi small{color:var(--muted);font-size:12px}
 .sgi:hover,.sgi.on{background:var(--accent-soft)}
 input.picked{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.addrcell{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted);min-width:0}
+.addrline{display:flex;gap:6px;min-width:0}
+.addbtn{font:inherit;font-size:18px;font-weight:600;line-height:1;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);border-radius:6px;padding:0 12px;cursor:pointer;flex:none}
 .axdel{font:inherit;font-size:16px;line-height:1;color:var(--muted);background:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer}
 .zonehit{font-size:12.5px;color:var(--accent);font-weight:600;margin:0}
 .stage{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
@@ -176,7 +179,7 @@ details[open] summary::before{content:"－ "}
  .inhead{align-items:center}
  .inhead .hint{display:none}
  .intoggle{display:inline-block}
- .inputs.collapsed .ingrid,.inputs.collapsed .vwrow,.inputs.collapsed .addrx,.inputs.collapsed .zonehit,.inputs.collapsed #zoneRange{display:none}
+ .inputs.collapsed .ingrid,.inputs.collapsed .vwrow,.inputs.collapsed .zonehit,.inputs.collapsed #zoneRange{display:none}
  .inputs.collapsed .insum{display:block}
  .viewbar .legend{font-size:11px;gap:4px 10px}
  .big{display:grid;grid-template-columns:1fr 1fr}
@@ -213,7 +216,7 @@ details[open] summary::before{content:"－ "}
  <div class="inhead"><b>설계 자료 (토지이음)</b><button type="button" class="intoggle" id="intoggle" aria-controls="f" aria-expanded="true">입력 고치기</button><span class="hint">토지이음 → 토지이용계획 → 행위제한내용 설명의 <b>건폐율·용적률</b>, <b>층수·높이제한</b> 탭 숫자. 비워 두면 국토계획법 상한으로 계산합니다.</span></div>
  <p class="insum" id="insum"></p>
  <div class="ingrid">
-  <label for="addr" class="w2">주소<input id="addr" value="서울특별시 강북구 수유동"></label>
+  <div class="w2 addrcell"><label for="addr">주소</label><div class="addrline"><input id="addr" value="서울특별시 강북구 수유동"><button type="button" id="vwadd" class="addbtn" title="필지 추가 (여러 필지를 하나의 대지로)" aria-label="필지 추가">+</button></div><div class="addrx" id="addrx"></div></div>
   <label for="use">과제 용도<select id="use">
    <optgroup label="주거"><option value="단독주택">단독주택</option><option value="공동주택" selected>공동주택 (다세대·연립·아파트)</option></optgroup>
    <optgroup label="근린·업무"><option value="근린생활시설">근린생활시설 (일반 점포)</option><option value="업무시설">업무시설 (사무소)</option></optgroup>
@@ -232,8 +235,7 @@ details[open] summary::before{content:"－ "}
   <label for="flMax">층수 제한<input id="flMax" type="number" step="1" value="4"></label>
   <label for="hMax">높이 제한 m<input id="hMax" type="number" step="0.1" value="16"></label>
  </div>
- <div class="addrx" id="addrx"></div>
- <div class="vwrow"><button type="button" id="vwbtn">주소로 대지 불러오기</button><button type="button" class="xlink" id="vwadd">+ 필지 추가</button><span class="hint" id="vwmsg" role="status"></span><button type="button" class="xlink" id="vwclr" hidden>직사각형 대지로 되돌리기</button></div>
+ <div class="vwrow"><button type="button" id="vwbtn">주소로 대지 불러오기</button><span class="hint" id="vwmsg" role="status"></span><button type="button" class="xlink" id="vwclr" hidden>직사각형 대지로 되돌리기</button></div>
  <p class="zonehit" id="zonehit"></p>
  <p class="hint" id="zoneRange"></p>
 </form>
@@ -2348,7 +2350,7 @@ const esc=v=>String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function setSite(S){SITE=S;SFC=null;$('vwclr').hidden=!S;$('front').readOnly=!!S;$('front').title=S?'대지 모양이 있으면 도로에 맞닿은 변 길이로 자동 계산합니다':''}
 // 추가 필지 줄: 기본 화면에는 없고 "+ 필지 추가"를 누를 때만 생김
 function addRow(v){const d=document.createElement('div');d.className='axrow';
- d.innerHTML=`<input class="ax" placeholder="추가 필지 (예: 697 또는 매곡리 697)" aria-label="추가 필지 주소"><button type="button" class="axdel" aria-label="이 필지 빼기">×</button><span class="axmsg hint"></span>`;
+ d.innerHTML=`<input class="ax" placeholder="추가 필지 지번 (예: 697)" aria-label="추가 필지 주소"><button type="button" class="axdel" aria-label="이 필지 빼기">×</button><span class="axmsg hint"></span>`;
  d.querySelector('.ax').value=v||''; d.querySelector('.axdel').onclick=()=>{d.remove()}; $('addrx').appendChild(d); return d;}
 $('vwadd').addEventListener('click',()=>{addRow('').querySelector('.ax').focus()});
 // 줄여 쓴 지번은 첫 주소의 앞부분을 이어 붙임 ("697" → "충청남도 아산시 탕정면 매곡리 697")
@@ -2430,7 +2432,7 @@ if(EXQ!=='suyu'){
  $('addr').value=EX_ASAN.addr; $('use').value='공동주택'; zsel.value='계획관리지역'; $('area').value=525; $('roadW').value=4; $('roadDir').value='S';
  $('bcrZ').value=40; $('bcrD').value=''; $('far').value=100; $('flMax').value=4; $('hMax').value='';
  setSite({...EX_ASAN,zones:EX_ASAN.zones.slice(),parts:EX_ASAN.parts.map(p=>({...p,poly:p.poly.map(q=>q.slice()),road:p.road.slice()}))});
- $('vwmsg').textContent='예시: 매곡리 697-1의 연속지적도 모양(2026. 10. 29. 브이월드에서 받음)을 넣어 두었습니다. 옆 필지를 합쳐 보려면 "+ 필지 추가"를 누르세요.';
+ $('vwmsg').textContent='예시: 매곡리 697-1의 연속지적도 모양(2026. 10. 29. 브이월드에서 받음)을 넣어 두었습니다. 옆 필지를 합쳐 보려면 주소 칸 옆 + 를 누르세요.';
 } else { $('extext').textContent='처음 화면은 예시입니다. 서울 강북구 수유동의 한 필지를 토지이음 값(대지 515㎡, 제1종일반주거지역·자연경관지구)으로 넣었고, 대지 모양과 도로 폭은 가정한 값입니다.'; }
 render();
 </script>
