@@ -202,6 +202,41 @@ details[open] summary::before{content:"－ "}
 .gloss b{display:block;margin-bottom:2px;color:var(--accent)}
 .gloss[hidden]{display:none}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.cmp{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 10px}
+.cmp th,.cmp td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:top}
+.cmp thead th{font-size:12px;color:var(--muted);font-weight:600}
+.cmp tbody th{font-weight:500;color:var(--muted);white-space:nowrap}
+.cmp td.bad{color:var(--cut);font-weight:700}
+svg.inssvg{width:100%;height:auto;display:block}
+#d-ins .cmp{table-layout:fixed}
+#d-ins .cmp col.c0{width:126px}
+.insfig{display:grid;grid-template-columns:118px repeat(3,1fr);gap:0 16px;align-items:end;margin:4px 0 2px}
+.insfig .lab{font-size:13.5px;color:var(--muted);align-self:center;padding-left:8px}
+.insfig .lab small{display:block;font-size:12px}
+.insfig figure{margin:0}
+.insfig figcaption{font-size:12.5px;font-weight:600;color:var(--muted);margin:6px 0 2px}
+.insfig+.cmp thead{display:none}
+.insfig figcaption{font-size:13px;color:var(--ink)}
+@media (max-width:560px){.insfig+.cmp thead{display:table-header-group}.insfig{grid-template-columns:1fr}.insfig .lab{padding-left:0}.insfig figcaption{display:block}#d-ins .cmp col.c0{width:60px}}
+.cmp tr.pic td{padding-top:4px;padding-bottom:4px}
+ul.basis{list-style:none;margin:0 0 10px;padding:0;font-size:13px;line-height:1.6}
+ul.basis li{margin:2px 0}
+ul.basis b{font-weight:600;margin-right:6px}
+ul.basis .tag{margin-left:4px;vertical-align:1px}
+@media (max-width:560px){.cmp{font-size:12px}.cmp th,.cmp td{padding:5px 3px}}
+
+.cmp{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0 12px}
+.cmp th,.cmp td{border-bottom:1px solid var(--line);padding:8px 8px;text-align:left;vertical-align:top}
+.cmp thead th{font-size:12.5px;color:var(--muted);font-weight:600}
+.cmp tbody th{font-weight:500;color:var(--muted);white-space:nowrap}
+.cmp .sub{color:var(--muted);font-size:12px;margin-top:2px}
+.cmp .bad{color:var(--cut);font-weight:700;font-size:12.5px;margin-top:2px}
+ul.basis{list-style:none;margin:0 0 10px;padding:0;font-size:13px;line-height:1.6}
+ul.basis li{margin:2px 0}
+ul.basis b{font-weight:600;margin-right:6px}
+ul.basis .tag{margin-left:4px;vertical-align:1px}
+@media (max-width:560px){.cmp{font-size:12px}.cmp th,.cmp td{padding:6px 3px}}
 </style>
 
 <div class="wrap">
@@ -244,7 +279,7 @@ details[open] summary::before{content:"－ "}
 
 <section class="stage" aria-label="최대 매스">
  <div class="viewbar"><span class="t">넘으면 안 되는 대략의 한계 <small style="font-weight:500;color:var(--muted)">근사치 · 보수적 추정</small></span>
-  <div class="legend"><span><i style="background:none;outline:1.5px dashed var(--accent);outline-offset:-1px"></i>외곽 볼륨 (이 안에서 자유롭게)</span><span><i style="background:var(--mass);opacity:.5;outline:1px solid var(--accent)"></i>최대 바닥을 한 덩어리로 놓은 예</span><span><i style="background:var(--pil)"></i>필로티</span><span><i style="background:var(--core)"></i>코어</span><span><i style="background:var(--cut)"></i>일조 사선·설비</span><span><i style="background:var(--muted)"></i>사람·승용차 (크기 비교)</span></div></div>
+  <div class="legend"><span><i style="background:var(--accent);opacity:.25;outline:1px solid var(--accent)"></i>외곽 볼륨 (최대 규모, 이 안에서 자유롭게)</span><span><i style="background:none;outline:1.5px dashed var(--accent);outline-offset:-1px"></i>지을 수 있는 땅</span><span><i style="background:var(--muted)"></i>사람·승용차 (크기 비교)</span></div></div>
  <div class="warnbox" id="warnbox" role="alert"></div>
  <div class="infobox" id="infobox"></div>
  <div class="stagegrid">
@@ -256,7 +291,7 @@ details[open] summary::before{content:"－ "}
   </aside>
  </div>
  <div class="gov" id="gov"></div>
- <div class="export"><div><b>모델링 도구로 가져가기</b><span class="hint">외곽 볼륨과 예시 덩어리, 대지를 m 단위로 담은 OBJ(Rhino·SketchUp)와 IFC(Revit·ArchiCAD) 파일을 zip으로 묶어 내려받습니다.</span></div><button type="button" id="exbtn">내려받기 (.zip)</button><span class="hint" id="exmsg" role="status"></span></div>
+ <div class="export"><div><b>모델링 도구로 가져가기</b><span class="hint">외곽 볼륨과 대지를 m 단위로 담은 OBJ(Rhino·SketchUp)와 IFC(Revit·ArchiCAD) 파일을 zip으로 묶어 내려받습니다.</span></div><button type="button" id="exbtn">내려받기 (.zip)</button><span class="hint" id="exmsg" role="status"></span></div>
  <div class="hint" style="padding:8px 14px;border-top:1px solid var(--line)" id="lawline"></div>
 </section>
 
@@ -1451,7 +1486,11 @@ function isMyeon(q){return /[가-힣]+면(\s|\d|$)/.test(q||'')}
 
 // ───────── 대지 모양 (브이월드 연속지적도, 여러 필지 합치기) ─────────
 // SITE.parts[k].poly: 진북 기준 m 좌표(x 동쪽, y 북쪽, 모든 필지가 같은 원점), .road: 도로와 맞닿은 변 번호(변 i = 꼭짓점 i → i+1)
-let SITE=null, SFC=null; // SFC: siteFrame 결과 캐시 (Map)
+let SITE=null, SFC=null, RECT=null; // SFC: siteFrame 결과 캐시 (Map)
+// 대지 모양이 없으면 입력값(면적·도로 접한 길이·도로 방향)으로 만든 직사각형 대지를 같은 방식으로 계산
+function rectSite(I){const front=Math.max(0.1,I.front), depth=I.area/front, ns=(I.roadDir==='S'||I.roadDir==='N'), Lc=ns?front:depth, Ln=ns?depth:front;
+ const id=['rect',I.area,front,I.roadDir].join('|'); if(RECT&&RECT.id===id) return RECT;
+ RECT={id,rect:true,parts:[{poly:[[0,0],[Lc,0],[Lc,Ln],[0,Ln]],road:[{S:0,E:1,N:2,W:3}[I.roadDir]||0],area:I.area}]}; return RECT;}
 const pArea=P=>{let a=0;for(let i=0;i<P.length;i++){const q=P[(i+1)%P.length];a+=P[i][0]*q[1]-q[0]*P[i][1]}return a/2};
 const pCen=P=>{let x=0,y=0;P.forEach(p=>{x+=p[0];y+=p[1]});return[x/P.length,y/P.length]};
 function inPoly(x,y,P){let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])c=!c}return c}
@@ -1478,9 +1517,9 @@ function buildSegs(parts){
 }
 // 대장 면적으로 줄인 모양을 돌린 좌표계에 놓고, 띄움 거리를 뺀 땅 안에 들어가는 가장 큰 직사각형을 찾음
 // 정북 일조가 걸리는 지역은 진북 고정. 래스터 격자 중심으로 판정하므로 결과는 실제보다 약간 작게 나옴
-function siteFrame(I,dRoad,dAdj,daylight,aForce){
- const key=[SITE.id,SITE.manualRoad?'m':'a',I.area,I.roadDir,dRoad,dAdj,daylight,aForce].join('|'); if(!SFC) SFC=new Map(); if(SFC.has(key)) return SFC.get(key); if(SFC.size>40) SFC.clear();
- const S=SITE.segs||(SITE.segs=buildSegs(SITE.parts));
+function siteFrame(ST,I,dRoad,dAdj,daylight,aForce){
+ const key=[ST.id,ST.manualRoad?'m':'a',I.area,I.roadDir,dRoad,dAdj,daylight,aForce].join('|'); if(!SFC) SFC=new Map(); if(SFC.has(key)) return SFC.get(key); if(SFC.size>40) SFC.clear();
+ const S=ST.segs||(ST.segs=buildSegs(ST.parts));
  const a0=S.polys.reduce((t,P)=>t+Math.abs(pArea(P)),0), k=Math.sqrt(I.area/a0), c0=pCen(S.polys.flat());
  const sc=p=>[(p[0]-c0[0])*k,(p[1]-c0[1])*k];
  const polys0=S.polys.map(P=>P.map(sc));
@@ -1488,7 +1527,7 @@ function siteFrame(I,dRoad,dAdj,daylight,aForce){
  const inner0=S.inner.filter(s=>s.part<s.mate).map(s=>({a:sc(s.a),b:sc(s.b)}));
  const nrmS=s=>{const dx=s.b[0]-s.a[0],dy=s.b[1]-s.a[1],L=Math.hypot(dx,dy)||1;return[dy/L,-dx/L]};
  const lenS=s=>Math.hypot(s.b[0]-s.a[0],s.b[1]-s.a[1]);
- let auto=!SITE.manualRoad&&segs0.some(s=>s.road);
+ let auto=!ST.manualRoad&&segs0.some(s=>s.road);
  if(!auto){const v=DIRV[I.roadDir]||DIRV.S;segs0.forEach(s=>s.road=false);const sv=segs0.map(s=>{const m=nrmS(s);return m[0]*v[0]+m[1]*v[1]});
   let any=false;segs0.forEach((s,i)=>{if(sv[i]>0.6&&lenS(s)>0.5){s.road=true;any=true}});if(!any)segs0[sv.indexOf(Math.max(...sv))].road=true;}
  const rs0=segs0.filter(s=>s.road), mainS=rs0.reduce((b,s)=>lenS(s)>lenS(b)?s:b,rs0[0]), main=segs0.indexOf(mainS);
@@ -1519,7 +1558,8 @@ function siteFrame(I,dRoad,dAdj,daylight,aForce){
  const cand=[...new Set([0,...segs0.filter(s=>lenS(s)>0.5).map(s=>+alphaOf(s).toFixed(4))])], aMain=lenS(mainS)>=3?+alphaOf(mainS).toFixed(4):null;
  let alpha=0;
  if(aForce!=null) alpha=aForce;
- else if(!daylight){const R0=Math.max(...polys0.flat().map(p=>Math.hypot(p[0],p[1])))*2, gq=Math.max(0.25,R0/160);
+ else if(aMain!=null) alpha=aMain;
+ else {const R0=Math.max(...polys0.flat().map(p=>Math.hypot(p[0],p[1])))*2, gq=Math.max(0.25,R0/160);
   let best=null, mainA=0;
   cand.forEach(a=>{const r=fit(a,gq).area; if(a===aMain) mainA=r; if(!best||r>best.r) best={a,r};});
   alpha=(best&&aMain!=null&&mainA>=best.r*0.97)?aMain:(best?best.a:0);}
@@ -1556,6 +1596,108 @@ function siteFrame(I,dRoad,dAdj,daylight,aForce){
   LOC.set(k,out);return out};
  const F={polys,segs,inner,rect,Lc,Ln,alpha,front,roadDir,main,auto,g,refTop,north,gap,nlim,locus,cand,aMain,nParts:polys.length,nv:polys.reduce((t,P)=>t+P.length,0),nRoad:segs.filter(s=>s.road).length};
  SFC.set(key,F); return F;
+}
+// 외단열·내단열 벽 단면 그림 (위에서 자른 모습, 왼쪽이 바깥). 두께는 사이트가 계산한 값 그대로
+function insSvg(kind,tS,ti,fe,fi,uid){
+ const k=0.3, X=mm=>22+mm*k, Y0=34, Y1=104, R=292;
+ // 층: [이름, 시작mm, 두께mm]
+ let L, line, inner, ref=fe+ti+tS/2, refIn=fe+ti+tS+fi;
+ if(kind==='out'){L=[['f',0,fe],['i',fe,ti],['c',fe+ti,tS],['f',fe+ti+tS,fi]];line=ref;inner=refIn;}
+ else if(kind==='keepRoom'){L=[['f',0,fe],['c',fe,tS],['i',fe+tS,ti],['f',fe+tS+ti,fi]];line=fe+(tS+ti)/2;inner=fe+tS+ti+fi;}
+ else {const c0=fe+ti;L=[['f',c0-fe,fe],['c',c0,tS],['i',c0+tS,ti],['f',c0+tS+ti,fi]];line=c0+(tS+ti)/2;inner=c0+tS+ti+fi;}
+ const col={f:'#d9dcd8',c:'#9da3a0',i:'url(#h'+uid+')'};
+ let g=`<defs><pattern id="h${uid}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#f6d77a"/><line x1="0" y1="0" x2="0" y2="6" stroke="#d9a520" stroke-width="2"/></pattern>
+  <marker id="a${uid}" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L6 3L0 6z" fill="currentColor"/></marker></defs>`;
+ g+=`<rect x="${X(inner)}" y="${Y0}" width="${R-X(inner)}" height="${Y1-Y0}" fill="#e7f0ea"/>`;
+ g+=`<text x="${(X(inner)+R)/2}" y="${(Y0+Y1)/2+4}" text-anchor="middle" font-size="12" fill="#4a6b58">방</text>`;
+ g+=`<text x="6" y="${(Y0+Y1)/2+4}" font-size="11" fill="#8a8f8b">밖</text>`;
+ L.forEach(([t,a,w])=>{g+=`<rect x="${X(a)}" y="${Y0}" width="${w*k}" height="${Y1-Y0}" fill="${col[t]}" stroke="#6f7471" stroke-width="0.4"/>`});
+ // 기준선(외단열일 때 면적 재는 선)과 실제 선
+ if(kind!=='out') g+=`<line x1="${X(ref)}" y1="${Y0-12}" x2="${X(ref)}" y2="${Y1+6}" stroke="#9aa09c" stroke-width="1.2" stroke-dasharray="3 3"/>`;
+ g+=`<line x1="${X(line)}" y1="${Y0-12}" x2="${X(line)}" y2="${Y1+6}" stroke="#d1462f" stroke-width="2" stroke-dasharray="5 3"/>`;
+ if(kind==='out') g+=`<text x="${X(line)+4}" y="${Y0-15}" font-size="11" fill="#d1462f">면적 재는 선</text>`;
+ else {const d=line-ref, dir=d<0?'밖으로':'안으로';
+  g+=`<line x1="${X(ref)}" y1="${Y0-6}" x2="${X(line)}" y2="${Y0-6}" stroke="#d1462f" stroke-width="1.4" color="#d1462f" marker-end="url(#a${uid})"/>`;
+  g+=`<text x="${Math.max(X(ref),X(line))+5}" y="${Y0-15}" font-size="11" fill="#d1462f">${Math.round(Math.abs(d))}mm ${dir}</text>`;}
+ // 방 크기 화살표
+ const ya=Y1+20; g+=`<line x1="${X(inner)+1}" y1="${ya}" x2="${R-2}" y2="${ya}" stroke="#4a6b58" stroke-width="1.2" color="#4a6b58" marker-start="url(#a${uid})" marker-end="url(#a${uid})"/>`;
+ if(kind==='keepWall'){g+=`<line x1="${X(refIn)}" y1="${Y1}" x2="${X(refIn)}" y2="${ya+6}" stroke="#9aa09c" stroke-width="1.2" stroke-dasharray="3 3"/>`;
+  g+=`<text x="${(X(inner)+R)/2}" y="${ya+15}" text-anchor="middle" font-size="11" fill="#d1462f">방이 ${ti}mm 좁아짐</text>`;}
+ else g+=`<text x="${(X(inner)+R)/2}" y="${ya+15}" text-anchor="middle" font-size="11" fill="#4a6b58">방 크기 ${kind==='out'?'(기준)':'그대로'}</text>`;
+ return `<svg viewBox="0 0 300 150" class="inssvg" role="img" aria-label="벽 단면">${g}</svg>`;
+}
+// 외단열·내단열 평면 그림 (기준층을 위에서 본 모습). 벽 두께는 보기 쉽게 과장, 바깥 크기는 기준층 비율
+function insPlan(kind,Wo,D,tS,ti,fe,fi,uid,txt){
+ const VW=300, VH=228, top=14, maxW=262, maxH=176, r=Math.min(maxW/Math.max(Wo,1),maxH/Math.max(D,1)), w=Wo*r, h=D*r, x0=(VW-w)/2, y0=top+(maxH-h)/2;
+ const kw=22/(fe+ti+tS+fi); // 벽 층 두께(mm) → px (과장)
+ const R=(o,fill,st)=>`<rect x="${(x0+o).toFixed(1)}" y="${(y0+o).toFixed(1)}" width="${Math.max(0,w-2*o).toFixed(1)}" height="${Math.max(0,h-2*o).toFixed(1)}" ${fill?`fill="${fill}"`:'fill="none"'} ${st||''}/>`;
+ const C={f:'#d9dcd8',c:'#9da3a0',i:'url(#p'+uid+')',room:'#e7f0ea'};
+ let L, line, inner, outer=0, ref=fe+ti+tS/2, refIn=fe+ti+tS+fi;
+ if(kind==='out'){L=[['f',0],['i',fe],['c',fe+ti],['f',fe+ti+tS]];line=ref;inner=refIn;}
+ else if(kind==='keepRoom'){L=[['f',0],['c',fe],['i',fe+tS],['f',fe+tS+ti]];line=fe+(tS+ti)/2;inner=fe+tS+ti+fi;}
+ else {outer=ti;L=[['f',ti],['c',fe+ti],['i',fe+ti+tS],['f',fe+ti+tS+ti]];line=fe+ti+(tS+ti)/2;inner=fe+ti+tS+ti+fi;}
+ let g=`<defs><pattern id="p${uid}" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="4" fill="#f6d77a"/><line x1="0" y1="0" x2="0" y2="4" stroke="#d9a520" stroke-width="1.4"/></pattern></defs>`;
+ L.forEach(([t,a])=>{g+=R(a*kw,C[t])});
+ g+=R(inner*kw,C.room);
+ // 바뀐 띠: 방 크기 유지 = 산정선이 밖으로 (법적 면적이 늘어난 띠), 벽 위치 유지 = 방이 줄어든 띠
+ const ring=(o1,o2,fill)=>{const a=o1*kw,b=o2*kw;return `<path d="M${x0+a} ${y0+a}h${w-2*a}v${h-2*a}h${-(w-2*a)}z M${x0+b} ${y0+b}v${h-2*b}h${w-2*b}v${-(h-2*b)}z" fill="${fill}" fill-rule="evenodd"/>`};
+ if(kind==='keepRoom') g+=ring(line,ref,'rgba(224,120,20,.85)');
+ if(kind==='keepWall'){g+=ring(refIn,inner,'rgba(209,70,47,.45)');
+  g+=R(0,null,'stroke="#9aa09c" stroke-width="1" stroke-dasharray="3 3"');}
+ if(kind!=='out') g+=R(ref*kw,null,'stroke="#9aa09c" stroke-width="1" stroke-dasharray="3 3"');
+ g+=R(line*kw,null,'stroke="#d1462f" stroke-width="1.6" stroke-dasharray="5 3"');
+ g+=`<text x="${VW/2}" y="${y0+h/2+4}" text-anchor="middle" font-size="12" fill="#4a6b58">방</text>`;
+ g+=`<text x="${VW/2}" y="${y0+h+22}" text-anchor="middle" font-size="12" fill="${kind==='out'?'#4a5a52':kind==='keepRoom'?'#c0661a':'#d1462f'}" font-weight="${kind==='out'?400:600}">${txt}</text>`;
+ return `<svg viewBox="0 0 ${VW} ${VH}" class="inssvg" role="img" aria-label="기준층 평면">${g}</svg>`;
+}
+// 외곽 볼륨: 띄움 거리를 뺀 땅을 칸으로 나눠, 칸마다 올릴 수 있는 높이 (외벽 바깥면 기준)
+//  - 칸 전체가 띄움 거리를 지키도록 칸 반대각선만큼 더 뗌 (보수적)
+//  - 정북 일조: 칸 네 모서리에서 진북 방향으로 잰 대지경계선까지 거리 중 가장 짧은 값으로 판정
+//    10m 이하는 1.5m, 10m 초과는 높이의 1/2 (개정법 미리보기면 10~17m 5m)
+//  - 높이 제한(층수·높이)이 있으면 그 높이로 자름. 둘 다 없으면 Infinity
+function envField(F,dRoad,dAdj,daylight,extra,Hcap){
+ const key=[dRoad,dAdj,daylight,extra,Hcap,LAW_NEW].join('|'); F.EC=F.EC||new Map(); if(F.EC.has(key)) return F.EC.get(key);
+ const {Lc,Ln,segs,polys,inner}=F, s=Math.min(1,Math.max(0.2,Math.max(Lc,Ln)/160)), nx=Math.max(1,Math.ceil(Lc/s)), ny=Math.max(1,Math.ceil(Ln/s));
+ const d=segs.map(sg=>sg.road?dRoad:dAdj), hh=s*0.7072, W=nx+1;
+ const nX=F.north[0],nY=F.north[1], VS=[];segs.forEach(sg=>[sg.a,sg.b].forEach(p=>{if(!VS.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<1e-6))VS.push(p)}));
+ let G=null; if(daylight){G=new Float32Array(W*(ny+1));for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++)G[j*W+i]=F.gap(i*s,j*s,extra);}
+ const H=new Float32Array(nx*ny);
+ for(let j=0;j<ny;j++){const y=(j+0.5)*s;for(let i=0;i<nx;i++){const x=(i+0.5)*s;
+  let ok=polys.some(P=>inPoly(x,y,P))||inner.some(sg=>dSeg(x,y,sg.a,sg.b)<SEAM);
+  if(ok)for(let k=0;k<segs.length;k++){if(dSeg(x,y,segs[k].a,segs[k].b)<d[k]+hh){ok=false;break}}
+  if(!ok){H[j*nx+i]=0;continue}
+  let h=Hcap||Infinity;
+  if(daylight){let g=Math.min(G[j*W+i],G[j*W+i+1],G[(j+1)*W+i],G[(j+1)*W+i+1]);
+   // 꼭짓점 그림자: 진북 방향 선이 경계의 꼭짓점을 스치는 곳에서 거리가 끊기므로, 칸을 지나는 '꼭짓점에서 정남으로 그은 선'의 가장 북쪽 점도 확인 (보수적)
+   const cx0=i*s,cx1=cx0+s,cy0=j*s,cy1=cy0+s;
+   for(const v of VS){let t0=0,t1=Infinity;
+    if(Math.abs(nX)<1e-12){if(v[0]<cx0||v[0]>cx1)continue}else{const a1=(v[0]-cx0)/nX,a2=(v[0]-cx1)/nX;t0=Math.max(t0,Math.min(a1,a2));t1=Math.min(t1,Math.max(a1,a2))}
+    if(Math.abs(nY)<1e-12){if(v[1]<cy0||v[1]>cy1)continue}else{const b1=(v[1]-cy0)/nY,b2=(v[1]-cy1)/nY;t0=Math.max(t0,Math.min(b1,b2));t1=Math.min(t1,Math.max(b1,b2))}
+    if(t0<=t1&&t0<g)g=t0;}
+   h=Math.min(h,g<1.5?0:LAW_NEW?(g<5?10:g<8.5?17:2*g):(g<5?10:2*g));}
+  H[j*nx+i]=h;}}
+ const E={s,nx,ny,H}; F.EC.set(key,E); return E;
+}
+// 높이 칸을 면으로: 윗면·바닥면(같은 높이끼리 한 줄로 묶음), 높이가 바뀌는 곳의 벽. 면은 바깥을 향하게, 좌표는 대지 좌표(x, y, 높이)
+function envQuads(O){
+ const E=O.env.E,{s,nx,ny}=E,cap=O.env.Hdraw,Hd=new Float32Array(nx*ny);
+ for(let k=0;k<nx*ny;k++){const h=E.H[k];Hd[k]=h>0?Math.min(h,cap):0}
+ const at=(i,j)=>(i<0||j<0||i>=nx||j>=ny)?0:Hd[j*nx+i], eq=(a,b)=>Math.abs(a-b)<1e-6;
+ const Q=[],top=[],ground=[];
+ for(let j=0;j<ny;j++){let i=0;while(i<nx){const h=at(i,j);if(h<=0){i++;continue}let k=i+1;while(k<nx&&eq(at(k,j),h))k++;
+  const x0=i*s,x1=k*s,y0=j*s,y1=(j+1)*s;
+  Q.push([[x0,y0,h],[x1,y0,h],[x1,y1,h],[x0,y1,h]]); Q.push([[x0,y0,0],[x0,y1,0],[x1,y1,0],[x1,y0,0]]); i=k;}}
+ for(let i=0;i<=nx;i++){let j=0;while(j<ny){const ha=at(i-1,j),hb=at(i,j);if(eq(ha,hb)){j++;continue}
+  let k=j+1;while(k<ny&&eq(at(i-1,k),ha)&&eq(at(i,k),hb))k++;
+  const X=i*s,y0=j*s,y1=k*s,lo=Math.min(ha,hb),hi=Math.max(ha,hb);
+  Q.push(ha>hb?[[X,y0,lo],[X,y1,lo],[X,y1,hi],[X,y0,hi]]:[[X,y1,lo],[X,y0,lo],[X,y0,hi],[X,y1,hi]]);
+  if(hi-lo>=0.6) top.push([[X,y0,hi],[X,y1,hi]]); if(lo===0) ground.push([[X,y0,0],[X,y1,0]]); j=k;}}
+ for(let j=0;j<=ny;j++){let i=0;while(i<nx){const ha=at(i,j-1),hb=at(i,j);if(eq(ha,hb)){i++;continue}
+  let k=i+1;while(k<nx&&eq(at(k,j-1),ha)&&eq(at(k,j),hb))k++;
+  const Y=j*s,x0=i*s,x1=k*s,lo=Math.min(ha,hb),hi=Math.max(ha,hb);
+  Q.push(ha>hb?[[x1,Y,lo],[x0,Y,lo],[x0,Y,hi],[x1,Y,hi]]:[[x0,Y,lo],[x1,Y,lo],[x1,Y,hi],[x0,Y,hi]]);
+  if(hi-lo>=0.6) top.push([[x0,Y,hi],[x1,Y,hi]]); if(lo===0) ground.push([[x0,Y,0],[x1,Y,0]]); i=k;}}
+ return {Q,top,ground};
 }
 // 여러 필지의 용도지역: 국토계획법 제84조① · 시행령 제94조(330㎡)
 function zoneMerge(parts){
@@ -1692,11 +1834,6 @@ const f0=x=>Math.round(x).toLocaleString('ko-KR');
 function compute(I){
  // 바닥면적 1,000㎡ 이상 문화·집회시설은 대지 안의 공지 하한이 커지므로 한 번 더 계산 (건축법 시행령 별표 2)
  let O=computeOnce(I);
- if(SITE&&O.F&&O.daylight&&I.aForce==null){
-  // 정북 일조 지역: 진북·대지 변 방향마다 계산해 연면적이 가장 큰 배치를 고름 (주 도로 변 방향이 3% 안쪽이면 그쪽)
-  const runs=O.F.cand.map(a=>computeOnce({...I,aForce:a})); let best=runs.reduce((b,r)=>r.gfa>b.gfa+1e-6?r:b,runs[0]);
-  const m=O.F.aMain!=null?runs[O.F.cand.indexOf(O.F.aMain)]:null; if(m&&m.gfa>=best.gfa*0.97) best=m;
-  O=best;}
  if(O.needBig&&!I.bigSet){const Z=ZONES[I.zone]; O=computeOnce({...I,lineSet:Math.max(I.lineSet,3),adj:Z.com?I.adj:Math.max(I.adj,1.5),bigSet:true}); O.bigApplied=true; O.info.unshift(`바닥면적 합계 1,000㎡ 이상 공연장이라 대지 안의 공지가 건축선에서 3m, 인접 대지에서 ${Z.com?'0.5':'1.5'}m 이상으로 커집니다 (건축법 시행령 별표 2). 이 값으로 다시 계산했습니다.`)}
  return O;
 }
@@ -1716,20 +1853,13 @@ function computeOnce(I){
  out.lineSet=lineSet; out.adjEff=adj;
  const rs=I.roadW<4?(4-I.roadW)/2:0; out.rs=rs;
  const daylight=Z.res;
- let Ln,Lc,depth,front=I.front,sS,sNlim,xW,xE,ref,roadDir=I.roadDir;
- if(SITE){ const F=siteFrame(I,rs+lineSet,adj,daylight,I.aForce); out.F=F; Lc=F.Lc; Ln=F.Ln; depth=Ln; front=F.front; roadDir=F.roadDir;
-  sS=F.rect.y0; sNlim=F.rect.y1; xW=F.rect.x0; xE=F.rect.x1; ref=daylight?F.refTop(xW,xE):Ln; out.dlExtra=apt?I.roadW/2:I.roadW; }
- else { depth=I.area/I.front; const ns=(I.roadDir==='S'||I.roadDir==='N'); Ln=ns?depth:I.front; Lc=ns?I.front:depth;
-  // 이격: 도로 쪽 = 건축선 후퇴 + 대지 안의 공지(건축선에서), 나머지 = 인접대지경계선에서
-  const sb={S:adj,N:adj,E:adj,W:adj}; sb[I.roadDir]=rs+lineSet; out.sb=sb;
-  sS=sb.S; sNlim=Ln-sb.N; xW=sb.W; xE=Lc-sb.E;
-  // 정북 일조 기준선: 북쪽이 도로면 도로 반대편 경계선(공동주택은 도로 중심선)
-  ref=I.roadDir==='N'?Ln+(apt?I.roadW/2:I.roadW):Ln; }
+ const ST=SITE||rectSite(I);
+ const F=siteFrame(ST,I,rs+lineSet,adj,daylight); out.F=F;
+ const Lc=F.Lc, Ln=F.Ln, depth=Ln, front=F.front, roadDir=F.roadDir; out.dlExtra=apt?I.roadW/2:I.roadW;
  const NS=(roadDir==='S'||roadDir==='N');
  out.Ln=Ln; out.Lc=Lc; out.depth=depth; out.front=front; out.roadDir=roadDir;
  const A=I.area-rs*front; out.A=A; // 건축선과 도로 사이 땅은 대지면적에서 뺌
- const Wb=Math.max(0,xE-xW);
- out.daylight=daylight; out.ref=ref;
+ out.daylight=daylight;
  // 건폐율·용적률
  const bcrIn=[I.bcrZ,I.bcrD].filter(v=>v!=null&&v>0);
  const bcr=bcrIn.length?Math.min(...bcrIn):Z.bcr; out.bcr=bcr; out.bcrFrom=bcrIn.length?(I.bcrD!=null&&I.bcrD>0&&I.bcrD<(I.bcrZ??999)?'지구':'용도지역'):'상한';
@@ -1739,49 +1869,45 @@ function computeOnce(I){
  const flMax=flCaps.length?Math.min(...flCaps):40; const hMax=(I.hMax!=null&&I.hMax>0)?I.hMax:null;
  const fhOf=i=>i===1?I.fh1:I.fh; const topOf=i=>{let t=0;for(let k=1;k<=i;k++)t+=fhOf(k);return t};
  let n=flMax; if(hMax) while(n>0&&topOf(n)+PARAPET>hMax+1e-6) n--;
- // 바닥 모양: 맨 위층이 일조선에 걸리지 않는 깊이를 먼저 잡고, 폭 = 면적 ÷ 깊이
- const northLim=SITE?(h=>Math.min(sNlim,daylight?out.F.nlim(dl(h),xW,xE,out.dlExtra):Infinity)):(h=>Math.min(sNlim,daylight?ref-dl(h):Infinity));
- const availDo=Math.max(0,sNlim-sS);
- let fp=A*bcr/100; const fpRect=Math.max(0,(Wb-2*off))*Math.max(0,availDo-2*off);
- out.fpByRect=fpRect<fp; fp=Math.min(fp,fpRect); out.fp=fp;
- let Do=Math.max(0,northLim(topOf(n)+PARAPET)-sS); let Di=Do-2*off; let Wi=Di>0?fp/Di:Infinity;
- if(!(Di>3)||Wi+2*off>Wb){Wi=Math.max(0,Wb-2*off);Di=Wi>0?fp/Wi:0;Do=Di+2*off}
- const Wo=Wi+2*off; const xMid=(xW+xE)/2;
- out.box={x0:xMid-Wo/2,x1:xMid+Wo/2,sS,sNlim}; out.s0=sS; out.s1=sS+Do; out.Wc=Wo; out.Wi=Wi;
- // 외곽 볼륨: 띄움 거리 + 정북 일조 + 높이·층수 제한이 만드는 범위 (외벽 바깥면 기준)
- const Htop=topOf(n)+PARAPET; const NE=h=>Math.max(sS,northLim(h));
- // 일조 사선으로 깊이가 2.5m 아래로 줄어드는 높이에서 끊고, 높이 제한이 없으면 건물 위 10m까지만 그림
- let He=Htop, open=false; for(let h=0;h<=Htop;h+=0.1){if(NE(h)-sS<2.5){He=Math.max(0,h-0.1);break}}
- out.envH0=He;
- const hs=[0,10,10.001,17,17.001,He].filter(h=>h<=He+1e-9);
- out.env={x0:xW,x1:xE,s0:sS,H:He,open,prof:hs.map(h=>[h,NE(h)])};
- out.envFloor=Wb*Math.max(0,NE(0)-sS); out.envTop=Wb*Math.max(0,NE(Htop)-sS);
- out.capBy=(hMax&&n<flMax)?'h':'fl'; out.nCap=n;
- const floors=[]; let cutByLight=false;
- for(let i=1;i<=n;i++){
-  const h=topOf(i)+(i===n?PARAPET:0);
-  let edge=sS+Do; const lim=northLim(h); if(lim<edge-1e-6){edge=lim;cutByLight=true}
-  const dO=edge-sS, dI=dO-2*off; if(dI<2.5) break;
-  floors.push({i,h0:topOf(i-1),fh:fhOf(i),h,dep:dO,area:Wi*dI,pil:I.pil&&i===1,light:edge<sS+Do-1e-6});
- }
- if(daylight&&floors.length&&floors.length<n){const f=floors[floors.length-1];const L=northLim(f.h+PARAPET);if(sS+f.dep>L+1e-6){f.dep=Math.max(0,L-sS);f.area=Wi*Math.max(0,f.dep-2*off);f.light=true;cutByLight=true}}
- const envGFA=floors.filter(f=>!f.pil).reduce((t,f)=>t+f.area,0);
+ const capped=flMax<40||!!hMax, Hcap=capped?topOf(n)+PARAPET:null;
+ // 외곽 볼륨 (최대 규모). 코어·예시 덩어리는 두지 않고, 이 안에서 건폐율·용적률을 맞춰 자유롭게 설계
+ const E=envField(F,rs+lineSet,adj,daylight,out.dlExtra,Hcap), st=E.s, ca=st*st;
+ // 높이 T 이상 올릴 수 있는 땅: 바깥면 면적, 외벽 두께만큼 줄인 면적(바닥면적은 내측 중심선 기준, 칸 둘레로 줄여 보수적), 크기
+ const lvl=T=>{const {nx,ny,H}=E;let c=0,per=0,bx0=1e9,bx1=-1,by0=1e9,by1=-1;const ok=k=>H[k]>=T-1e-6;
+  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const k=j*nx+i;if(!ok(k))continue;c++;if(i<bx0)bx0=i;if(i>bx1)bx1=i;if(j<by0)by0=j;if(j>by1)by1=j;
+   if(i===0||!ok(k-1))per++;if(i===nx-1||!ok(k+1))per++;if(j===0||!ok(k-nx))per++;if(j===ny-1||!ok(k+nx))per++;}
+  const ao=c*ca;return {ao,ai:Math.max(0,ao-per*st*off),w:c?(bx1-bx0+1)*st:0,d:c?(by1-by0+1)*st:0,x0:c?bx0*st:0,y0:c?by0*st:0}};
+ const L1=lvl(topOf(1)+PARAPET), fpCap=A*bcr/100;
+ const fp=Math.min(fpCap,L1.ai); out.fp=fp; out.fpCap=fpCap; out.land=L1.ao; out.landIn=L1.ai; out.fpByRect=L1.ai<fpCap;
+ const plate=Lk=>Math.min(fp,Lk.ai); // 어느 층도 건축면적(수평투영면적)을 넘을 수 없음
  let farCap=A*far/100; out.useCapHit=false; out.convCap=false;
- const lowA0=D.mix&&floors.length?floors[0].area:0;
+ const lowA0=D.mix?plate(L1):0;
  if(D.conv&&URb[0]==='no'&&URs&&URs[0]!=='no'){const c=lowA0+D.conv.lim-0.1; if(c<farCap){farCap=c;out.useCapHit=true;out.convCap=true}}
  else if(URb[2]){const c=lowA0+(URb[3]?URb[2]-0.1:URb[2]); if(c<farCap){farCap=c;out.useCapHit=true}}
- out.envGFA=envGFA; out.farCap=farCap;
- let gfa=envGFA, trimmed=0;
- if(envGFA>farCap){let over=envGFA-farCap; trimmed=over;
-  for(let k=floors.length-1;k>=0&&over>1e-6;k--){const f=floors[k]; if(f.pil) continue; const c=Math.min(f.area,over); f.area-=c; f.dep=f.area/Wi+2*off; over-=c;}
-  while(floors.length&&floors[floors.length-1].area<1) floors.pop(); gfa=farCap;}
- out.floors=floors; out.gfa=gfa; out.trimmed=trimmed; out.n=floors.length; out.flMax=flMax; out.hMax=hMax;
+ out.farCap=farCap;
+ // 아래층부터 쌓되, 용적률 한도에 닿으면 멈춤 (남은 면적이 10㎡ 미만이면 그 층은 두지 않음: 보수적)
+ const floors=[]; let cum=0, geo=0, cutByLight=false;
+ for(let k=1;k<=(capped?n:80);k++){const Lk=k===1?L1:lvl(topOf(k)+PARAPET); if(Lk.ai<5) break;
+  const pil=!!(I.pil&&k===1), pa=plate(Lk); if(!pil) geo+=pa; if(daylight&&Lk.ai<L1.ai-1) cutByLight=true;
+  if(pil||cum<farCap-1e-6){const area=pil?pa:Math.min(pa,farCap-cum);
+   if(pil||area>=10||!floors.some(f=>!f.pil)){const sc=Math.min(1,Math.sqrt(area/Math.max(Lk.ai,1e-9)));
+    floors.push({i:k,h0:topOf(k-1),fh:fhOf(k),h:topOf(k),area,pil,dep:Lk.d*sc,wo:Lk.w*sc,light:daylight&&Lk.ai<L1.ai-1}); if(!pil) cum+=area;}}
+  else if(!capped&&!daylight) break;}
+ if(floors.length) floors[floors.length-1].h=topOf(floors.length)+PARAPET;
+ const envGFA=geo, gfa=cum, trimmed=Math.max(0,geo-gfa);
+ out.envGFA=envGFA; out.floors=floors; out.gfa=gfa; out.trimmed=trimmed; out.n=floors.length; out.flMax=flMax; out.hMax=hMax;
  out.Hf=topOf(floors.length); out.H=out.Hf+(floors.length?PARAPET:0);
- if(out.env.H>out.H+10){const He=out.H+10; out.env.H=He; out.env.open=true; out.env.prof=out.env.prof.filter(([h])=>h<He).concat([[He,Math.max(sS,northLim(He))]]);}
- const g=[]; if(envGFA>farCap+0.5) g.push('far'); else { if(cutByLight) g.push('light'); if(n<(Z.floors||99)||hMax) g.push('height'); }
+ out.capBy=(hMax&&n<flMax)?'h':'fl'; out.nCap=n;
+ let Hmx=0; for(const h of E.H) if(h>0&&isFinite(h)&&h>Hmx) Hmx=h;
+ const open=!capped&&!daylight; // 높이 제한도 일조도 없으면 건축면적 한도로 채워 용적률에 닿는 높이까지만 그림
+ out.env={E,open,Hdraw:open?out.H:Hmx,H:open?out.H:Hmx};
+ out.envFloor=L1.ao;
+ const g=[]; if(envGFA>farCap+0.5) g.push('far'); else { if(cutByLight) g.push('light'); if(capped) g.push('height'); }
  out.cutByLight=cutByLight; out.gov=g;
  const usable=floors.filter(f=>!f.pil);
- const typ=usable.reduce((a,f)=>f.area>(a?a.area:0)?f:a,null)||floors[0]||{area:0,dep:0}; out.typ=typ;
+ const typ=usable.reduce((a,f)=>f.area>(a?a.area:0)?f:a,null)||floors[0]||{area:0,dep:0,wo:0}; out.typ=typ;
+ // 피난 거리·외벽 면적 추정용 판 크기: 기준층 바닥을 그 층 땅의 크기에 비례해 줄인 것
+ const Wo=typ.wo||L1.w||0; out.Wc=Wo; out.Wi=Math.max(0,Wo-2*off); out.s0=L1.y0; out.s1=L1.y0+(typ.dep||0); out.box={x0:L1.x0,x1:L1.x0+Wo,sS:L1.y0,sNlim:L1.y0+L1.d};
  const lowA=D.mix&&floors.length?floors[0].area:0; out.lowA=lowA;
  const mainA=gfa-lowA; out.mainA=mainA;
  const small=!!(D.conv&&mainA<D.conv.lim); out.small=small;
@@ -1804,6 +1930,15 @@ function computeOnce(I){
  if(SITE&&SITE.zm&&SITE.zm.mode==='strict') out.info.push(`용도지역이 둘 이상이고 가장 작은 부분도 330㎡를 넘어, 원래는 부분마다 그 용도지역 기준이 따로 적용됩니다. 이 도구는 한 덩어리로 계산하므로 더 엄격한 ${SITE.zm.zone} 기준을 대지 전체에 적용했습니다 (확인 필요).`);
  if(SITE&&SITE.zones){const zs=SITE.zones;
   if(zs.includes('자연취락지구')) out.info.push('자연취락지구: 지을 수 있는 용도와 층수(4층 이하)를 국토계획법 시행령 별표 23과 조례가 따로 정합니다.');
+  const CHK=[['건축선','지정 건축선이 있습니다. 도로 경계선이 아니라 지정된 건축선에서 띄움 거리를 재야 할 수 있어, 토지이음에서 위치를 확인하세요 (건축법 제46조②, 확인 필요).'],
+   ['지구단위계획구역','지구단위계획구역입니다. 건축한계선·건축지정선·벽면한계선, 용도, 높이, 건폐율·용적률을 계획 결정도와 시행지침에서 확인하세요 (확인 필요).'],
+   ['가로구역별 최고높이 제한지역','가로구역별 최고높이 제한지역입니다. 고시된 높이를 높이 제한 칸에 넣어야 볼륨 윗면이 정해집니다 (건축법 제60조①, 확인 필요).'],
+   ['대공방어협조구역','대공방어협조구역입니다. 일정 높이를 넘으면 군 협의가 필요합니다 (확인 필요).'],
+   ['고도지구','고도지구입니다. 도시관리계획으로 정한 최고 높이를 높이 제한 칸에 넣으세요 (확인 필요).'],
+   ['경관지구','경관지구입니다. 조례로 높이·건폐율 등을 따로 정할 수 있습니다 (확인 필요).'],
+   ['역사문화환경 보존지역','국가유산(문화재) 주변 보존지역입니다. 높이 등 현상변경 허용 기준을 확인하세요 (확인 필요).']];
+  CHK.forEach(([k,t])=>{if(zs.some(z=>z.includes(k)))out.info.push(t)});
+  {const zz=Object.keys(ZONES).filter(z=>z!==I.zone&&zs.includes(z)); if(zz.length) out.info.push(`이 필지에는 ${I.zone} 말고도 ${zz.join('·')}이 함께 걸려 있습니다. 부분마다 기준이 다를 수 있어 이 도구의 한 덩어리 계산과 다릅니다 (국토계획법 제84조, 확인 필요).`);}
   if(zs.includes('성장관리계획구역')&&I.zone==='계획관리지역') out.info.push('성장관리계획구역: 성장관리계획이 수립된 계획관리지역은 용적률을 125%까지 완화할 수 있습니다. 실제 값과 조건은 그 계획의 지침을 확인하세요.');}
  // 코어
  const walkLim=50, walkCenter=Wo/2+typ.dep/2, liv=typ.area*(D.live||0.8);
@@ -1882,25 +2017,26 @@ function render(){
 
  const K0=O.core, W0=O.wall;
  const B=[
-  ['d-scale','층수 · 높이',`${O.n}<small>층</small>`,`${f1(O.H)}m (난간 포함)${O.floors.some(f=>f.pil)?' · 1층 필로티':''}`],
-  ['d-scale','연면적 (지상)',`${f0(O.gfa)}<small>㎡</small>`,`대지의 ${f0(O.gfa/O.A*100)}% · 용적률 한도의 ${f0(O.gfa/O.farCap*100)}%`],
+  ['d-scale','최대 건축면적',`${f0(O.fp)}<small>㎡</small>`,O.fpByRect?`땅이 정함 · 건폐율 한도 ${f0(O.fpCap)}㎡ (${O.bcr}% × 대지 ${f0(O.A)}㎡${O.rs>0?', 도로 후퇴 뒤':''})`:`건폐율이 정함 · ${O.bcr}% × 대지 ${f0(O.A)}㎡${O.rs>0?' (도로 후퇴 뒤)':''}`],
+  ['d-scale','최대 연면적 (지상)',`${f0(O.gfa)}<small>㎡</small>`,O.gov.includes('far')?`용적률 ${O.far}% 한도까지`:`볼륨에 들어가는 만큼 · 용적률 한도의 ${f0(O.gfa/O.farCap*100)}%`],
+  ['d-scale','층수 · 높이',`${O.n}<small>층</small>`,`${f1(O.H)}m (난간 포함)${O.floors.some(f=>f.pil)?' · 1층 필로티':''}${O.env.open?' · 높이 제한 없음':''}`],
   ['d-core','직통계단',`${K0.cores}<small>개소</small>`,K0.stair==='직통계단'?(K0.stairNote?'피난계단 예외':'일반 계단 (5층 미만)'):K0.stair],
   ['d-core','승강기',K0.elevLaw?'법정':K0.elevPrac?'실무상':'없음',K0.elevLaw?'법으로 설치해야 함':K0.elevPrac?'법적 의무는 없지만 대부분 설치':'이 층수에서는 없어도 됨'],
   ['d-park','주차',`${O.park.need}<small>대</small>`,O.park.pilCap!=null?(O.park.pilCap>=O.park.need?'필로티에 모두 들어감':`필로티에 ${O.park.pilCap}대 · ${O.park.need-O.park.pilCap}대 부족`):O.park.basis],
   ['d-wall','외벽 두께',`${W0.tot}<small>mm</small>`,`단열재 ${W0.tIns}mm 포함 · ${REG[W0.z]}`],
   ['d-mep','급수',O.n>3?'가압':'직결',O.n>3?'3층을 넘어 펌프·수조가 필요':'수도관 압력으로 바로 급수']
  ];
- B[3][0]='d-mep';
+ B[4][0]='d-mep';
  $('big').innerHTML=B.map(([id,k,v,sub])=>`<li><a href="#${id}" data-go="${id}"><span class="k">${k}</span><span class="v">${v}</span><span class="s">${sub} <span class="go">${TABNAME[TABOF[id]]} 탭 →</span></span></a></li>`).join('');
  $('big').querySelectorAll('a').forEach(a=>a.onclick=e=>{e.preventDefault();showTab(TABOF[a.dataset.go]);const t=$(a.dataset.go);if(t){t.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});t.classList.add('flash');setTimeout(()=>t.classList.remove('flash'),1400)}});
  drawPlan(O,I);
  const gtxt=[];
- const lim=O.floors.length<O.nCap; // 일조 때문에 층이 빠진 경우
- const hWhy=lim?'정북 일조 사선':O.capBy==='h'?`높이 ${f1(O.hMax)}m 제한`:`${O.flMax}층 제한`;
- const fWhy=O.fpByRect?'띄움 거리':`건폐율 ${O.bcr}%(${f0(O.fp)}㎡)`;
- if(O.gov.includes('far')) gtxt.push(`이 땅은 <b>용적률</b>이 규모를 정합니다. 형태로는 ${f0(O.envGFA)}㎡까지 들어가지만 ${O.useCapHit?'용도별 면적 상한':'용적률 한도'} ${f0(O.farCap)}㎡를 넘는 ${f0(O.trimmed)}㎡를 위층에서 덜어 냈습니다.`);
- else { gtxt.push(`이 땅은 바닥을 <b>${fWhy}</b>가, 높이를 <b>${hWhy}</b>이 정합니다.${O.cutByLight&&!lim?' 위층 깊이는 <b>정북 일조 사선</b>이 줄입니다.':''} ${O.useCapHit?'용도별 면적 상한':'용적률 한도'} ${f0(O.farCap)}㎡ 중 ${f0(O.gfa)}㎡(${f0(O.gfa/O.farCap*100)}%)만 씁니다.`); }
- if(!O.fpByRect&&O.envFloor>O.fp+5) gtxt.push(`띄움 거리를 뺀 땅은 ${f0(O.envFloor)}㎡인데 건폐율 때문에 그중 ${f0(O.fp)}㎡만 덮을 수 있어, 반투명 덩어리는 점선 외곽 볼륨보다 작습니다.${O.daylight&&!O.cutByLight?' 일조 사선과는 맨 위에서만 닿습니다.':''} 점선 안이라면 바닥을 더 납작하게 펴거나 위층을 북쪽에서 물려도 됩니다.`);
+ gtxt.push(`반투명 볼륨은 띄움 거리${O.daylight?', 정북 일조':''}${O.env.open?'':', 층수·높이 제한'}을 지키면서 건물이 들어갈 수 있는 <b>최대 범위</b>입니다. 이 안에서 건축면적 <b>${f0(O.fp)}㎡</b>, 연면적 <b>${f0(O.gfa)}㎡</b> 이하로 자유롭게 매스를 만드세요.`);
+ if(O.rs>0) gtxt.push(`도로 폭이 4m에 못 미쳐 건축선이 ${f1(O.rs)}m 물러나므로, 대지 ${f0(I.area)}㎡에서 도로에 내주는 ${f0(I.area-O.A)}㎡를 뺀 <b>${f0(O.A)}㎡</b>로 건폐율·용적률을 계산합니다.`);
+ if(O.fpByRect) gtxt.push(`띄움 거리를 뺀 땅은 외벽 바깥면 기준 ${f0(O.land)}㎡, 외벽 두께를 빼면 바닥면적 기준 ${f0(O.landIn)}㎡입니다. 건폐율 한도 ${f0(O.fpCap)}㎡보다 작아 땅이 건축면적을 정합니다.`);
+ if(O.gov.includes('far')) gtxt.push(`볼륨에는 ${O.env.open?'더':f0(O.envGFA)+'㎡까지'} 들어가지만 ${O.useCapHit?'용도별 면적 상한':'용적률 한도'} ${f0(O.farCap)}㎡가 연면적을 정합니다.`);
+ else gtxt.push(`${O.useCapHit?'용도별 면적 상한':'용적률 한도'}는 ${f0(O.farCap)}㎡인데 ${O.cutByLight?'정북 일조':'높이 제한'} 때문에 볼륨에는 ${f0(O.gfa)}㎡(${f0(O.gfa/O.farCap*100)}%)까지만 들어갑니다.`);
+ if(O.env.open) gtxt.push(`높이 제한이 없어 건축면적 한도로 꽉 채웠을 때 용적률에 닿는 높이(${f1(O.H)}m)까지만 그렸습니다. 바닥을 줄이면 더 높이 올릴 수 있습니다.`);
  if(O.farIsCap) gtxt.push('용적률을 비워 두어 국토계획법 상한으로 계산했습니다. 실제 조례 값은 더 낮을 수 있습니다.');
  $('gov').innerHTML=gtxt.join(' ');
  $('warnbox').innerHTML=O.warn.join('<br>');
@@ -1911,20 +2047,20 @@ function render(){
  const C=[];
  // 1 규모
  const pilS=O.floors.some(f=>f.pil);
- C.push(`<article class="card" id="d-scale"><h2>규모 <small>최대 매스 기준</small></h2>
- <dl class="kv">${O.F?`<dt>대지 모양</dt><dd>${O.F.nParts>1?O.F.nParts+'필지를 합친 ':''}연속지적도 모양, 대장 ${f0(I.area)}㎡로 맞춤</dd><dt>건물을 놓을 수 있는 직사각형</dt><dd>${f1(O.F.rect.x1-O.F.rect.x0)} × ${f1(O.F.rect.y1-O.F.rect.y0)} m</dd>`:`<dt>대지 (가로 × 깊이)</dt><dd>${f1(O.Lc)} × ${f1(O.Ln)} m</dd>`}${O.rs>0?`<dt>도로로 내주는 땅을 뺀 대지면적</dt><dd>${f0(O.A)} ㎡</dd>`:''}<dt>건축면적</dt><dd>${f0(O.fp)} ㎡</dd><dt>층별 바닥면적</dt><dd>${O.floors.map(f=>f.pil?'필로티':f0(f.area)).join(' / ')}</dd><dt>연면적 (지상)</dt><dd>${f0(O.gfa)} ㎡</dd><dt>높이 (막힌 난간 포함)</dt><dd>${f1(O.H)} m</dd></dl>
- <p class="say">${O.cutByLight?'북쪽 이웃에 해가 들도록 높은 층은 북쪽에서 더 물러납니다. 그래서 윗층 바닥이 줄어듭니다.':O.Z.res?'이 규모에서는 정북 일조에 걸리지 않습니다.':'이 용도지역은 정북 일조 기준을 적용하지 않습니다.'}${O.roadDir==='N'&&O.Z.res&&!O.F?' 북쪽이 도로라 도로 '+(O.wall.apt?'중심선':'반대편 경계선')+'에서부터 잽니다.':''}${O.kind?` 주택 층수 ${O.houseFloors}개 층으로 법적 분류는 <b>${O.kind}</b>입니다.`:''}${pilS?' 1층 필로티는 층수 제한(4층 이하)에 들어갑니다. 단지형 연립·다세대만 예외입니다.':''}</p>
+ C.push(`<article class="card" id="d-scale"><h2>규모 <small>외곽 볼륨 기준</small></h2>
+ <dl class="kv">${O.F?`<dt>대지 모양</dt><dd>${O.F.nParts>1?O.F.nParts+'필지를 합친 ':''}연속지적도 모양, 대장 ${f0(I.area)}㎡로 맞춤</dd>`:`<dt>대지 (가로 × 깊이)</dt><dd>${f1(O.Lc)} × ${f1(O.Ln)} m</dd>`}<dt>지을 수 있는 땅</dt><dd>${f0(O.land)} ㎡ (외벽 두께 빼면 ${f0(O.landIn)} ㎡)</dd>${O.rs>0?`<dt>도로로 내주는 땅을 뺀 대지면적</dt><dd>${f0(O.A)} ㎡</dd>`:''}<dt>최대 건축면적</dt><dd>${f0(O.fp)} ㎡</dd><dt>층별 최대 바닥면적</dt><dd>${O.floors.map(f=>f.pil?'필로티':f0(f.area)).join(' / ')}</dd><dt>최대 연면적 (지상)</dt><dd>${f0(O.gfa)} ㎡</dd><dt>높이 (막힌 난간 포함)</dt><dd>${f1(O.H)} m</dd></dl>
+ <p class="say">${O.cutByLight?'북쪽 이웃에 해가 들도록 높은 곳은 북쪽 경계에서 더 물러나야 해서, 위층에서 쓸 수 있는 땅이 줄어듭니다.':O.Z.res?'이 규모에서는 정북 일조에 걸리지 않습니다.':'이 용도지역은 정북 일조 기준을 적용하지 않습니다.'}${O.roadDir==='N'&&O.Z.res&&!O.F?' 북쪽이 도로라 도로 '+(O.wall.apt?'중심선':'반대편 경계선')+'에서부터 잽니다.':''}${O.kind?` 주택 층수 ${O.houseFloors}개 층으로 법적 분류는 <b>${O.kind}</b>입니다.`:''}${pilS?' 1층 필로티는 층수 제한(4층 이하)에 들어갑니다. 단지형 연립·다세대만 예외입니다.':''}</p>
  <div class="tags">${T.law}${T.choice}${O.farIsCap?T.chk:''}</div>
  <details><summary>왜 이렇게 나오나요?</summary><div class="why">
- ${step('입력',`${O.F?`대지 ${f0(I.area)}㎡. 모양은 브이월드 연속지적도${O.F.nParts>1?`(필지 ${O.F.nParts}개를 합치고 서로 맞닿은 경계는 지움)`:''}를 대장 면적에 맞게 줄여 쓰고, 도로에 맞닿은 변 ${O.F.nRoad}개(합계 ${f1(O.front)}m)는 ${O.F.auto?'둘레의 도로(지목 도) 필지에서 찾았습니다':'도로 방향 입력으로 정했습니다'}. 띄움 거리를 뺀 땅 안에 들어가는 가장 큰 직사각형(${f1(O.F.rect.x1-O.F.rect.x0)} × ${f1(O.F.rect.y1-O.F.rect.y0)}m)에 건물을 놓습니다.`:`대지 ${f0(I.area)}㎡, 도로에 접한 길이 ${f1(I.front)}m → 깊이 ${f1(O.depth)}m.`} 도로 폭 ${f1(I.roadW)}m${O.rs>0?` → 4m에 못 미쳐 건축선이 ${f1(O.rs)}m 물러나고, 그 땅 ${f0(I.area-O.A)}㎡는 대지면적에서 빠집니다 (건축법 제46조, 시행령 제119조)`:''}.`)}
+ ${step('입력',`${O.F?`대지 ${f0(I.area)}㎡. 모양은 브이월드 연속지적도${O.F.nParts>1?`(필지 ${O.F.nParts}개를 합치고 서로 맞닿은 경계는 지움)`:''}를 대장 면적에 맞게 줄여 쓰고, 도로에 맞닿은 변 ${O.F.nRoad}개(합계 ${f1(O.front)}m)는 ${O.F.auto?'둘레의 도로(지목 도) 필지에서 찾았습니다':'도로 방향 입력으로 정했습니다'}. `:`대지 ${f0(I.area)}㎡, 도로에 접한 길이 ${f1(I.front)}m인 직사각형으로 봅니다.`} 띄움 거리를 뺀 땅을 ${f1(O.env.E.s*100)}cm 칸으로 나눠 칸마다 올릴 수 있는 높이를 구했습니다. 칸 전체가 기준을 지키도록 칸 반대각선만큼 더 띄웁니다. 도로 폭 ${f1(I.roadW)}m${O.rs>0?` → 4m에 못 미쳐 건축선이 ${f1(O.rs)}m 물러나고, 그 땅 ${f0(I.area-O.A)}㎡는 대지면적에서 빠집니다 (건축법 제46조, 시행령 제119조)`:''}.`)}
  ${step('가정',`층고 ${f1(I.fh)}m${pilS?`, 필로티층 ${f1(I.fh1)}m (주차 높이 2.1m와 전이보 고려)`:''}, 옥상 막힌 난간벽 ${PARAPET}m. 대지 안의 공지: 도로 쪽 건축선에서 ${f1(O.lineSet)}m, 이웃 대지에서 ${f1(O.adjEff)}m${O.wall.apt?` (${O.city?O.city+'시':'그 밖 지역'} 기준. 다세대 채광창 벽은 인접 대지에서 ${f1(O.lightD)}m 이상인데(건축법 시행령 제86조③·조례), 창을 어느 면에 낼지 정하기 전이라 도로 외 모든 면에 적용했습니다)`:''}. 이격은 외벽 바깥면(단열·마감 포함)부터 잽니다.`)}
  ${step('규칙',`건폐율은 입력 중 작은 값 <code>${O.bcr}%</code>(${O.bcrFrom}), 용적률 <code>${O.far}%</code>, 층수 <code>${O.flMax<40?O.flMax+'층':'제한 없음'}</code>${O.hMax?`, 높이 <code>${O.hMax}m</code>`:''}. ${O.daylight?(LAW_NEW?'정북 일조: 높이 10m 이하 1.5m, 10~17m 5m, 17m 초과는 높이의 1/2 이상 (개정 건축법 제61조의 최소값 5m를 쓴 미리보기. 실제 거리는 조례가 정함).':'정북 일조: 높이 10m 이하 1.5m, 10m 초과는 높이의 1/2 이상. 2026. 11. 12. 시행 개정 건축법 제61조는 10~17m 구간을 "5m 이상으로 조례가 정하는 거리"로 바꾸는데, 지금 조례가 정한 높이의 1/2(5~8.5m)도 그 범위 안이라 조례를 고치기 전까지는 계속 적용될 수 있어 1/2로 계산합니다. 실제 적용은 허가권자에게 확인해야 합니다.'):''}`)}
- ${step('계산',`건축면적 = ${f0(O.A)} × ${O.bcr}% = <code>${f0(O.A*O.bcr/100)}㎡</code>${O.fpByRect?` → 띄울 거리를 빼면 ${f0(O.fp)}㎡까지만 들어갑니다`:''}. 층별 깊이(바깥면): ${O.floors.map(f=>`${f.i}층 ${f1(f.dep)}m`).join(', ')}. 형태로 가능한 연면적 ${f0(O.envGFA)}㎡, 용적률 한도 ${f0(O.A)} × ${O.far}% = ${f0(O.farCap)}㎡ → 작은 값 <code>${f0(O.gfa)}㎡</code>. 바닥면적은 외단열이라 내측 내력벽 중심선으로 잽니다.`)}
- ${step('결과',`지상 ${O.n}층, 연면적 ${f0(O.gfa)}㎡. 건물은 ${O.F?'':{S:'남쪽',N:'북쪽',E:'동쪽',W:'서쪽'}[I.roadDir]+' '}도로 쪽으로 붙여 놓았습니다.`)}
+ ${step('계산',`건축면적 = ${f0(O.A)} × ${O.bcr}% = <code>${f0(O.A*O.bcr/100)}㎡</code>${O.fpByRect?` → 지을 수 있는 땅(외벽 두께 제외)이 ${f0(O.fp)}㎡라 그만큼만 들어갑니다`:''}. 층마다 그 높이(맨 위면 난간까지)를 올릴 수 있는 땅과 건축면적 중 작은 값을 바닥면적으로 쌓으면 ${f0(O.envGFA)}㎡, 용적률 한도 ${f0(O.A)} × ${O.far}% = ${f0(O.farCap)}㎡ → 작은 값 <code>${f0(O.gfa)}㎡</code>. 바닥면적은 외단열이라 내측 내력벽 중심선으로 잽니다.`)}
+ ${step('결과',`최대 건축면적 ${f0(O.fp)}㎡, 최대 연면적 ${f0(O.gfa)}㎡, 지상 ${O.n}층. 이 값과 볼륨 안이라면 매스 모양과 위치는 자유롭게 정하면 됩니다.`)}
  </div></details></article>`);
  // 2 코어
  const K=O.core;
- C.push(`<article class="card" id="d-core"><h2>코어 · 피난 <small>기준층 ${f1(O.Wc)} × ${f1(O.typ.dep)} m</small></h2>
+ C.push(`<article class="card" id="d-core"><h2>직통계단 · 승강기 판단 <small>최대 규모 기준층 약 ${f1(O.Wc)} × ${f1(O.typ.dep)} m로 추정</small></h2>
  <dl class="kv"><dt>직통계단</dt><dd>${K.cores}개소</dd><dt>계단 종류</dt><dd>${K.stair}${K.stairNote?' (예외)':''}</dd><dt>가장 먼 곳 → 계단</dt><dd>약 ${f1(K.walkCenter)} m</dd>${K.cores>1?`<dt>두 계단 사이</dt><dd>${f1(K.sepMin)} m 이상</dd>`:''}<dt>승강기</dt><dd>${K.elevLaw?'법정 설치':K.elevPrac?'실무상 설치':'없어도 됨'}</dd></dl>
  <p class="say">${K.cores===1?`판이 작아 계단 하나로 피난 거리가 충분합니다. 코어 하나에 계단${K.elevPrac||K.elevLaw?'과 승강기':''}를 모으고, 화장실·주방·배관 샤프트를 그 가까이 두면 배관이 짧아집니다.`:`판이 크거나 거실이 넓어 계단이 2개 필요합니다. 두 계단은 평면 대각선(${f1(K.diag)}m)의 ${I.spr?'1/3':'1/2'} 이상 떨어뜨려 한쪽이 막혀도 다른 쪽으로 나가게 합니다.`}${K.elevPrac&&!K.elevLaw?' 승강기는 법적 의무는 아니지만 이 층수에서는 실무상 대부분 설치합니다.':''}${K.stairNote?' '+K.stairNote+'입니다.':''}${K.elev89?' 6층이면서 거실 300㎡ 이내마다 직통계단을 두면 승강기 의무에서 빠질 수 있습니다 (시행령 제89조).':''}${K.elevEm?' 높이가 31m를 넘어 비상용 승강기도 필요합니다. 31m를 넘는 층의 용도와 면적에 따라 예외가 있습니다.':''}</p>
  <div class="tags">${T.law}${K.elevPrac&&!K.elevLaw?T.prac:''}${T.chk}</div>
@@ -1983,7 +2119,7 @@ function render(){
  ${step('결과',`${W.tIns} + ${W.tS} + ${I.fin} + ${W.tIn} = <code>${W.tot}mm</code>. 외단열이면 바닥면적은 내측 내력벽 중심선 기준으로 잽니다 (건축법 시행령 제119조).`)}
  </div></details></article>`);
  const xl=(t,txt)=>`<button type="button" class="xlink" data-x="${t}">${txt}</button>`;
- $('tp-law').innerHTML=`<p class="links">메인 숫자 중 <b>층수·높이, 연면적, 직통계단, 주차</b>를 정합니다. 승강기 의무 기준은 코어 카드에, 승강기가 생기는 공사비 문턱은 ${xl('mep','설비 탭')}에 있습니다.</p>
+ $('tp-law').innerHTML=`<p class="links">메인 숫자 중 <b>층수·높이, 연면적, 직통계단, 주차</b>를 정합니다. 승강기 의무 기준은 직통계단·승강기 카드에, 승강기가 생기는 공사비 문턱은 ${xl('mep','설비 탭')}에 있습니다.</p>
  <h3 class="subhead">국토계획법 · 건축법<small>용도지역, 건폐율·용적률, 높이·일조, 피난</small></h3><div class="cards">${C[0]}${C[1]}</div>
  <h3 class="subhead">관련법규<small>주차장법, 녹색건축물 조성 지원법</small></h3><div class="cards">${C[2]}<article class="card"><h2>건축물의 에너지절약설계기준 <small>녹색건축물 조성 지원법</small></h2><p class="say">외벽 단열 기준(열관류율)은 이 고시가 정합니다. 외벽 두께 ${W.tot}mm가 어떻게 나왔는지는 ${xl('env','환경 탭')}에서 이어서 봅니다.</p><div class="tags">${T.law}</div></article></div>`;
  $('tp-env').innerHTML=`<p class="links">메인 숫자 중 <b>외벽 두께</b>를 정합니다. 근거 법령은 녹색건축물 조성 지원법의 에너지절약설계기준입니다 (${xl('law','법규 탭 · 관련법규')}).</p><div class="cards one">${C[5]}</div>`;
@@ -2011,9 +2147,9 @@ function drawPlanPoly(O,I){
  F.polys.forEach(P=>{g+=`<polygon points="${P.map(pt).join(' ')}" style="fill:var(--site);stroke:var(--site);stroke-width:0.8"/>`});
  F.inner.forEach(sg=>{g+=`<line x1="${X(sg.a[0]).toFixed(1)}" y1="${Y(sg.a[1]).toFixed(1)}" x2="${X(sg.b[0]).toFixed(1)}" y2="${Y(sg.b[1]).toFixed(1)}" style="stroke:var(--muted);stroke-width:0.8;stroke-dasharray:3 2"/>`});
  F.segs.forEach(sg=>{g+=`<line x1="${X(sg.a[0]).toFixed(1)}" y1="${Y(sg.a[1]).toFixed(1)}" x2="${X(sg.b[0]).toFixed(1)}" y2="${Y(sg.b[1]).toFixed(1)}" style="stroke:var(--ink);stroke-width:1.2;stroke-linecap:round"/>`});
- if(O.env){const E=O.env,sn=E.prof[0][1]; g+=r(X(E.x0),Y(sn),(E.x1-E.x0)*sc,(sn-E.s0)*sc,'fill:none;stroke:var(--accent);stroke-width:1;stroke-dasharray:4 3');}
- g+=r(X(O.box.x0),Y(O.s1),(O.box.x1-O.box.x0)*sc,(O.s1-O.s0)*sc,'fill:var(--mass);stroke:var(--ink);stroke-width:1');
- g+=t(X((O.box.x0+O.box.x1)/2),Y((O.s0+O.s1)/2)+4,f1(O.box.x1-O.box.x0)+' × '+f1(O.s1-O.s0)+'m','fill:var(--ink);font-weight:600');
+ {const E=O.env.E,st=E.s,T=O.floors.length?O.floors[0].h0+O.floors[0].fh+(O.floors.length===1?PARAPET:0):0;
+  for(let j=0;j<E.ny;j++){let i=0;while(i<E.nx){if(!(E.H[j*E.nx+i]>0)){i++;continue}let k=i+1;while(k<E.nx&&E.H[j*E.nx+k]>0)k++;
+   g+=r(X(i*st),Y((j+1)*st),(k-i)*st*sc+0.3,st*sc+0.3,'fill:var(--accent);opacity:.22');i=k;}}}
  if(O.daylight){const runs=L=>{const r=[];let cur=[];L.forEach(p=>{if(p)cur.push(p);else{if(cur.length>1)r.push(cur);cur=[]}});if(cur.length>1)r.push(cur);return r};
   [[1.5,'1.1','4 2']].concat(O.H>10?[[dl(O.H),'0.8','2 2']]:[]).forEach(([d,w,da])=>runs(F.locus(d,O.dlExtra)).forEach(R=>{g+=`<polyline points="${R.map(pt).join(' ')}" style="fill:none;stroke:var(--cut);stroke-width:${w};stroke-dasharray:${da}"/>`}));}
  {const sg=F.segs[F.main],a=sg.a,b=sg.b,m=sg.n;const mx=(a[0]+b[0])/2+m[0]*rw/2,my=(a[1]+b[1])/2+m[1]*rw/2;g+=t(X(mx),Y(my)+4,'도로 '+f1(I.roadW)+'m','fill:var(--panel);font-weight:600');}
@@ -2021,7 +2157,7 @@ function drawPlanPoly(O,I){
  const rad=deg*Math.PI/180;
  g+=`<g transform="translate(${nx.toFixed(1)},${ny.toFixed(1)}) rotate(${deg.toFixed(1)})"><line x1="0" y1="10" x2="0" y2="-6" style="stroke:var(--ink);stroke-width:1.6"/><path d="M0 -12 l-4 7 h8 z" style="fill:var(--ink)"/></g>`+t(nx+Math.sin(rad)*19,ny-Math.cos(rad)*19+4,'N','fill:var(--ink);font-weight:700');
  svg.innerHTML=g;
- $('plancap').innerHTML=`위에서 본 배치 (${F.alpha?'돌려 그린 그림, N이 북쪽':'위가 북쪽'}${F.nParts>1?`, 회색 점선은 합친 필지 경계`:''}) · 대지 <b>${f0(I.area)}㎡</b> 중 건물 바닥 <b>${f0(O.fp)}㎡ (${f0(O.fp/I.area*100)}%)</b> · 녹색 점선은 띄움 거리를 뺀 땅 안의 가장 큰 직사각형 ${f0(O.envFloor)}㎡${O.daylight?` · 주황 점선은 대지경계선에서 <b>정북 방향으로</b> 잰 일조 거리 1.5m 선${O.H>10?`과 맨 위 높이(${f1(O.H)}m)의 ${f1(dl(O.H))}m 선`:''}`:''}`;
+ $('plancap').innerHTML=`위에서 본 배치 (${F.alpha?'돌려 그린 그림, N이 북쪽':'위가 북쪽'}${F.nParts>1?`, 회색 점선은 합친 필지 경계`:''}) · 대지 <b>${f0(I.area)}㎡</b> · 초록색은 띄움 거리를 뺀 땅 ${f0(O.land)}㎡ (외벽 바깥면 기준) · 최대 건축면적 ${f0(O.fp)}㎡${O.daylight?` · 주황 점선은 대지경계선에서 <b>정북 방향으로</b> 잰 일조 거리 1.5m 선${O.H>10?`과 맨 위 높이(${f1(O.H)}m)의 ${f1(dl(O.H))}m 선`:''}`:''}`;
 }
 function drawPlan(O,I){
  if(O.F) return drawPlanPoly(O,I);
@@ -2086,7 +2222,7 @@ function label(text,color){
  const w=Math.ceil(ctx.measureText(text).width)+24;c.width=w;c.height=s+20;
  const ctx2=c.getContext('2d');ctx2.font=`600 ${s}px "IBM Plex Sans KR", sans-serif`;ctx2.fillStyle=color;ctx2.textBaseline='middle';ctx2.fillText(text,12,c.height/2);
  const tex=new THREE.CanvasTexture(c);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));
- sp.scale.set(w/c.height*LS,LS,1);return sp;
+ sp.scale.set(w/c.height*LS,LS,1);sp.renderOrder=999;return sp;
 }
 function fit3D(force){
  if(!R3||!R3.dims) return; const [Lc,Ln,Hs]=R3.dims; const asp=R3.cam.aspect||1;
@@ -2108,7 +2244,7 @@ function draw(O,I){
  const G=R3.group; while(G.children.length){const o=G.children.pop();o.geometry&&o.geometry.dispose();o.material&&o.material.dispose&&o.material.dispose()}
  const col=n=>new THREE.Color(cssVar(n));
  const Lc=O.Lc, Ln=O.Ln;
- LS=Math.max(1.5,Math.hypot(Lc,Ln,Math.max(O.H,O.env?O.env.H:0))/22);
+ LS=Math.max(1.5,Math.hypot(Lc,Ln,Math.max(O.H,O.env?O.env.Hdraw:0))/22);
  // 좌표: x = 서→동 (0..Lc), z = 북쪽이 -z. s(남쪽 끝 0 → 북쪽)를 z로
  const X=x=>x-Lc/2, Zs=s=>Ln/2-s;
  const box=(w,h,d,x,y,z,c,op)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:c,transparent:op<1,opacity:op??1,depthWrite:!(op<1)}));m.position.set(x,y,z);G.add(m);return m};
@@ -2130,67 +2266,19 @@ function draw(O,I){
  {const a=label('가로 '+f1(Lc)+'m',cssVar('--muted'));a.position.set(-Lc/4,0.4,-Ln/2-LS*1.6);G.add(a);const b=label('깊이 '+f1(Ln)+'m',cssVar('--muted'));b.position.set(-Lc/2-LS*2.6,0.4,Ln/6);G.add(b);}
  const bl=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([[-Lc/2,-Ln/2],[Lc/2,-Ln/2],[Lc/2,Ln/2],[-Lc/2,Ln/2]].map(p=>new THREE.Vector3(p[0],0.02,p[1]))),new THREE.LineBasicMaterial({color:col('--ink')}));G.add(bl);
  }
- // 층
  const ink=col('--ink');
- O.floors.forEach(f=>{
-  const h=f.fh*0.94, y=f.h0+h/2;
-  const zc=Zs(O.s0+f.dep/2);
-  if(f.pil){ // 필로티: 기둥과 얇은 판
-   const m=box(O.Wc,h,f.dep,X(O.box.x0+O.Wc/2),y,zc,col('--pil'),0.12); edges(m,col('--muted'));
-  } else { const m=box(O.Wc,h,f.dep,X(O.box.x0+O.Wc/2),y,zc,col(f.light?'--mass-top':'--mass'),0.22); edges(m,col('--accent')); }
- });
- if(O.floors.length){const t=O.floors[O.floors.length-1];const pm=box(O.Wc,PARAPET,t.dep,X(O.box.x0+O.Wc/2),O.Hf+PARAPET/2,Zs(O.s0+t.dep/2),col('--mass-top'),0.35);}
- // 코어
- if(O.floors.length){
-  const top=O.Hf+( (O.core.elevLaw||O.core.elevPrac)?2.8:1.2 );
-  const cw=Math.min(3,O.Wc*0.3), cd=Math.min(6,O.typ.dep*0.6);
-  const zN=Zs(O.s0+Math.min(O.typ.dep,O.floors[O.floors.length-1].dep)-cd/2-0.2);
-  const xs=O.core.cores===1?[O.box.x0+O.Wc/2]:[O.box.x0+cw/2+0.3,O.box.x1-cw/2-0.3];
-  xs.forEach(xx=>{const m=box(cw,top,cd,X(xx),top/2,zN,col('--core'),0.6);edges(m,ink)});
-  if(O.core.cores===2){const sp=label('계단 간격 '+f1(Math.abs(xs[1]-xs[0]))+'m (최소 '+f1(O.core.sepMin)+'m)',cssVar('--core'));sp.position.set(0,top+1.5,zN);G.add(sp)}
-  // 저수조·펌프 (지하)
-  if(O.n>3){const m=box(4,2.4,3,X(O.box.x0+O.Wc/2),-1.3,Zs(O.s0+1.8),col('--cut'),0.55);edges(m,ink);const sp=label('펌프실·수조',cssVar('--cut'));sp.position.set(X(O.box.x0+O.Wc/2)+2+LS*3,-1.6,Zs(O.s0+1.8));G.add(sp)}
- }
- // 외곽 볼륨 (점선)
+ // 외곽 볼륨 (최대 규모): 옅은 반투명 면 + 높이가 바뀌는 곳의 윤곽선. '이 모양으로 지으라'가 아니라 '이 안에서'로 읽히게
  if(O.env&&O.env.H>0){
-  const E=O.env; const pr=E.prof; // [h, 북쪽 끝 s]
-  const loop=[[E.s0,0],[E.s0,E.H],...pr.slice().reverse().map(([h,sn])=>[sn,h])];
-  const segs=[];
-  [E.x0,E.x1].forEach(x=>{for(let i=0;i<loop.length;i++){if(E.open&&i===1)continue;const a=loop[i],b=loop[(i+1)%loop.length];segs.push(new THREE.Vector3(X(x),a[1],Zs(a[0])),new THREE.Vector3(X(x),b[1],Zs(b[0])))}});
-  loop.forEach(([sv,h],i)=>{if(E.open&&(i===1||i===2))return;segs.push(new THREE.Vector3(X(E.x0),h,Zs(sv)),new THREE.Vector3(X(E.x1),h,Zs(sv)))});
-  const ls=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(segs),new THREE.LineDashedMaterial({color:col('--accent'),dashSize:0.5,gapSize:0.35}));
-  ls.computeLineDistances(); G.add(ls);
-  const el=label(E.open?'외곽 볼륨 (위로 이어짐)':'외곽 볼륨',cssVar('--accent'));el.position.set(X(E.x0)+LS*2,E.H+LS*0.9,Zs(E.prof[E.prof.length-1][1]));G.add(el);
- }
- // 일조 기준 (기준선에서 띄울 거리)
- if(O.daylight&&F){
-  // 대지 모양이 있으면: 높이마다 '진북 방향 거리 = 일조 거리'가 되는 선을 쌓은 면 (대지 안쪽만)
-  const Hm=Math.max(O.H+4,14), lv=[[0,1.5],[10,1.5]];
-  for(let h=10;h<=Hm+1e-9;h+=1){const d=LAW_NEW?(h<17?5:h/2):h/2; if(LAW_NEW&&Math.abs(h-17)<1e-9) lv.push([17,5]); lv.push([h,d]);}
-  const Ls=lv.map(([h,d])=>F.locus(d,O.dlExtra)), P=[], ln=[], V=(p,h)=>new THREE.Vector3(X(p[0]),h,Zs(p[1]));
-  for(let k=0;k<lv.length-1;k++){const A=Ls[k],B=Ls[k+1],h0=lv[k][0],h1=lv[k+1][0];
-   for(let i=0;i<A.length-1;i++){if(!(A[i]&&A[i+1]&&B[i]&&B[i+1]))continue;const a1=V(A[i],h0),b1=V(A[i+1],h0),b2=V(B[i+1],h1),a2=V(B[i],h1);P.push(a1,b1,b2,a1,b2,a2)}}
-  [0,1].forEach(k=>{const A=Ls[k];for(let i=0;i<A.length-1;i++)if(A[i]&&A[i+1])ln.push(V(A[i],lv[k][0]),V(A[i+1],lv[k][0]))});
-  {const A=Ls[Ls.length-1];for(let i=0;i<A.length-1;i++)if(A[i]&&A[i+1])ln.push(V(A[i],lv[lv.length-1][0]),V(A[i+1],lv[lv.length-1][0]))}
-  if(P.length){const geo=new THREE.BufferGeometry(); geo.setFromPoints(P);
-   G.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:col('--cut'),transparent:true,opacity:0.18,side:THREE.DoubleSide,depthWrite:false})));
-   G.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(ln),new THREE.LineBasicMaterial({color:col('--cut')})));
-   const A=Ls[1].filter(Boolean), m=A[Math.floor(A.length*0.8)]||A[0];
-   if(m){const sp=label('정북 일조 기준',cssVar('--cut'));sp.position.set(X(m[0]),12,Zs(m[1]));G.add(sp);}}
- } else if(O.daylight){
-  const Hm=Math.max(O.H+4,14); const zR=Ln/2-O.ref; const xL=-Lc/2,xR=Lc/2;
-  const v=(x,h,d)=>new THREE.Vector3(x,h,zR+d);
-  const quad=(a,b,c,d)=>[a,b,c,a,c,d];
-  let P,pts;
-  if(LAW_NEW){P=[...quad(v(xL,0,1.5),v(xR,0,1.5),v(xR,10,1.5),v(xL,10,1.5)),...quad(v(xL,10,5),v(xR,10,5),v(xR,Math.min(17,Hm),5),v(xL,Math.min(17,Hm),5))];
-   if(Hm>17) P.push(...quad(v(xL,17,8.5),v(xR,17,8.5),v(xR,Hm,Hm/2),v(xL,Hm,Hm/2)));
-   pts=[v(xL,0,1.5),v(xL,10,1.5),v(xL,10,5),v(xL,Math.min(17,Hm),5)]; if(Hm>17) pts.push(v(xL,17,8.5),v(xL,Hm,Hm/2));}
-  else{P=[...quad(v(xL,0,1.5),v(xR,0,1.5),v(xR,10,1.5),v(xL,10,1.5)),...quad(v(xL,10,5),v(xR,10,5),v(xR,Hm,Hm/2),v(xL,Hm,Hm/2))];
-   pts=[v(xL,0,1.5),v(xL,10,1.5),v(xL,10,5),v(xL,Hm,Hm/2)];}
-  const geo=new THREE.BufferGeometry(); geo.setFromPoints(P);
-  G.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:col('--cut'),transparent:true,opacity:0.18,side:THREE.DoubleSide,depthWrite:false})));
-  G.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:col('--cut')})));
-  const sp=label('정북 일조 기준',cssVar('--cut'));sp.position.set(xR-LS*2.5,Math.min(Hm,12),zR+5);G.add(sp);
+  const {Q,top,ground}=envQuads(O), V=p=>new THREE.Vector3(X(p[0]),p[2],Zs(p[1])), P=[];
+  Q.forEach(q=>{const a=V(q[0]),b=V(q[1]),c=V(q[2]),d=V(q[3]);P.push(a,b,c,a,c,d)});
+  const geo=new THREE.BufferGeometry();geo.setFromPoints(P);
+  G.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:col('--accent'),transparent:true,opacity:0.14,side:THREE.FrontSide,depthWrite:false})));
+  G.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(top.flatMap(([a,b])=>[V(a),V(b)])),new THREE.LineBasicMaterial({color:col('--accent'),transparent:true,opacity:0.85})));
+  const gl=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(ground.flatMap(([a,b])=>[V([a[0],a[1],0.04]),V([b[0],b[1],0.04])])),new THREE.LineDashedMaterial({color:col('--accent'),dashSize:0.5,gapSize:0.35}));gl.computeLineDistances();G.add(gl);
+  // 최고 높이 칸 위에 라벨
+  const E=O.env.E;let bi=0,bh=-1;for(let k=0;k<E.H.length;k++){const h=Math.min(E.H[k],O.env.Hdraw);if(E.H[k]>0&&h>bh+1e-6){bh=h;bi=k}}
+  const lx=((bi%E.nx)+0.5)*E.s, ly=(Math.floor(bi/E.nx)+0.5)*E.s;
+  const el=label(O.env.open?`외곽 볼륨 · ${f1(O.env.Hdraw)}m (위로 이어짐)`:`외곽 볼륨 · 최고 ${f1(O.env.H)}m`,cssVar('--accent'));el.position.set(X(lx),O.env.Hdraw+LS*1.2,Zs(ly));G.add(el);
  }
  if(F){ // 크기 비교와 방위: 도로 변 바깥에 사람·승용차, 진북 화살표
   const skin=col('--ink'), sg=F.segs[F.main], a=sg.a, b=sg.b, m=sg.n;
@@ -2201,7 +2289,7 @@ function draw(O,I){
   const cp=[pp[0]+u[0]*3.4,pp[1]+u[1]*3.4];
   const car=new THREE.Mesh(new THREE.BoxGeometry(4.7,1.5,1.9),new THREE.MeshLambertMaterial({color:col('--muted'),transparent:true,opacity:0.85}));car.position.set(X(cp[0]),0.75,Zs(cp[1]));car.rotation.y=Math.atan2(u[1],u[0]);G.add(car);
   const ce=new THREE.LineSegments(new THREE.EdgesGeometry(car.geometry),new THREE.LineBasicMaterial({color:ink}));ce.position.copy(car.position);ce.rotation.copy(car.rotation);G.add(ce);
-  const sl=label('사람 1.7m · 승용차 4.7m',cssVar('--muted'));sl.position.set(X(cp[0]),2.6,Zs(cp[1]));G.add(sl);
+  const sl=label('사람 1.7m · 승용차 4.7m',cssVar('--muted'));sl.position.set(X(cp[0]+u[0]*1.5),2.4+LS*0.9,Zs(cp[1]+u[1]*1.5));G.add(sl);
   const R0=Math.max(Lc,Ln)/2+3, c0=[Lc/2,Ln/2], t0=[c0[0]+F.north[0]*R0,c0[1]+F.north[1]*R0], t1=[c0[0]+F.north[0]*(R0+4),c0[1]+F.north[1]*(R0+4)];
   G.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(X(t0[0]),0.05,Zs(t0[1])),new THREE.Vector3(X(t1[0]),0.05,Zs(t1[1]))]),new THREE.LineBasicMaterial({color:ink})));
   const nl=label('북 N',cssVar('--ink'));nl.position.set(X(t1[0]+F.north[0]*1.5),0.8,Zs(t1[1]+F.north[1]*1.5));G.add(nl);
@@ -2221,9 +2309,8 @@ function draw(O,I){
  const rd=label('도로 '+f1(I.roadW)+'m',cssVar('--muted'));
  const rp={S:[Lc/2-LS*2,0.6,Ln/2+rw+LS],N:[-Lc/4,0.6,-Ln/2-rw-LS],E:[Lc/2+rw+3,0.6,0],W:[-Lc/2-rw-3,0.6,0]}[I.roadDir];rd.position.set(...rp);G.add(rd);
  }
- const hl=label(O.n+'층 · '+f1(O.H)+'m',cssVar('--ink'));hl.position.set(X(O.box.x0+O.Wc/2),O.H+LS*1.6,Zs(O.s0));G.add(hl);
  // 시점: 대지·건물 크기나 화면 비율이 바뀌면, 지금 보는 방향은 두고 전체가 들어오도록 거리와 중심을 다시 맞춤
- R3.dims=[Lc,Ln,Math.max(O.H,O.env?O.env.H:0)]; fit3D(false);
+ R3.dims=[Lc,Ln,Math.max(O.H,O.env?O.env.Hdraw:0)]; fit3D(false);
 }
 
 // ───────── 모델링 도구로 내보내기 (OBJ · IFC2X3, zip 묶음) ─────────
@@ -2236,28 +2323,15 @@ function meshes(O){
  if(O.F){O.F.polys.forEach((P,pi)=>{const n=P.length,v=[...P.map(([x,y])=>[x,y,-0.05]),...P.map(([x,y])=>[x,y,0])],f=[[...Array(n).keys()].reverse(),[...Array(n).keys()].map(i=>n+i)];
   for(let i=0;i<n;i++){const j=(i+1)%n;f.push([i,j,n+j,n+i])} M.push({name:O.F.nParts>1&&SITE&&SITE.parts[pi]?'대지 '+SITE.parts[pi].jibun:'대지',v,f,site:true});});}
  else M.push(boxM('대지',0,Lc,0,Ln,-0.05,0));
- if(O.env&&O.env.H>0){
-  const E=O.env, L=E.prof.slice().sort((a,b)=>a[0]-b[0]); // [h, 북쪽 끝 y]
-  const k=L.length, v=[], f=[];
-  // 0..k-1: 서쪽 면 남쪽 변 (s0,h), k..2k-1: 서쪽 면 북쪽 변 (N,h); 2k..: 동쪽 면 같은 순서
-  [E.x0,E.x1].forEach(x=>{L.forEach(([h])=>v.push([x,E.s0,h]));L.forEach(([h,n])=>v.push([x,n,h]))});
-  const S=i=>i, N=i=>k+i, o=2*k;
-  for(let i=0;i<k-1;i++){
-   f.push([S(i),S(i+1),N(i+1),N(i)]);              // 서쪽 끝면
-   f.push([o+S(i),o+N(i),o+N(i+1),o+S(i+1)]);      // 동쪽 끝면
-   f.push([S(i),o+S(i),o+S(i+1),S(i+1)]);          // 남쪽 면
-   f.push([N(i),N(i+1),o+N(i+1),o+N(i)]);          // 북쪽(일조) 면
-  }
-  f.push([S(0),N(0),o+N(0),o+S(0)]);                // 바닥
-  f.push([S(k-1),o+S(k-1),o+N(k-1),N(k-1)]);        // 윗면
-  M.push({name:'외곽 볼륨 (이 안에서 자유롭게)',v,f,env:true});
- }
- O.floors.forEach(fl=>{const z1=fl.h0+fl.fh; M.push(boxM(`예시 덩어리 ${fl.i}층${fl.pil?' (필로티)':''}`,O.box.x0,O.box.x1,O.s0,O.s0+fl.dep,fl.h0,z1))});
+ if(O.env&&O.env.H>0){const {Q}=envQuads(O), v=[], f=[], id=new Map();
+  const vi=p=>{const k=p.map(x=>x.toFixed(4)).join(',');if(!id.has(k)){id.set(k,v.length);v.push(p.slice())}return id.get(k)};
+  Q.forEach(q=>f.push(q.map(vi)));
+  M.push({name:'외곽 볼륨 (최대 규모, 이 안에서 자유롭게)',v,f,env:true,fixed:true});}
  // 대지 모양이 있으면 진북 기준으로 되돌리고 원점을 대지의 남서쪽 끝(최소 x·y)으로
  if(O.F){const a=-O.F.alpha,c=Math.cos(a),sn=Math.sin(a);M.forEach(m=>m.v=m.v.map(([x,y,z])=>[x*c-y*sn,x*sn+y*c,z]));
   const site=M.filter(m=>m.site).flatMap(m=>m.v);const mx=Math.min(...site.map(p=>p[0])),my=Math.min(...site.map(p=>p[1]));M.forEach(m=>m.v=m.v.map(([x,y,z])=>[x-mx,y-my,z]));}
  // 바깥쪽을 향하도록 면 방향 맞춤 (부호 있는 부피로 확인)
- M.forEach(m=>{let vol=0;m.f.forEach(face=>{for(let j=1;j<face.length-1;j++){const a=m.v[face[0]],b=m.v[face[j]],c=m.v[face[j+1]];vol+=(a[0]*(b[1]*c[2]-b[2]*c[1])-a[1]*(b[0]*c[2]-b[2]*c[0])+a[2]*(b[0]*c[1]-b[1]*c[0]))/6}});if(vol<0)m.f=m.f.map(x=>x.slice().reverse())});
+ M.forEach(m=>{if(m.fixed)return;let vol=0;m.f.forEach(face=>{for(let j=1;j<face.length-1;j++){const a=m.v[face[0]],b=m.v[face[j]],c=m.v[face[j+1]];vol+=(a[0]*(b[1]*c[2]-b[2]*c[1])-a[1]*(b[0]*c[2]-b[2]*c[0])+a[2]*(b[0]*c[1]-b[1]*c[0]))/6}});if(vol<0)m.f=m.f.map(x=>x.slice().reverse())});
  return M;
 }
 const n4=x=>(Math.round(x*1000)/1000).toFixed(3);
@@ -2323,12 +2397,12 @@ function exportFiles(){
  const read=[...head,'',
   '들어 있는 것',
   O.F?`- 대지: 브이월드 연속지적도 모양${O.F.nParts>1?`(필지 ${O.F.nParts}개, 필지마다 따로 담음)`:''}을 대장 면적 ${f0(I.area)}㎡에 맞게 줄인 것 (측량 성과가 아님)`:`- 대지: ${f1(O.Lc)} × ${f1(O.Ln)} m (직사각형 가정)`,
-  `- 외곽 볼륨: 띄움 거리 + 정북 일조 + 높이·층수 제한이 만드는 범위 (외벽 바깥면 기준)${O.env&&O.env.open?'. 높이 제한이 없어 건물 위 10m까지만 담았습니다':''}`,
-  `- 예시 덩어리: 최대 바닥 ${f0(O.fp)}㎡을 한 덩어리로 놓은 예, 층별 상자 ${O.floors.length}개 (지상 ${O.n}층, 연면적 ${f0(O.gfa)}㎡)`,
+  `- 외곽 볼륨: 띄움 거리 + 정북 일조 + 높이·층수 제한이 만드는 최대 범위 (외벽 바깥면 기준, ${f1(O.env.E.s*100)}cm 칸)${O.env&&O.env.open?`. 높이 제한이 없어 건축면적 한도로 채워 용적률에 닿는 높이(${f1(O.env.Hdraw)}m)까지만 담았습니다`:''}`,
+  `- 이 안에서 최대 건축면적 ${f0(O.fp)}㎡, 최대 연면적 ${f0(O.gfa)}㎡ 이하로 설계`,
   '','쓰는 법',
   '- Rhino·Blender·SketchUp(2025 이상): multiverse_envelope.obj 가져오기',
   '- Revit·ArchiCAD·SketchUp Pro: multiverse_envelope.ifc 열기 또는 링크 (IFC2X3)',
-  '- 외곽 볼륨 안에서 자유롭게 매스를 다시 세우고, 예시 덩어리는 지워도 됩니다.',
+  '- 외곽 볼륨은 한계를 보여 주는 참고 형상입니다. 이 안에서 자유롭게 매스를 세우세요.',
   '- 법령 기준: '+(LAW_NEW?'정북 일조 10~17m 구간 5m (개정 건축법 제61조 최소값, 미리보기)':'정북 일조 10m 초과 높이의 1/2 (조례 개정 확인 전 보수값)')];
  return [['multiverse_envelope.obj',toOBJ(M,head)],['multiverse_envelope.ifc',toIFC(M,O,I)],['읽어보기.txt',read.join('\r\n')]];
 }
