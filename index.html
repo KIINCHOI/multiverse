@@ -50,6 +50,10 @@ input[type=checkbox]{width:auto}
 .chk{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:13.5px}
 .hint{font-size:12px;color:var(--muted);line-height:1.5;margin:0}
 .hint b{color:var(--ink);font-weight:600}
+.vwrow{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+#vwbtn{font:inherit;font-size:13px;font-weight:600;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);border-radius:6px;padding:5px 11px;cursor:pointer;white-space:nowrap}
+#vwbtn:disabled{opacity:.6;cursor:wait}
+#vwmsg{flex:1 1 260px}
 .zonehit{font-size:12.5px;color:var(--accent);font-weight:600;margin:0}
 .stage{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
 .viewbar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line)}
@@ -161,7 +165,7 @@ details[open] summary::before{content:"－ "}
  .inhead{align-items:center}
  .inhead .hint{display:none}
  .intoggle{display:inline-block}
- .inputs.collapsed .ingrid,.inputs.collapsed .zonehit,.inputs.collapsed #zoneRange{display:none}
+ .inputs.collapsed .ingrid,.inputs.collapsed .vwrow,.inputs.collapsed .zonehit,.inputs.collapsed #zoneRange{display:none}
  .inputs.collapsed .insum{display:block}
  .viewbar .legend{font-size:11px;gap:4px 10px}
  .big{display:grid;grid-template-columns:1fr 1fr}
@@ -191,7 +195,7 @@ details[open] summary::before{content:"－ "}
   <h1>MULTIVERSE Plan</h1>
   <p class="lead">설계 자료로 받은 대지 정보를 넣으면, 이 땅에서 넘으면 안 되는 대략의 규모와 그 규모에 필요한 계단·주차·외벽 두께를 먼저 보여 줍니다. 숫자는 설계 출발점이며 정답이 아닙니다. 숫자를 누르면 법규·환경·설비·구조 탭에서 이유와 근거를 볼 수 있습니다.</p>
  </div>
- <div class="ex">처음 화면은 예시입니다. 서울 강북구 수유동의 한 필지를 토지이음 값(대지 515㎡, 제1종일반주거지역·자연경관지구)으로 넣었고, 대지 모양과 도로 폭은 가정한 값입니다.</div>
+ <div class="ex" id="extext">처음 화면은 예시입니다. 선문대 아산캠퍼스 옆 충남 아산시 탕정면 매곡리 697-1을 토지이음 값(대지 525㎡, 계획관리지역·자연취락지구)과 브이월드 연속지적도 모양으로 넣었고, 도로 폭은 가정한 값입니다. 주소를 바꾸고 "주소로 대지 불러오기"를 누르면 다른 필지도 불러옵니다.</div>
 </header>
 
 <form id="f" autocomplete="off" class="inputs">
@@ -217,6 +221,7 @@ details[open] summary::before{content:"－ "}
   <label for="flMax">층수 제한<input id="flMax" type="number" step="1" value="4"></label>
   <label for="hMax">높이 제한 m<input id="hMax" type="number" step="0.1" value="16"></label>
  </div>
+ <div class="vwrow"><button type="button" id="vwbtn">주소로 대지 불러오기</button><span class="hint" id="vwmsg" role="status"></span><button type="button" class="xlink" id="vwclr" hidden>직사각형 대지로 되돌리기</button></div>
  <p class="zonehit" id="zonehit"></p>
  <p class="hint" id="zoneRange"></p>
 </form>
@@ -258,7 +263,8 @@ details[open] summary::before{content:"－ "}
    <h3>이 도구가 가정하는 것</h3>
    <ul>
     <li>결과는 대지에 허용되는 최대 규모를 전제로 한 설계 출발 조건이며, 모든 근사치는 실제 허용치보다 작게(보수적으로) 나오도록 맞췄습니다. 인허가 판단을 대신하지 않습니다.</li>
-    <li>대지는 직사각형으로 보고, 건물은 도로 쪽으로 붙여 맨 위층이 일조 사선에 걸리지 않는 깊이로 놓습니다.</li>
+    <li>주소로 불러온 대지는 브이월드 연속지적도 모양을 대장 면적에 맞게 줄여 쓰고, 띄움 거리를 뺀 땅 안에 들어가는 가장 큰 직사각형에 건물을 놓습니다. 연속지적도는 측량 성과가 아니라서 실제 경계와 다를 수 있습니다. 직접 입력한 대지는 직사각형으로 봅니다. 건물은 도로 쪽으로 붙여 맨 위층이 일조 사선에 걸리지 않는 깊이로 놓습니다.</li>
+    <li>다세대주택은 채광창 벽의 이격 거리(서울 1m, 수원·대전 2m, 천안·아산과 그 밖 지역 4m)를 창 위치를 정하기 전이라 도로 외 모든 면에 적용합니다. 아산시 다세대의 대지 안의 공지는 건축선·인접 대지 1.5m입니다.</li>
     <li>용적률은 지상층만 셉니다. 공동주택은 1층을 필로티 주차로, 복합건축물은 1층을 근린생활시설로 봅니다.</li>
     <li>대지 안의 공지는 조례가 정하는 범위의 하한을 씁니다. 공동주택은 건축선·인접 대지 1m, 그 밖의 용도는 건축선 1m·인접 대지 0.5m, 바닥면적 1,000㎡ 이상 공연장은 건축선 3m·인접 대지 1.5m(상업지역 0.5m)입니다 (건축법 시행령 별표 2).</li>
     <li>공연장·학원·사무소는 같은 건축물 바닥면적 합계 500㎡를 기준으로 제2종 근린생활시설과 본래 용도를 자동으로 나눕니다 (건축법 시행령 별표 1).</li>
@@ -1344,6 +1350,7 @@ details[open] summary::before{content:"－ "}
 } )();
 
 </script>
+<script src="vworld-key.js"></script>
 <script>
 // ───────── 기준 데이터 ─────────
 // 국토계획법 시행령 제84조(건폐율)·제85조(용적률) 상한과 범위. floors: 시행령 별표 층수 제한
@@ -1354,11 +1361,12 @@ const ZONES={
  '준주거지역':{bcr:70,far:500,farMin:200,floors:null,res:false},
  '근린상업지역':{bcr:70,far:900,farMin:200,floors:null,res:false,com:true},
  '일반상업지역':{bcr:80,far:1300,farMin:200,floors:null,res:false,com:true},
- '자연녹지지역':{bcr:20,far:100,farMin:50,floors:4,res:false}
+ '자연녹지지역':{bcr:20,far:100,farMin:50,floors:4,res:false},
+ '계획관리지역':{bcr:40,far:100,farMin:50,floors:4,res:false,rural:true} // floors: 별표 20 제1호가목 (4층 초과 금지)
 };
 // 용도지역별 허용 용도 — 국토계획법 시행령 별표 4·5·6(일반주거), 7(준주거), 9·10(상업), 17(자연녹지). 2026. 10. 법규 검토 회신으로 원문 대조
 // [판정, 설명, 면적 상한㎡, 상한 미만(true)/이하(false)] · 판정: ok 허용 / cond 조례로 허용 / ban 조례로 금지할 수 있음 / dist 거리 조건부 / no 불가
-const ZK=['제1종일반주거지역','제2종일반주거지역','제3종일반주거지역','준주거지역','근린상업지역','일반상업지역','자연녹지지역'];
+const ZK=['제1종일반주거지역','제2종일반주거지역','제3종일반주거지역','준주거지역','근린상업지역','일반상업지역','자연녹지지역','계획관리지역'];
 const RULE_ROWS={
  '단독':[['ok','단독주택 허용 (별표 4)'],['ok','단독주택 허용 (별표 5)'],['ok','단독주택 허용 (별표 6)'],['ok','단독주택 허용 (별표 7)'],['ok','단독주택 허용 (별표 10)'],['ban','일반상업지역의 단독주택은 조례로 금지할 수 있습니다 (별표 9 제2호)'],['ok','단독주택 허용 (별표 17)']],
  '공동':[['ok','공동주택(아파트 제외) 허용 (별표 4 제1호)'],['ok','공동주택 허용 (별표 5 제1호)'],['ok','공동주택 허용 (별표 6 제1호)'],['ok','공동주택 허용 (별표 7)'],['ban','공동주택만으로 된 건물은 조례로 금지할 수 있습니다. 공동주택 부분이 연면적의 90% 미만인 복합건물은 제외 (별표 10 제2호가목)'],['ban','공동주택만으로 된 건물은 조례로 금지할 수 있습니다. 공동주택 부분이 연면적의 90% 미만인 복합건물은 제외 (별표 9 제2호나목)'],['cond','조례로 허용하는 경우만, 아파트 제외 (별표 17 제2호가목)']],
@@ -1372,6 +1380,19 @@ const RULE_ROWS={
  '업무':[['no','업무시설은 지을 수 없습니다. 오피스텔만 조례로 3천㎡ 미만 허용 (별표 4 제2호자목)'],['cond','조례로 허용하는 경우만, 오피스텔·금융업소·사무소·공공업무시설 3천㎡ 미만 (별표 5 제2호아목)',3000,true],['cond','조례로 허용하는 경우만, 3천㎡ 이하 (별표 6 제2호아목)',3000,false],['ok','허용 (별표 7)'],['ok','허용 (별표 10)'],['ok','허용 (별표 9)'],['no','업무시설은 지을 수 없습니다 (별표 17)']],
  '숙박':[['no','숙박시설은 지을 수 없습니다 (별표 4)'],['no','숙박시설은 지을 수 없습니다 (별표 5)'],['no','숙박시설은 지을 수 없습니다 (별표 6)'],['no','일반숙박시설은 지을 수 없습니다. 생활숙박시설만 주택 밀집지역과 차단되거나 거리 밖일 때 허용되고, 그 경우에도 조례로 금지할 수 있음 (별표 7)'],['dist','공원·녹지·지형지물로 주거지역과 차단되거나, 주거지역에서 조례로 정한 거리 밖일 때만 지을 수 있습니다 (별표 10 제1호나목)'],['dist','공원·녹지·지형지물로 주거지역과 차단되거나, 주거지역에서 조례로 정한 거리 밖일 때만 지을 수 있습니다 (별표 9 제1호가목)'],['no','관광지·관광단지 안에서만 조례로 허용합니다 (별표 17 제2호자목)']]
 };
+// 계획관리지역 — 국토계획법 시행령 별표 20 (건축할 수 없는 건축물: 제1호 금지, 제2호 조례로 금지 가능). 2026. 10. 29. 원문 대조
+const RR_PM={'단독':['ok','단독주택 허용 (별표 20에 금지 없음)'],
+ '공동':['ban','아파트는 지을 수 없습니다 (별표 20 제1호나목·제2호나목)'],
+ '근생':['ok','일반 점포는 허용. 휴게음식점·제과점·일반음식점은 상수원 주변 등 정해진 지역에서 금지 (별표 20 제1호다목·라목)'],
+ '근생2':['ok','제2종 근린생활시설(공연장·학원·사무소)은 별표 20의 금지 목록에 없습니다'],
+ '공연장':['ban','문화 및 집회시설이 해당합니다 (별표 20 제2호마목)'],
+ '전시장':['ban','문화 및 집회시설이 해당합니다 (별표 20 제2호마목)'],
+ '학원':['ban','교육연구시설 중 학원이 해당합니다 (별표 20 제2호자목)'],
+ '연구소':['ban','교육연구시설 중 연구소가 해당합니다 (별표 20 제2호자목)'],
+ '노유자':['ok','노유자시설 허용 (별표 20에 금지 없음)'],
+ '업무':['no','업무시설은 지을 수 없습니다 (별표 20 제1호바목). 500㎡ 미만 사무소는 제2종 근린생활시설입니다'],
+ '숙박':['ban','상수원 주변 등 정해진 지역에서는 금지됩니다 (별표 20 제1호사목·제2호카목)']};
+Object.keys(RULE_ROWS).forEach(k=>{if(RULE_ROWS[k].length===7&&RR_PM[k]) RULE_ROWS[k].push(RR_PM[k])});
 const ruleOf=(zone,zk)=>{const r=RULE_ROWS[zk]; const i=ZK.indexOf(zone); return (r&&i>=0)?r[i]:['ok','']};
 const RULE_HEAD={no:'지을 수 없는 용도입니다. ',cond:'조례로 허용해야 지을 수 있습니다. ',ban:'기본은 허용이지만 조례로 금지할 수 있습니다. ',dist:'거리 조건을 만족해야 지을 수 있습니다. '};
 // 별표1 외벽(외기 직접) 열관류율 [중부1,중부2,남부,제주] — 공동주택 / 공동주택 외
@@ -1404,6 +1425,116 @@ function regionOf(q){
   for(const c of cs) if(rest.startsWith(c)) return {label:pv+' '+c,z:zoneOf(pv,c)}; }
  return null;
 }
+
+
+// ───────── 지역 조례 (2026. 10. 29. 다섯 도시 조례 대조, 법규 검토 문서 15~17절) ─────────
+// 다세대 채광 이격(건축법 시행령 제86조③, 조례): 창이 어느 면에 날지 정하기 전이라 도로 외 모든 면에 적용 (보수적)
+const LIGHT={서울:1,수원:2,대전:2,천안:4,아산:4};
+function cityOf(q){q=(q||'').replace(/\s+/g,'');for(const c of ['서울','수원','대전','천안','아산']) if(q.includes(c)) return c; return null}
+function isMyeon(q){return /[가-힣]+면(\s|\d|$)/.test(q||'')}
+
+// ───────── 대지 모양 (브이월드 연속지적도) ─────────
+// SITE.poly: 진북 기준 m 좌표(x 동쪽, y 북쪽), SITE.road: 도로와 맞닿은 변 번호(변 i = 꼭짓점 i → i+1)
+let SITE=null, SFC=null;
+const pArea=P=>{let a=0;for(let i=0;i<P.length;i++){const q=P[(i+1)%P.length];a+=P[i][0]*q[1]-q[0]*P[i][1]}return a/2};
+const pCen=P=>{let x=0,y=0;P.forEach(p=>{x+=p[0];y+=p[1]});return[x/P.length,y/P.length]};
+function inPoly(x,y,P){let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])c=!c}return c}
+function dSeg(x,y,a,b){const dx=b[0]-a[0],dy=b[1]-a[1];const L=dx*dx+dy*dy;let t=L?((x-a[0])*dx+(y-a[1])*dy)/L:0;t=Math.max(0,Math.min(1,t));return Math.hypot(x-a[0]-t*dx,y-a[1]-t*dy)}
+const DIRV={S:[0,-1],N:[0,1],E:[1,0],W:[-1,0]};
+// 대장 면적으로 줄인 모양을 도로가 아래(남)로 오게 돌린 좌표계에 놓고, 띄움 거리를 뺀 땅 안에 들어가는 가장 큰 직사각형을 찾음
+// 정북 일조가 걸리는 지역은 돌리지 않음(진북 기준). 래스터 격자 중심으로 판정하므로 결과는 실제보다 약간 작게 나옴
+function siteFrame(I,dRoad,dAdj,daylight){
+ const key=[SITE.id,SITE.road.join(','),I.area,I.roadDir,dRoad,dAdj,daylight].join('|'); if(SFC&&SFC.key===key) return SFC.F;
+ let P=SITE.poly.map(p=>p.slice()); const n=P.length; let R=SITE.road.slice();
+ if(pArea(P)<0){P.reverse(); R=R.map(i=>(n-2-i+2*n)%n);} // 반시계 방향으로
+ const a0=Math.abs(pArea(P)), k=Math.sqrt(I.area/a0), c0=pCen(P);
+ P=P.map(([x,y])=>[c0[0]+(x-c0[0])*k,c0[1]+(y-c0[1])*k]);
+ const E=i=>[P[i],P[(i+1)%n]];
+ const nrm=i=>{const [a,b]=E(i);const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;return[dy/L,-dx/L]};
+ const len=i=>{const [a,b]=E(i);return Math.hypot(b[0]-a[0],b[1]-a[1])};
+ let auto=R.length>0;
+ if(!R.length){const v=DIRV[I.roadDir]||DIRV.S; const sc=[...Array(n).keys()].map(i=>{const m=nrm(i);return m[0]*v[0]+m[1]*v[1]});
+  R=[...Array(n).keys()].filter(i=>sc[i]>0.6&&len(i)>0.5); if(!R.length) R=[sc.indexOf(Math.max(...sc))];}
+ const main=R.reduce((b,i)=>len(i)>len(b)?i:b,R[0]);
+ const mn=nrm(main); const alpha=daylight?0:(-Math.PI/2-Math.atan2(mn[1],mn[0]));
+ const ca=Math.cos(alpha), sa=Math.sin(alpha);
+ P=P.map(([x,y])=>[x*ca-y*sa,x*sa+y*ca]);
+ const mx=Math.min(...P.map(p=>p[0])), my=Math.min(...P.map(p=>p[1]));
+ P=P.map(([x,y])=>[x-mx,y-my]);
+ const Lc=Math.max(...P.map(p=>p[0])), Ln=Math.max(...P.map(p=>p[1]));
+ const rn=[mn[0]*ca-mn[1]*sa,mn[0]*sa+mn[1]*ca];
+ const roadDir=Math.abs(rn[1])>=Math.abs(rn[0])?(rn[1]<0?'S':'N'):(rn[0]>0?'E':'W');
+ const d=[...Array(n).keys()].map(i=>R.includes(i)?dRoad:dAdj);
+ // 격자에서 지을 수 있는 칸 → 히스토그램으로 최대 직사각형
+ const g=Math.max(0.1,Math.max(Lc,Ln)/420), nx=Math.max(1,Math.floor(Lc/g)), ny=Math.max(1,Math.floor(Ln/g));
+ const h=new Int32Array(nx); let best={a:0};
+ for(let r=0;r<ny;r++){const y=(r+0.5)*g;
+  for(let c=0;c<nx;c++){const x=(c+0.5)*g; let ok=inPoly(x,y,P);
+   if(ok) for(let i=0;i<n;i++){const [a,b]=E(i); if(dSeg(x,y,a,b)<d[i]){ok=false;break}}
+   h[c]=ok?h[c]+1:0;}
+  const st=[]; for(let c=0;c<=nx;c++){const hc=c<nx?h[c]:0; let s=c;
+   while(st.length&&st[st.length-1][1]>=hc){const [sc,sh]=st.pop(); const w=c-sc; const ar=(w-1)*(sh-1); if(sh>0&&w>0&&ar>best.a) best={a:ar,c0:sc,c1:c-1,r1:r,r0:r-sh+1}; s=sc;}
+   st.push([s,hc]);}
+ }
+ const rect=best.a>0?{x0:(best.c0+0.5)*g,x1:(best.c1+0.5)*g,y0:(best.r0+0.5)*g,y1:(best.r1+0.5)*g}:{x0:Lc/2,x1:Lc/2,y0:Ln/2,y1:Ln/2};
+ const topAt=x=>{let t=-Infinity;for(let i=0;i<n;i++){const [a,b]=E(i);if((a[0]<=x&&b[0]>x)||(b[0]<=x&&a[0]>x)){const yy=a[1]+(x-a[0])*(b[1]-a[1])/(b[0]-a[0]);if(yy>t)t=yy}}return t===-Infinity?Ln:t};
+ const refTop=(x0,x1)=>{let m=Infinity;for(let x=x0;x<=x1+1e-9;x+=g){m=Math.min(m,topAt(x))}return m===Infinity?Ln:m};
+ const front=R.reduce((t,i)=>t+len(i),0);
+ const north=[-sa,ca]; // 진북 방향 (이 좌표계에서)
+ const F={P,R,d,rect,Lc,Ln,alpha,front,roadDir,main,auto,g,refTop,north,nrm:i=>{const m=nrm(i);return[m[0]*ca-m[1]*sa,m[0]*sa+m[1]*ca]}};
+ SFC={key,F}; return F;
+}
+
+// ───────── 브이월드 (주소 → 필지 경계·면적·용도지역) ─────────
+// 인증키는 같은 폴더의 vworld-key.js(window.VW_KEY)에서 읽음. 브이월드는 다른 사이트의 직접 호출을 막아 JSONP로 부름
+const VW=(()=>{
+ let n=0;
+ const jsonp=url=>new Promise((res,rej)=>{const cb='__mv'+(++n);const s=document.createElement('script');
+  const t=setTimeout(()=>{done();rej(new Error('브이월드가 응답하지 않습니다'))},15000);
+  function done(){clearTimeout(t);try{delete window[cb]}catch(e){window[cb]=undefined}s.remove()}
+  window[cb]=d=>{done();res(d)};s.onerror=()=>{done();rej(new Error('브이월드에 연결하지 못했습니다'))};s.src=url+'&callback='+cb;document.head.appendChild(s)});
+ const K=()=>`key=${encodeURIComponent(window.VW_KEY||'')}&domain=${encodeURIComponent(location.hostname)}`;
+ const err=d=>{const r=d&&d.response;return r&&r.status&&r.status!=='OK'&&r.status!=='NOT_FOUND'?(r.error&&r.error.text)||r.status:null};
+ async function search(q,cat){const d=await jsonp(`https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:4326&size=1&page=1&type=address&category=${cat}&format=json&errorformat=json&query=${encodeURIComponent(q)}&${K()}`);
+  const e=err(d); if(e) throw new Error(e); const it=d.response&&d.response.result&&d.response.result.items&&d.response.result.items[0]; return it||null}
+ async function feats(filter,size){const d=await jsonp(`https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LP_PA_CBND_BUBUN&format=json&errorformat=json&geometry=true&attribute=true&crs=EPSG:4326&size=${size||1}&${filter}&${K()}`);
+  const e=err(d); if(e) throw new Error(e); const fc=d.response&&d.response.result&&d.response.result.featureCollection; return (fc&&fc.features)||[]}
+ const ring=g=>{let c=g.coordinates;while(Array.isArray(c[0][0]))c=c[0];c=c.slice();const a=c[0],z=c[c.length-1];if(a[0]===z[0]&&a[1]===z[1])c.pop();return c};
+ async function landChar(pnu){const y=new Date().getFullYear();for(const sy of [y,y-1,y-2]){try{const d=await jsonp(`https://api.vworld.kr/ned/data/getLandCharacteristics?pnu=${pnu}&stdrYear=${sy}&format=json&numOfRows=10&pageNo=1&${K()}`);const f=d&&d.landCharacteristicss&&d.landCharacteristicss.field;if(f&&f.length)return f[0]}catch(e){}}return null}
+ async function landUse(pnu){try{const d=await jsonp(`https://api.vworld.kr/ned/data/getLandUseAttr?pnu=${pnu}&format=json&numOfRows=100&pageNo=1&${K()}`);const f=d&&d.landUses&&d.landUses.field;return f?[...new Set(f.map(x=>x.prposAreaDstrcCodeNm).filter(Boolean))]:[]}catch(e){return[]}}
+ async function load(q){
+  if(!window.VW_KEY) throw new Error('브이월드 인증키 파일(vworld-key.js)이 없습니다');
+  let it=await search(q,'parcel'), ft=null;
+  if(it&&it.id&&/^\d{19}$/.test(it.id)) ft=(await feats('attrFilter=pnu:=:'+it.id))[0];
+  if(!ft){ if(!it) it=await search(q,'road'); if(!it||!it.point) throw new Error('주소에 맞는 필지를 찾지 못했습니다');
+   ft=(await feats(`geomFilter=POINT(${it.point.x} ${it.point.y})`))[0]; }
+  if(!ft) throw new Error('필지 경계를 받지 못했습니다');
+  const pr=ft.properties||{}, pnu=pr.pnu; const RG=ring(ft.geometry);
+  // 진북 기준 m 좌표 (위도별 1° 길이로 평면 근사)
+  let lo=0,la=0;RG.forEach(p=>{lo+=p[0];la+=p[1]});lo/=RG.length;la/=RG.length;const f=la*Math.PI/180;
+  const my=111132.92-559.82*Math.cos(2*f)+1.175*Math.cos(4*f), mx=111412.84*Math.cos(f)-93.5*Math.cos(3*f);
+  const toM=p=>[(p[0]-lo)*mx,(p[1]-la)*my]; const poly=RG.map(toM);
+  // 둘레의 지목 '도' 필지와 맞닿은 변 = 도로 변
+  let road=[];
+  try{const xs=RG.map(p=>p[0]),ys=RG.map(p=>p[1]),e=0.00025;
+   const nb=await feats(`geomFilter=BOX(${Math.min(...xs)-e},${Math.min(...ys)-e},${Math.max(...xs)+e},${Math.max(...ys)+e})`,100);
+   const roads=nb.filter(x=>x.properties&&x.properties.pnu!==pnu&&/\s?도$/.test(String(x.properties.jibun||'').trim())).map(x=>ring(x.geometry).map(toM));
+   for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<0.3)continue;
+    const pts=[0.25,0.5,0.75].map(t=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]);
+    if(roads.some(rp=>pts.filter(([x,y])=>{let m=Infinity;for(let j=0;j<rp.length;j++)m=Math.min(m,dSeg(x,y,rp[j],rp[(j+1)%rp.length]));return m<0.8}).length>=2)) road.push(i);}
+  }catch(e){}
+  const [lc,lu]=await Promise.all([landChar(pnu),landUse(pnu)]);
+  return {pnu,addr:pr.addr||q,jibun:pr.jibun||'',poly,road,area:lc?parseFloat(lc.lndpclAr):null,zone:lc?lc.prposArea1Nm:null,roadCls:lc?lc.roadSideCodeNm:null,zones:lu};
+ }
+ return {load};
+})();
+// 도로접면(토지특성) → 도로 폭 가정: 구간의 아래쪽 값. 세로(가)는 8m 미만이라 4m로 가정(확인 필요), 세로(불)는 차가 못 다녀 2m
+function roadWOf(c){c=c||'';if(/광대/.test(c))return 25;if(/중로/.test(c))return 12;if(/소로/.test(c))return 8;if(/세로.*불/.test(c))return 2;if(/세로/.test(c))return 4;if(/맹지/.test(c))return 0;return null}
+
+// 예시 대지: 충남 아산시 탕정면 매곡리 697-1 (2026. 10. 29. 브이월드 LP_PA_CBND_BUBUN 수신, 진북 기준 m)
+const EX_ASAN={id:'4420033025106970001',pnu:'4420033025106970001',addr:'충청남도 아산시 탕정면 매곡리 697-1',src:'예시',
+ poly:[[0,13.53],[1.01,16.77],[9.46,29.54],[16.67,35.95],[22.03,36.53],[24.64,33.3],[28.41,28.66],[26.75,26.37],[16.97,6.87],[15.07,3.2],[10.78,0]],
+ road:[4,7,8],roadCls:'세로한면(가)',zones:['계획관리지역','자연취락지구','성장관리계획구역','상대보호구역','가축사육제한구역'],areaCad:551.6};
 
 // ───────── 입력 ─────────
 const $=id=>document.getElementById(id);
@@ -1459,16 +1590,25 @@ function computeOnce(I){
  const Uw=(apt?U_WALL.apt:U_WALL.non)[z]; const R=1/Uw-RS_WALL; const tIns=Math.ceil(R*I.lam*1000/5)*5;
  const tS=parseInt(I.wallS); const tIn=20; const tot=tS+tIns+I.fin+tIn;
  const off=(tIns+I.fin)/1000+tS/2000; out.off=off;
- // 대지
- const depth=I.area/I.front; const NS=(I.roadDir==='S'||I.roadDir==='N');
- const Ln=NS?depth:I.front, Lc=NS?I.front:depth; out.Ln=Ln; out.Lc=Lc; out.depth=depth;
+ // 대지 · 지역 조례 (다세대 공지·채광)
+ const city=cityOf(I.addr); out.city=city; let lineSet=I.lineSet, adj=I.adj; out.lightD=0;
+ if(apt){ if(city==='아산'){lineSet=Math.max(lineSet,1.5);adj=Math.max(adj,1.5)} const LD=LIGHT[city]??4; out.lightD=LD; adj=Math.max(adj,LD); }
+ out.lineSet=lineSet; out.adjEff=adj;
  const rs=I.roadW<4?(4-I.roadW)/2:0; out.rs=rs;
- const A=I.area-rs*I.front; out.A=A; // 건축선과 도로 사이 땅은 대지면적에서 뺌
- // 이격: 도로 쪽 = 건축선 후퇴 + 대지 안의 공지(건축선에서), 나머지 = 인접대지경계선에서
- const sb={S:I.adj,N:I.adj,E:I.adj,W:I.adj}; sb[I.roadDir]=rs+I.lineSet; out.sb=sb;
- const sS=sb.S, sNlim=Ln-sb.N, xW=sb.W, xE=Lc-sb.E; const Wb=Math.max(0,xE-xW);
- // 정북 일조 기준선: 북쪽이 도로면 도로 반대편 경계선(공동주택은 도로 중심선)
- const daylight=Z.res; const ref=I.roadDir==='N'?Ln+(apt?I.roadW/2:I.roadW):Ln;
+ const daylight=Z.res;
+ let Ln,Lc,depth,front=I.front,sS,sNlim,xW,xE,ref,roadDir=I.roadDir;
+ if(SITE){ const F=siteFrame(I,rs+lineSet,adj,daylight); out.F=F; Lc=F.Lc; Ln=F.Ln; depth=Ln; front=F.front; roadDir=F.roadDir;
+  sS=F.rect.y0; sNlim=F.rect.y1; xW=F.rect.x0; xE=F.rect.x1; ref=daylight?F.refTop(xW,xE):Ln; }
+ else { depth=I.area/I.front; const ns=(I.roadDir==='S'||I.roadDir==='N'); Ln=ns?depth:I.front; Lc=ns?I.front:depth;
+  // 이격: 도로 쪽 = 건축선 후퇴 + 대지 안의 공지(건축선에서), 나머지 = 인접대지경계선에서
+  const sb={S:adj,N:adj,E:adj,W:adj}; sb[I.roadDir]=rs+lineSet; out.sb=sb;
+  sS=sb.S; sNlim=Ln-sb.N; xW=sb.W; xE=Lc-sb.E;
+  // 정북 일조 기준선: 북쪽이 도로면 도로 반대편 경계선(공동주택은 도로 중심선)
+  ref=I.roadDir==='N'?Ln+(apt?I.roadW/2:I.roadW):Ln; }
+ const NS=(roadDir==='S'||roadDir==='N');
+ out.Ln=Ln; out.Lc=Lc; out.depth=depth; out.front=front; out.roadDir=roadDir;
+ const A=I.area-rs*front; out.A=A; // 건축선과 도로 사이 땅은 대지면적에서 뺌
+ const Wb=Math.max(0,xE-xW);
  out.daylight=daylight; out.ref=ref;
  // 건폐율·용적률
  const bcrIn=[I.bcrZ,I.bcrD].filter(v=>v!=null&&v>0);
@@ -1529,14 +1669,19 @@ function computeOnce(I){
  if(apt){const hf=usable.filter(f=>!(D.mix&&f.i===1)).length; out.kind=hf>=5?'아파트':mainA>660?'연립주택':'다세대주택'; out.houseFloors=hf;}
  // 용도지역에서 지을 수 있는 용도 (국토계획법 시행령 별표 4~17)
  let UR=small?URs:URb;
- if(apt&&out.kind==='아파트'&&(I.zone==='제1종일반주거지역'||I.zone==='자연녹지지역')) UR=['no','주택 층수가 5개 층 이상이면 아파트인데, 이 용도지역에서는 아파트를 지을 수 없습니다 (별표 4·17)'];
+ if(apt&&out.kind==='아파트'&&(I.zone==='제1종일반주거지역'||I.zone==='자연녹지지역'||I.zone==='계획관리지역')) UR=['no','주택 층수가 5개 층 이상이면 아파트인데, 이 용도지역에서는 아파트를 지을 수 없습니다 (별표 4·17·20)'];
  if(D.mix&&apt&&UR[0]==='ban'&&mainA/gfa<0.9){out.info.push(`공동주택 부분이 연면적의 ${f0(mainA/gfa*100)}%로 90% 미만이라, 상업지역의 "공동주택만으로 된 건물" 조례 금지 대상에서 빠집니다 (별표 9·10).`);UR=['ok','']}
  out.useRule={s:UR[0],t:UR[1]};
  if(UR[0]!=='ok'&&RULE_HEAD[UR[0]]) out.warn.push(RULE_HEAD[UR[0]]+UR[1]);
  if(out.convCap) out.info.push(`이 용도지역에서는 500㎡ 이상 ${D.name}를 지을 수 없어, 500㎡ 미만(${D.conv.small})으로 줄여 계산했습니다.`);
  else if(D.conv) out.info.push(`${D.mix?'2층 이상 부분':'바닥면적 합계'} ${f0(mainA)}㎡ → <b>${small?D.conv.small:(D.conv.bigName||D.name)}</b>. ${D.conv.why}`);
- if(I.front<2) out.warn.push('대지가 도로에 2m 이상 접해야 건축할 수 있습니다 (건축법 제44조).');
- if(gfa>=2000&&(I.roadW<6||I.front<4)) out.warn.push('연면적 2천㎡ 이상은 너비 6m 이상 도로에 4m 이상 접해야 합니다 (건축법 시행령 제28조).');
+ const myeon=!!(Z.rural&&isMyeon(I.addr)); out.myeon=myeon; const exW=myeon?' 면 지역이라 건축법 접도 규정은 적용되지 않지만, 개발행위허가의 진입도로 조건으로 같은 기준을 봅니다 (실무 기준).':'';
+ if(front<2) out.warn.push('대지가 도로에 2m 이상 접해야 건축할 수 있습니다 (건축법 제44조).'+exW);
+ if(gfa>=2000&&(I.roadW<6||front<4)) out.warn.push('연면적 2천㎡ 이상은 너비 6m 이상 도로에 4m 이상 접해야 합니다 (건축법 시행령 제28조).'+exW);
+ if(myeon) out.info.push('면 지역의 계획관리지역이라 건축법 제44조~제47조(접도·건축선)는 적용되지 않습니다(건축법 제3조②). 다만 건축허가 때 개발행위허가의 진입도로 조건을 함께 보므로, 이 도구는 접도와 건축선 후퇴를 같은 기준으로 계산합니다 (실무 기준).');
+ if(SITE&&SITE.zones){const zs=SITE.zones;
+  if(zs.includes('자연취락지구')) out.info.push('자연취락지구: 지을 수 있는 용도와 층수(4층 이하)를 국토계획법 시행령 별표 23과 조례가 따로 정합니다.');
+  if(zs.includes('성장관리계획구역')&&I.zone==='계획관리지역') out.info.push('성장관리계획구역: 성장관리계획이 수립된 계획관리지역은 용적률을 125%까지 완화할 수 있습니다. 실제 값과 조건은 그 계획의 지침을 확인하세요.');}
  // 코어
  const walkLim=50, walkCenter=Wo/2+typ.dep/2, liv=typ.area*(D.live||0.8);
  const live=D.live||0.8;
@@ -1637,21 +1782,22 @@ function render(){
  $('gov').innerHTML=gtxt.join(' ');
  $('warnbox').innerHTML=O.warn.join('<br>');
  $('infobox').innerHTML=O.info.length?`<b class="h">이 용도·규모에서 알아 둘 것</b><ul>${O.info.map(t=>`<li>${t}</li>`).join('')}</ul>`:'';
- $('insum').innerHTML=`${(I.addr||'주소 없음').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))} · <b>${O.useName||I.use}</b> · ${I.zone.replace('지역','')} · 대지 ${f0(I.area)}㎡ · 도로 ${{S:'남',N:'북',E:'동',W:'서'}[I.roadDir]} ${f1(I.roadW)}m`;
+ $('insum').innerHTML=`${(I.addr||'주소 없음').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))} · <b>${O.useName||I.use}</b> · ${I.zone.replace('지역','')} · 대지 ${f0(I.area)}㎡${O.F?' (모양 있음)':''} · 도로 ${O.F?'':{S:'남',N:'북',E:'동',W:'서'}[I.roadDir]+' '}${f1(I.roadW)}m`;
+ if(O.F) $('front').value=(Math.round(O.front*10)/10);
 
  const C=[];
  // 1 규모
  const pilS=O.floors.some(f=>f.pil);
  C.push(`<article class="card" id="d-scale"><h2>규모 <small>최대 매스 기준</small></h2>
- <dl class="kv"><dt>대지 (가로 × 깊이)</dt><dd>${f1(O.Lc)} × ${f1(O.Ln)} m</dd>${O.rs>0?`<dt>도로로 내주는 땅을 뺀 대지면적</dt><dd>${f0(O.A)} ㎡</dd>`:''}<dt>건축면적</dt><dd>${f0(O.fp)} ㎡</dd><dt>층별 바닥면적</dt><dd>${O.floors.map(f=>f.pil?'필로티':f0(f.area)).join(' / ')}</dd><dt>연면적 (지상)</dt><dd>${f0(O.gfa)} ㎡</dd><dt>높이 (막힌 난간 포함)</dt><dd>${f1(O.H)} m</dd></dl>
- <p class="say">${O.cutByLight?'북쪽 이웃에 해가 들도록 높은 층은 북쪽에서 더 물러납니다. 그래서 윗층 바닥이 줄어듭니다.':O.Z.res?'이 규모에서는 정북 일조에 걸리지 않습니다.':'이 용도지역은 정북 일조 기준을 적용하지 않습니다.'}${I.roadDir==='N'&&O.Z.res?' 북쪽이 도로라 도로 '+(O.wall.apt?'중심선':'반대편 경계선')+'에서부터 잽니다.':''}${O.kind?` 주택 층수 ${O.houseFloors}개 층으로 법적 분류는 <b>${O.kind}</b>입니다.`:''}${pilS?' 1층 필로티는 층수 제한(4층 이하)에 들어갑니다. 단지형 연립·다세대만 예외입니다.':''}</p>
+ <dl class="kv">${O.F?`<dt>대지 모양</dt><dd>연속지적도 ${O.F.P.length}각형, 대장 ${f0(I.area)}㎡로 맞춤</dd><dt>건물을 놓을 수 있는 직사각형</dt><dd>${f1(O.F.rect.x1-O.F.rect.x0)} × ${f1(O.F.rect.y1-O.F.rect.y0)} m</dd>`:`<dt>대지 (가로 × 깊이)</dt><dd>${f1(O.Lc)} × ${f1(O.Ln)} m</dd>`}${O.rs>0?`<dt>도로로 내주는 땅을 뺀 대지면적</dt><dd>${f0(O.A)} ㎡</dd>`:''}<dt>건축면적</dt><dd>${f0(O.fp)} ㎡</dd><dt>층별 바닥면적</dt><dd>${O.floors.map(f=>f.pil?'필로티':f0(f.area)).join(' / ')}</dd><dt>연면적 (지상)</dt><dd>${f0(O.gfa)} ㎡</dd><dt>높이 (막힌 난간 포함)</dt><dd>${f1(O.H)} m</dd></dl>
+ <p class="say">${O.cutByLight?'북쪽 이웃에 해가 들도록 높은 층은 북쪽에서 더 물러납니다. 그래서 윗층 바닥이 줄어듭니다.':O.Z.res?'이 규모에서는 정북 일조에 걸리지 않습니다.':'이 용도지역은 정북 일조 기준을 적용하지 않습니다.'}${O.roadDir==='N'&&O.Z.res&&!O.F?' 북쪽이 도로라 도로 '+(O.wall.apt?'중심선':'반대편 경계선')+'에서부터 잽니다.':''}${O.kind?` 주택 층수 ${O.houseFloors}개 층으로 법적 분류는 <b>${O.kind}</b>입니다.`:''}${pilS?' 1층 필로티는 층수 제한(4층 이하)에 들어갑니다. 단지형 연립·다세대만 예외입니다.':''}</p>
  <div class="tags">${T.law}${T.choice}${O.farIsCap?T.chk:''}</div>
  <details><summary>왜 이렇게 나오나요?</summary><div class="why">
- ${step('입력',`대지 ${f0(I.area)}㎡, 도로에 접한 길이 ${f1(I.front)}m → 깊이 ${f1(O.depth)}m. 도로 폭 ${f1(I.roadW)}m${O.rs>0?` → 4m에 못 미쳐 건축선이 ${f1(O.rs)}m 물러나고, 그 땅 ${f0(I.area-O.A)}㎡는 대지면적에서 빠집니다 (건축법 제46조, 시행령 제119조)`:''}.`)}
- ${step('가정',`층고 ${f1(I.fh)}m${pilS?`, 필로티층 ${f1(I.fh1)}m (주차 높이 2.1m와 전이보 고려)`:''}, 옥상 막힌 난간벽 ${PARAPET}m. 대지 안의 공지: 도로 쪽 건축선에서 ${f1(I.lineSet)}m, 이웃 대지에서 ${f1(I.adj)}m${O.wall.apt?' (다세대는 조례로 건축선 1~4m, 인접 대지 0.5~4m 범위, 채광창 벽은 1m 이상)':''}. 이격은 외벽 바깥면(단열·마감 포함)부터 잽니다.`)}
+ ${step('입력',`${O.F?`대지 ${f0(I.area)}㎡. 모양은 브이월드 연속지적도(${O.F.P.length}각형)를 대장 면적에 맞게 줄여 쓰고, 도로에 맞닿은 변 ${O.F.R.length}개(합계 ${f1(O.front)}m)는 ${O.F.auto?'둘레의 도로(지목 도) 필지에서 찾았습니다':'도로 방향 입력으로 정했습니다'}. 띄움 거리를 뺀 땅 안에 들어가는 가장 큰 직사각형(${f1(O.F.rect.x1-O.F.rect.x0)} × ${f1(O.F.rect.y1-O.F.rect.y0)}m)에 건물을 놓습니다.`:`대지 ${f0(I.area)}㎡, 도로에 접한 길이 ${f1(I.front)}m → 깊이 ${f1(O.depth)}m.`} 도로 폭 ${f1(I.roadW)}m${O.rs>0?` → 4m에 못 미쳐 건축선이 ${f1(O.rs)}m 물러나고, 그 땅 ${f0(I.area-O.A)}㎡는 대지면적에서 빠집니다 (건축법 제46조, 시행령 제119조)`:''}.`)}
+ ${step('가정',`층고 ${f1(I.fh)}m${pilS?`, 필로티층 ${f1(I.fh1)}m (주차 높이 2.1m와 전이보 고려)`:''}, 옥상 막힌 난간벽 ${PARAPET}m. 대지 안의 공지: 도로 쪽 건축선에서 ${f1(O.lineSet)}m, 이웃 대지에서 ${f1(O.adjEff)}m${O.wall.apt?` (${O.city?O.city+'시':'그 밖 지역'} 기준. 다세대 채광창 벽은 인접 대지에서 ${f1(O.lightD)}m 이상인데(건축법 시행령 제86조③·조례), 창을 어느 면에 낼지 정하기 전이라 도로 외 모든 면에 적용했습니다)`:''}. 이격은 외벽 바깥면(단열·마감 포함)부터 잽니다.`)}
  ${step('규칙',`건폐율은 입력 중 작은 값 <code>${O.bcr}%</code>(${O.bcrFrom}), 용적률 <code>${O.far}%</code>, 층수 <code>${O.flMax<40?O.flMax+'층':'제한 없음'}</code>${O.hMax?`, 높이 <code>${O.hMax}m</code>`:''}. ${O.daylight?(LAW_NEW?'정북 일조: 높이 10m 이하 1.5m, 10~17m 5m, 17m 초과는 높이의 1/2 이상 (개정 건축법 제61조의 최소값 5m를 쓴 미리보기. 실제 거리는 조례가 정함).':'정북 일조: 높이 10m 이하 1.5m, 10m 초과는 높이의 1/2 이상. 2026. 11. 12. 시행 개정 건축법 제61조는 10~17m 구간을 "5m 이상으로 조례가 정하는 거리"로 바꾸는데, 지금 조례가 정한 높이의 1/2(5~8.5m)도 그 범위 안이라 조례를 고치기 전까지는 계속 적용될 수 있어 1/2로 계산합니다. 실제 적용은 허가권자에게 확인해야 합니다.'):''}`)}
  ${step('계산',`건축면적 = ${f0(O.A)} × ${O.bcr}% = <code>${f0(O.A*O.bcr/100)}㎡</code>${O.fpByRect?` → 띄울 거리를 빼면 ${f0(O.fp)}㎡까지만 들어갑니다`:''}. 층별 깊이(바깥면): ${O.floors.map(f=>`${f.i}층 ${f1(f.dep)}m`).join(', ')}. 형태로 가능한 연면적 ${f0(O.envGFA)}㎡, 용적률 한도 ${f0(O.A)} × ${O.far}% = ${f0(O.farCap)}㎡ → 작은 값 <code>${f0(O.gfa)}㎡</code>. 바닥면적은 외단열이라 내측 내력벽 중심선으로 잽니다.`)}
- ${step('결과',`지상 ${O.n}층, 연면적 ${f0(O.gfa)}㎡. 건물은 ${{S:'남쪽',N:'북쪽',E:'동쪽',W:'서쪽'}[I.roadDir]} 도로 쪽으로 붙여 놓았습니다.`)}
+ ${step('결과',`지상 ${O.n}층, 연면적 ${f0(O.gfa)}㎡. 건물은 ${O.F?'':{S:'남쪽',N:'북쪽',E:'동쪽',W:'서쪽'}[I.roadDir]+' '}도로 쪽으로 붙여 놓았습니다.`)}
  </div></details></article>`);
  // 2 코어
  const K=O.core;
@@ -1723,7 +1869,7 @@ function render(){
  $('lim-def').textContent=`거실 비율은 직통계단 판정이 엄격해지도록 모든 용도에 80%를 씁니다. 층고 ${f1(I.fh)}m${I.pil?`(필로티층 ${f1(I.fh1)}m)`:''}, 옥상 막힌 난간벽 ${PARAPET}m, 평균 전용 ${I.unit}㎡, 거실·전용률 80%, 구조 ${{wall:'RC 벽식',frame:'RC 라멘',steel:'철골조'}[I.sys]}, 단열재 λ ${I.lam}, 외부 마감 ${I.fin}mm는 지금 고른 용도(${I.use})의 기본값입니다. 각 카드의 "왜 이렇게 나오나요?"에 어떤 값을 썼는지 적어 두었습니다.`;
  const lawTxt=LAW_NEW?'정북 일조를 개정 건축법 제61조의 최소값(10~17m 구간 5m)으로 계산한 미리보기입니다. 실제 거리는 조례가 정합니다.':'정북 일조는 10m 이하 1.5m, 10m 초과 높이의 1/2로 계산합니다. 2026. 11. 12. 시행 개정 건축법 제61조는 10~17m 구간을 "5m 이상으로 조례가 정하는 거리"로 바꾸므로, 지금 조례가 정한 높이의 1/2(5~8.5m)도 그 범위 안이라 조례를 고치기 전까지는 계속 적용될 수 있습니다. 그래서 높이의 1/2을 보수적인 값으로 쓰고, 실제 적용은 허가권자에게 확인하도록 합니다.';
  $('lim-law').textContent=lawTxt;
- $('lawline').innerHTML=`법령 기준일 2026. 10. 26. · ${LAW_NEW?'정북 일조 5m 미리보기(개정법 최소값)':'정북 일조 10m 초과 높이의 1/2 (조례 개정 확인 전 보수값)'} · 계산 가정과 다루지 않는 것은 ${'<button type="button" class="xlink" data-x="lim">가정과 한계</button>'} 탭에 있습니다.`;
+ $('lawline').innerHTML=`법령 기준일 2026. 10. 29. · ${LAW_NEW?'정북 일조 5m 미리보기(개정법 최소값)':'정북 일조 10m 초과 높이의 1/2 (조례 개정 확인 전 보수값)'} · 계산 가정과 다루지 않는 것은 ${'<button type="button" class="xlink" data-x="lim">가정과 한계</button>'} 탭에 있습니다.`;
  document.querySelectorAll('.xlink').forEach(b=>b.onclick=()=>{showTab(b.dataset.x);$('tablist').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'})});
  hideGloss&&$('gloss')&&hideGloss(); ['gov','infobox','big','tp-law','tp-env','tp-mep','tp-str','tp-lim'].forEach(id=>markTerms($(id)));
  draw(O,I);
@@ -1731,7 +1877,28 @@ function render(){
 
 
 // ───────── 배치 평면 (위에서 본 모습) ─────────
+function drawPlanPoly(O,I){
+ const svg=$('plan'), F=O.F, Lc=O.Lc, Ln=O.Ln, rw=Math.max(I.roadW,1.5), pad=rw+5;
+ const W=Lc+2*pad, H=Ln+2*pad, sc=292/W; svg.setAttribute('viewBox',`0 0 ${(W*sc).toFixed(1)} ${(H*sc).toFixed(1)}`);
+ const X=x=>(pad+x)*sc, Y=s=>(pad+Ln-s)*sc, pt=([x,s])=>`${X(x).toFixed(1)},${Y(s).toFixed(1)}`;
+ const r=(x,y,w,h,st)=>`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" style="${st}"/>`;
+ const t=(x,y,txt,st='',anchor='middle')=>`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" style="font:500 10.5px var(--f-body);fill:var(--muted);${st}">${txt}</text>`;
+ const n=F.P.length; let g='';
+ F.R.forEach(i=>{const a=F.P[i],b=F.P[(i+1)%n],m=F.nrm(i);g+=`<polygon points="${[a,b,[b[0]+m[0]*rw,b[1]+m[1]*rw],[a[0]+m[0]*rw,a[1]+m[1]*rw]].map(pt).join(' ')}" style="fill:var(--road)"/>`});
+ g+=`<polygon points="${F.P.map(pt).join(' ')}" style="fill:var(--site);stroke:var(--ink);stroke-width:1.2"/>`;
+ if(O.env){const E=O.env,sn=E.prof[0][1]; g+=r(X(E.x0),Y(sn),(E.x1-E.x0)*sc,(sn-E.s0)*sc,'fill:none;stroke:var(--accent);stroke-width:1;stroke-dasharray:4 3');}
+ g+=r(X(O.box.x0),Y(O.s1),(O.box.x1-O.box.x0)*sc,(O.s1-O.s0)*sc,'fill:var(--mass);stroke:var(--ink);stroke-width:1');
+ g+=t(X((O.box.x0+O.box.x1)/2),Y((O.s0+O.s1)/2)+4,f1(O.box.x1-O.box.x0)+' × '+f1(O.s1-O.s0)+'m','fill:var(--ink);font-weight:600');
+ if(O.daylight){const yy=Y(O.ref-dl(O.H)); g+=`<line x1="${X(0)}" y1="${yy}" x2="${X(Lc)}" y2="${yy}" style="stroke:var(--cut);stroke-width:1;stroke-dasharray:3 3"/>`+t(X(Lc)-2,yy-3,'맨 위 높이 일조 이격선','fill:var(--cut)','end');}
+ {const i=F.main,a=F.P[i],b=F.P[(i+1)%n],m=F.nrm(i);const mx=(a[0]+b[0])/2+m[0]*rw/2,my=(a[1]+b[1])/2+m[1]*rw/2;g+=t(X(mx),Y(my)+4,'도로 '+f1(I.roadW)+'m','fill:var(--panel);font-weight:600');}
+ const deg=Math.atan2(F.north[0],F.north[1])*180/Math.PI, nx=X(Lc)+pad*sc-28, ny=Y(Ln)-pad*sc+26;
+ const rad=deg*Math.PI/180;
+ g+=`<g transform="translate(${nx.toFixed(1)},${ny.toFixed(1)}) rotate(${deg.toFixed(1)})"><line x1="0" y1="10" x2="0" y2="-6" style="stroke:var(--ink);stroke-width:1.6"/><path d="M0 -12 l-4 7 h8 z" style="fill:var(--ink)"/></g>`+t(nx+Math.sin(rad)*19,ny-Math.cos(rad)*19+4,'N','fill:var(--ink);font-weight:700');
+ svg.innerHTML=g;
+ $('plancap').innerHTML=`위에서 본 배치 (도로를 아래로 돌린 그림, N이 북쪽) · 대지 <b>${f0(I.area)}㎡</b> 중 건물 바닥 <b>${f0(O.fp)}㎡ (${f0(O.fp/I.area*100)}%)</b> · 점선은 띄움 거리를 뺀 땅 안의 가장 큰 직사각형 ${f0(O.envFloor)}㎡`;
+}
 function drawPlan(O,I){
+ if(O.F) return drawPlanPoly(O,I);
  const svg=$('plan'); const Lc=O.Lc, Ln=O.Ln; const rw=Math.max(I.roadW,1.5);
  const padL=I.roadDir==='W'?rw+2:4, padR=I.roadDir==='E'?rw+2:4, padT=(I.roadDir==='N'?rw+2:2)+3, padB=(I.roadDir==='S'?rw+2:2)+3;
  const W=Lc+padL+padR+6, H=Ln+padT+padB;
@@ -1820,9 +1987,14 @@ function draw(O,I){
  const X=x=>x-Lc/2, Zs=s=>Ln/2-s;
  const box=(w,h,d,x,y,z,c,op)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:c,transparent:op<1,opacity:op??1,depthWrite:!(op<1)}));m.position.set(x,y,z);G.add(m);return m};
  const edges=(mesh,c)=>{const e=new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),new THREE.LineBasicMaterial({color:c}));e.position.copy(mesh.position);G.add(e)};
- // 대지와 도로
+ const rw=Math.max(I.roadW,1); const F=O.F;
+ const flat=(pts,y,c)=>{const sh=new THREE.Shape(pts.map(([x,s])=>new THREE.Vector2(X(x),s-Ln/2)));const m=new THREE.Mesh(new THREE.ShapeGeometry(sh),new THREE.MeshLambertMaterial({color:c,side:THREE.DoubleSide}));m.rotation.x=-Math.PI/2;m.position.y=y;G.add(m);return m};
+ if(F){
+  flat(F.P,-0.02,col('--site'));
+  F.R.forEach(i=>{const a=F.P[i],b=F.P[(i+1)%F.P.length],m=F.nrm(i);flat([a,b,[b[0]+m[0]*rw,b[1]+m[1]*rw],[a[0]+m[0]*rw,a[1]+m[1]*rw]],-0.04,col('--road'))});
+  G.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(F.P.map(([x,s])=>new THREE.Vector3(X(x),0.02,Zs(s)))),new THREE.LineBasicMaterial({color:col('--ink')})));
+ } else {
  box(Lc,0.1,Ln,0,-0.05,0,col('--site'),1);
- const rw=Math.max(I.roadW,1);
  if(I.roadDir==='S') box(Lc+8,0.06,rw,0,-0.03,Ln/2+rw/2,col('--road'),1);
  if(I.roadDir==='N') box(Lc+8,0.06,rw,0,-0.03,-Ln/2-rw/2,col('--road'),1);
  if(I.roadDir==='E') box(rw,0.06,Ln+8,Lc/2+rw/2,-0.03,0,col('--road'),1);
@@ -1830,6 +2002,7 @@ function draw(O,I){
  // 대지 경계선
  {const a=label('가로 '+f1(Lc)+'m',cssVar('--muted'));a.position.set(-Lc/4,0.4,-Ln/2-LS*1.6);G.add(a);const b=label('깊이 '+f1(Ln)+'m',cssVar('--muted'));b.position.set(-Lc/2-LS*2.6,0.4,Ln/6);G.add(b);}
  const bl=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([[-Lc/2,-Ln/2],[Lc/2,-Ln/2],[Lc/2,Ln/2],[-Lc/2,Ln/2]].map(p=>new THREE.Vector3(p[0],0.02,p[1]))),new THREE.LineBasicMaterial({color:col('--ink')}));G.add(bl);
+ }
  // 층
  const ink=col('--ink');
  O.floors.forEach(f=>{
@@ -1878,6 +2051,21 @@ function draw(O,I){
   G.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:col('--cut')})));
   const sp=label('정북 일조 기준',cssVar('--cut'));sp.position.set(xR-LS*2.5,Math.min(Hm,12),zR+5);G.add(sp);
  }
+ if(F){ // 크기 비교와 방위: 도로 변 바깥에 사람·승용차, 진북 화살표
+  const skin=col('--ink'), i=F.main, a=F.P[i], b=F.P[(i+1)%F.P.length], m=F.nrm(i);
+  const ul=Math.hypot(b[0]-a[0],b[1]-a[1])||1, u=[(b[0]-a[0])/ul,(b[1]-a[1])/ul], mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+  const pp=[mid[0]-u[0]*4+m[0]*rw/2,mid[1]-u[1]*4+m[1]*rw/2];
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.22,1.45,12),new THREE.MeshLambertMaterial({color:skin}));body.position.set(X(pp[0]),0.72,Zs(pp[1]));G.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.13,12,10),new THREE.MeshLambertMaterial({color:skin}));head.position.set(X(pp[0]),1.58,Zs(pp[1]));G.add(head);
+  const cp=[pp[0]+u[0]*3.4,pp[1]+u[1]*3.4];
+  const car=new THREE.Mesh(new THREE.BoxGeometry(4.7,1.5,1.9),new THREE.MeshLambertMaterial({color:col('--muted'),transparent:true,opacity:0.85}));car.position.set(X(cp[0]),0.75,Zs(cp[1]));car.rotation.y=Math.atan2(u[1],u[0]);G.add(car);
+  const ce=new THREE.LineSegments(new THREE.EdgesGeometry(car.geometry),new THREE.LineBasicMaterial({color:ink}));ce.position.copy(car.position);ce.rotation.copy(car.rotation);G.add(ce);
+  const sl=label('사람 1.7m · 승용차 4.7m',cssVar('--muted'));sl.position.set(X(cp[0]),2.6,Zs(cp[1]));G.add(sl);
+  const R0=Math.max(Lc,Ln)/2+3, c0=[Lc/2,Ln/2], t0=[c0[0]+F.north[0]*R0,c0[1]+F.north[1]*R0], t1=[c0[0]+F.north[0]*(R0+4),c0[1]+F.north[1]*(R0+4)];
+  G.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(X(t0[0]),0.05,Zs(t0[1])),new THREE.Vector3(X(t1[0]),0.05,Zs(t1[1]))]),new THREE.LineBasicMaterial({color:ink})));
+  const nl=label('북 N',cssVar('--ink'));nl.position.set(X(t1[0]+F.north[0]*1.5),0.8,Zs(t1[1]+F.north[1]*1.5));G.add(nl);
+  const rd=label('도로 '+f1(I.roadW)+'m',cssVar('--muted'));rd.position.set(X(mid[0]+u[0]*4+m[0]*(rw+LS)),0.6,Zs(mid[1]+u[1]*4+m[1]*(rw+LS)));G.add(rd);
+ } else {
  // 크기 비교: 사람(1.7m)과 승용차(4.7 × 1.9 × 1.5m)를 도로 쪽에 세움
  {const skin=col('--ink');
   const rp2={S:[-Lc/2+3,Ln/2+Math.max(I.roadW,1)/2],N:[Lc/2-3,-Ln/2-Math.max(I.roadW,1)/2],E:[Lc/2+Math.max(I.roadW,1)/2,Ln/2-3],W:[-Lc/2-Math.max(I.roadW,1)/2,-Ln/2+3]}[I.roadDir];
@@ -1891,6 +2079,7 @@ function draw(O,I){
  const n=label('북 N ↑',cssVar('--ink'));n.position.set(Lc/2+3,0.8,-Ln/2-2);G.add(n);
  const rd=label('도로 '+f1(I.roadW)+'m',cssVar('--muted'));
  const rp={S:[Lc/2-LS*2,0.6,Ln/2+rw+LS],N:[-Lc/4,0.6,-Ln/2-rw-LS],E:[Lc/2+rw+3,0.6,0],W:[-Lc/2-rw-3,0.6,0]}[I.roadDir];rd.position.set(...rp);G.add(rd);
+ }
  const hl=label(O.n+'층 · '+f1(O.H)+'m',cssVar('--ink'));hl.position.set(X(O.box.x0+O.Wc/2),O.H+LS*1.6,Zs(O.s0));G.add(hl);
  // 시점: 대지·건물 크기나 화면 비율이 바뀌면, 지금 보는 방향은 두고 전체가 들어오도록 거리와 중심을 다시 맞춤
  R3.dims=[Lc,Ln,Math.max(O.H,O.env?O.env.H:0)]; fit3D(false);
@@ -1903,7 +2092,9 @@ function meshes(O){
  const M=[]; const Lc=O.Lc, Ln=O.Ln;
  const boxM=(name,x0,x1,y0,y1,z0,z1)=>({name,v:[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]],
   f:[[0,3,2,1],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]]});
- M.push(boxM('대지',0,Lc,0,Ln,-0.05,0));
+ if(O.F){const P=O.F.P,n=P.length,v=[...P.map(([x,y])=>[x,y,-0.05]),...P.map(([x,y])=>[x,y,0])],f=[[...Array(n).keys()].reverse(),[...Array(n).keys()].map(i=>n+i)];
+  for(let i=0;i<n;i++){const j=(i+1)%n;f.push([i,j,n+j,n+i])} M.push({name:'대지',v,f});}
+ else M.push(boxM('대지',0,Lc,0,Ln,-0.05,0));
  if(O.env&&O.env.H>0){
   const E=O.env, L=E.prof.slice().sort((a,b)=>a[0]-b[0]); // [h, 북쪽 끝 y]
   const k=L.length, v=[], f=[];
@@ -1921,6 +2112,9 @@ function meshes(O){
   M.push({name:'외곽 볼륨 (이 안에서 자유롭게)',v,f,env:true});
  }
  O.floors.forEach(fl=>{const z1=fl.h0+fl.fh; M.push(boxM(`예시 덩어리 ${fl.i}층${fl.pil?' (필로티)':''}`,O.box.x0,O.box.x1,O.s0,O.s0+fl.dep,fl.h0,z1))});
+ // 대지 모양이 있으면 진북 기준으로 되돌리고 원점을 대지의 남서쪽 끝(최소 x·y)으로
+ if(O.F){const a=-O.F.alpha,c=Math.cos(a),sn=Math.sin(a);M.forEach(m=>m.v=m.v.map(([x,y,z])=>[x*c-y*sn,x*sn+y*c,z]));
+  const site=M[0].v;const mx=Math.min(...site.map(p=>p[0])),my=Math.min(...site.map(p=>p[1]));M.forEach(m=>m.v=m.v.map(([x,y,z])=>[x-mx,y-my,z]));}
  // 바깥쪽을 향하도록 면 방향 맞춤 (부호 있는 부피로 확인)
  M.forEach(m=>{let vol=0;m.f.forEach(face=>{for(let j=1;j<face.length-1;j++){const a=m.v[face[0]],b=m.v[face[j]],c=m.v[face[j+1]];vol+=(a[0]*(b[1]*c[2]-b[2]*c[1])-a[1]*(b[0]*c[2]-b[2]*c[0])+a[2]*(b[0]*c[1]-b[1]*c[0]))/6}});if(vol<0)m.f=m.f.map(x=>x.slice().reverse())});
  return M;
@@ -1983,11 +2177,11 @@ function zip(files){
 }
 function exportFiles(){
  if(!LAST) return null; const {O,I}=LAST; const M=meshes(O);
- const head=[`MULTIVERSE Plan · 1차 통합설계 · ${I.addr||''}`,`${I.zone} · ${I.use} · 대지 ${f0(I.area)}㎡ · 도로 ${{S:'남',N:'북',E:'동',W:'서'}[I.roadDir]}쪽 ${f1(I.roadW)}m`,
+ const head=[`MULTIVERSE Plan · 1차 통합설계 · ${I.addr||''}`,`${I.zone} · ${I.use} · 대지 ${f0(I.area)}㎡ · 도로 ${O.F?'':{S:'남',N:'북',E:'동',W:'서'}[I.roadDir]+'쪽 '}${f1(I.roadW)}m`,
   `단위 m · 원점 = 대지 남서쪽 모서리 · X 동쪽, Y 북쪽, Z 위 (OBJ는 Y 위)`,`근사치·보수적 추정 · 인허가 판단을 대신하지 않음`];
  const read=[...head,'',
   '들어 있는 것',
-  `- 대지: ${f1(O.Lc)} × ${f1(O.Ln)} m (직사각형 가정)`,
+  O.F?`- 대지: 브이월드 연속지적도 모양(${O.F.P.length}각형)을 대장 면적 ${f0(I.area)}㎡에 맞게 줄인 것 (측량 성과가 아님)`:`- 대지: ${f1(O.Lc)} × ${f1(O.Ln)} m (직사각형 가정)`,
   `- 외곽 볼륨: 띄움 거리 + 정북 일조 + 높이·층수 제한이 만드는 범위 (외벽 바깥면 기준)${O.env&&O.env.open?'. 높이 제한이 없어 건물 위 10m까지만 담았습니다':''}`,
   `- 예시 덩어리: 최대 바닥 ${f0(O.fp)}㎡을 한 덩어리로 놓은 예, 층별 상자 ${O.floors.length}개 (지상 ${O.n}층, 연면적 ${f0(O.gfa)}㎡)`,
   '','쓰는 법',
@@ -2077,6 +2271,29 @@ $('f').addEventListener('submit',e=>e.preventDefault());
 const mq=window.matchMedia('(prefers-color-scheme: dark)');mq.addEventListener&&mq.addEventListener('change',render);
 new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(render);
+// ───────── 주소로 대지 불러오기 (브이월드) ─────────
+const esc=v=>String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function setSite(S){SITE=S;SFC=null;$('vwclr').hidden=!S;$('front').readOnly=!!S;$('front').title=S?'대지 모양이 있으면 도로에 맞닿은 변 길이로 자동 계산합니다':''}
+$('vwbtn').addEventListener('click',async()=>{const q=$('addr').value.trim(),msg=$('vwmsg'); if(!q){msg.textContent='주소를 넣어 주세요.';return}
+ msg.textContent='브이월드에서 불러오는 중…'; $('vwbtn').disabled=true;
+ try{const r=await VW.load(q);
+  setSite({id:r.pnu,pnu:r.pnu,addr:r.addr,poly:r.poly,road:r.road,roadCls:r.roadCls,zones:r.zones,src:'브이월드',areaCad:Math.abs(pArea(r.poly))});
+  if(r.area) $('area').value=r.area;
+  if(r.zone&&ZONES[r.zone]){zsel.value=r.zone;const Z=ZONES[r.zone];$('bcrZ').value=Z.bcr;$('bcrD').value='';$('far').value='';$('flMax').value=Z.floors||'';$('hMax').value=''}
+  const w=roadWOf(r.roadCls); if(w!=null) $('roadW').value=w;
+  msg.innerHTML=`불러왔습니다: ${esc(r.jibun||r.pnu)} · 대장 ${r.area?f0(r.area)+'㎡':'면적 없음'} · ${esc(r.zone||'용도지역 없음')}${r.zone&&!ZONES[r.zone]?' (아직 지원하지 않는 용도지역이라 바꾸지 않았습니다)':''} · 도로접면 ${esc(r.roadCls||'-')}${r.road.length?'':' · 도로 변을 찾지 못해 도로 방향 입력으로 정합니다'}. <b>건폐율·용적률·층수는 토지이음 값으로 고쳐 주세요.</b>`;
+ }catch(e){msg.textContent='불러오지 못했습니다: '+e.message+'. 입력칸에 직접 넣어 계산할 수 있습니다.'}
+ $('vwbtn').disabled=false; render();});
+$('vwclr').addEventListener('click',()=>{setSite(null);$('vwmsg').textContent='직사각형 대지로 계산합니다.';render()});
+$('roadDir').addEventListener('change',()=>{if(SITE){SITE.road=[];SFC=null}});
+// 처음 화면: 아산 매곡리 697-1 (?ex=suyu 이면 서울 수유동 예시)
+const EXQ=(()=>{try{return new URLSearchParams(location.search).get('ex')}catch(e){return null}})();
+if(EXQ!=='suyu'){
+ $('addr').value=EX_ASAN.addr; $('use').value='공동주택'; zsel.value='계획관리지역'; $('area').value=525; $('roadW').value=4; $('roadDir').value='S';
+ $('bcrZ').value=40; $('bcrD').value=''; $('far').value=100; $('flMax').value=4; $('hMax').value='';
+ setSite({...EX_ASAN,poly:EX_ASAN.poly.map(p=>p.slice()),road:EX_ASAN.road.slice(),zones:EX_ASAN.zones.slice()});
+ $('vwmsg').textContent='예시: 매곡리 697-1의 연속지적도 모양(2026. 10. 29. 브이월드에서 받음)을 넣어 두었습니다.';
+} else { $('extext').textContent='처음 화면은 예시입니다. 서울 강북구 수유동의 한 필지를 토지이음 값(대지 515㎡, 제1종일반주거지역·자연경관지구)으로 넣었고, 대지 모양과 도로 폭은 가정한 값입니다.'; }
 render();
 </script>
 
