@@ -1445,43 +1445,55 @@ const DIRV={S:[0,-1],N:[0,1],E:[1,0],W:[-1,0]};
 // 정북 일조가 걸리는 지역은 돌리지 않음(진북 기준). 래스터 격자 중심으로 판정하므로 결과는 실제보다 약간 작게 나옴
 function siteFrame(I,dRoad,dAdj,daylight){
  const key=[SITE.id,SITE.road.join(','),I.area,I.roadDir,dRoad,dAdj,daylight].join('|'); if(SFC&&SFC.key===key) return SFC.F;
- let P=SITE.poly.map(p=>p.slice()); const n=P.length; let R=SITE.road.slice();
- if(pArea(P)<0){P.reverse(); R=R.map(i=>(n-2-i+2*n)%n);} // 반시계 방향으로
- const a0=Math.abs(pArea(P)), k=Math.sqrt(I.area/a0), c0=pCen(P);
- P=P.map(([x,y])=>[c0[0]+(x-c0[0])*k,c0[1]+(y-c0[1])*k]);
- const E=i=>[P[i],P[(i+1)%n]];
- const nrm=i=>{const [a,b]=E(i);const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;return[dy/L,-dx/L]};
- const len=i=>{const [a,b]=E(i);return Math.hypot(b[0]-a[0],b[1]-a[1])};
+ let P0=SITE.poly.map(p=>p.slice()); const n=P0.length; let R=SITE.road.slice();
+ if(pArea(P0)<0){P0.reverse(); R=R.map(i=>(n-2-i+2*n)%n);} // 반시계 방향으로
+ const a0=Math.abs(pArea(P0)), k=Math.sqrt(I.area/a0), c0=pCen(P0);
+ P0=P0.map(([x,y])=>[(x-c0[0])*k,(y-c0[1])*k]);
+ const E0=i=>[P0[i],P0[(i+1)%n]];
+ const nrm0=i=>{const [a,b]=E0(i);const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;return[dy/L,-dx/L]};
+ const len=i=>{const [a,b]=E0(i);return Math.hypot(b[0]-a[0],b[1]-a[1])};
  let auto=R.length>0;
- if(!R.length){const v=DIRV[I.roadDir]||DIRV.S; const sc=[...Array(n).keys()].map(i=>{const m=nrm(i);return m[0]*v[0]+m[1]*v[1]});
+ if(!R.length){const v=DIRV[I.roadDir]||DIRV.S; const sc=[...Array(n).keys()].map(i=>{const m=nrm0(i);return m[0]*v[0]+m[1]*v[1]});
   R=[...Array(n).keys()].filter(i=>sc[i]>0.6&&len(i)>0.5); if(!R.length) R=[sc.indexOf(Math.max(...sc))];}
  const main=R.reduce((b,i)=>len(i)>len(b)?i:b,R[0]);
- const mn=nrm(main); const alpha=daylight?0:(-Math.PI/2-Math.atan2(mn[1],mn[0]));
- const ca=Math.cos(alpha), sa=Math.sin(alpha);
- P=P.map(([x,y])=>[x*ca-y*sa,x*sa+y*ca]);
- const mx=Math.min(...P.map(p=>p[0])), my=Math.min(...P.map(p=>p[1]));
- P=P.map(([x,y])=>[x-mx,y-my]);
- const Lc=Math.max(...P.map(p=>p[0])), Ln=Math.max(...P.map(p=>p[1]));
- const rn=[mn[0]*ca-mn[1]*sa,mn[0]*sa+mn[1]*ca];
- const roadDir=Math.abs(rn[1])>=Math.abs(rn[0])?(rn[1]<0?'S':'N'):(rn[0]>0?'E':'W');
  const d=[...Array(n).keys()].map(i=>R.includes(i)?dRoad:dAdj);
- // 격자에서 지을 수 있는 칸 → 히스토그램으로 최대 직사각형
- const g=Math.max(0.1,Math.max(Lc,Ln)/420), nx=Math.max(1,Math.floor(Lc/g)), ny=Math.max(1,Math.floor(Ln/g));
- const h=new Int32Array(nx); let best={a:0};
- for(let r=0;r<ny;r++){const y=(r+0.5)*g;
-  for(let c=0;c<nx;c++){const x=(c+0.5)*g; let ok=inPoly(x,y,P);
-   if(ok) for(let i=0;i<n;i++){const [a,b]=E(i); if(dSeg(x,y,a,b)<d[i]){ok=false;break}}
-   h[c]=ok?h[c]+1:0;}
-  const st=[]; for(let c=0;c<=nx;c++){const hc=c<nx?h[c]:0; let s=c;
-   while(st.length&&st[st.length-1][1]>=hc){const [sc,sh]=st.pop(); const w=c-sc; const ar=(w-1)*(sh-1); if(sh>0&&w>0&&ar>best.a) best={a:ar,c0:sc,c1:c-1,r1:r,r0:r-sh+1}; s=sc;}
-   st.push([s,hc]);}
+ const alphaOf=i=>{const m=nrm0(i);return -Math.PI/2-Math.atan2(m[1],m[0])};
+ // 돌린 좌표계에서 띄움 거리를 뺀 땅 안의 최대 직사각형 (격자 중심 판정)
+ function fit(alpha,gq){
+  const ca=Math.cos(alpha), sa=Math.sin(alpha);
+  let P=P0.map(([x,y])=>[x*ca-y*sa,x*sa+y*ca]);
+  const mx=Math.min(...P.map(p=>p[0])), my=Math.min(...P.map(p=>p[1]));
+  P=P.map(([x,y])=>[x-mx,y-my]);
+  const Lc=Math.max(...P.map(p=>p[0])), Ln=Math.max(...P.map(p=>p[1]));
+  const g=gq||Math.max(0.1,Math.max(Lc,Ln)/420), nx=Math.max(1,Math.floor(Lc/g)), ny=Math.max(1,Math.floor(Ln/g));
+  const h=new Int32Array(nx); let best={a:0};
+  for(let r=0;r<ny;r++){const y=(r+0.5)*g;
+   for(let c=0;c<nx;c++){const x=(c+0.5)*g; let ok=inPoly(x,y,P);
+    if(ok) for(let i=0;i<n;i++){if(dSeg(x,y,P[i],P[(i+1)%n])<d[i]){ok=false;break}}
+    h[c]=ok?h[c]+1:0;}
+   const st=[]; for(let c=0;c<=nx;c++){const hc=c<nx?h[c]:0; let s=c;
+    while(st.length&&st[st.length-1][1]>=hc){const [sc,sh]=st.pop(); const w=c-sc; const ar=(w-1)*(sh-1); if(sh>0&&w>0&&ar>best.a) best={a:ar,c0:sc,c1:c-1,r1:r,r0:r-sh+1}; s=sc;}
+    st.push([s,hc]);}
+  }
+  const rect=best.a>0?{x0:(best.c0+0.5)*g,x1:(best.c1+0.5)*g,y0:(best.r0+0.5)*g,y1:(best.r1+0.5)*g}:{x0:Lc/2,x1:Lc/2,y0:Ln/2,y1:Ln/2};
+  return {P,Lc,Ln,g,rect,area:best.a*g*g,ca,sa};
  }
- const rect=best.a>0?{x0:(best.c0+0.5)*g,x1:(best.c1+0.5)*g,y0:(best.r0+0.5)*g,y1:(best.r1+0.5)*g}:{x0:Lc/2,x1:Lc/2,y0:Ln/2,y1:Ln/2};
- const topAt=x=>{let t=-Infinity;for(let i=0;i<n;i++){const [a,b]=E(i);if((a[0]<=x&&b[0]>x)||(b[0]<=x&&a[0]>x)){const yy=a[1]+(x-a[0])*(b[1]-a[1])/(b[0]-a[0]);if(yy>t)t=yy}}return t===-Infinity?Ln:t};
+ // 방향: 정북 일조 지역은 진북 고정. 그 밖은 변마다 돌려 보아 가장 큰 직사각형이 나오는 방향을 고르되, 주 도로 변과 나란한 방향이 3% 안쪽이면 그쪽을 씀
+ let alpha=0;
+ if(!daylight){const Lmax=Math.max(...P0.map(p=>Math.hypot(p[0],p[1])))*2, gq=Math.max(0.25,Lmax/160);
+  const cand=[...new Set([...Array(n).keys()].filter(i=>len(i)>0.5).map(i=>+alphaOf(i).toFixed(4)))];
+  const aMain=+alphaOf(main).toFixed(4); let best=null, mainA=0;
+  cand.forEach(a=>{const r=fit(a,gq).area; if(a===aMain) mainA=r; if(!best||r>best.r) best={a,r};});
+  alpha=(best&&mainA>=best.r*0.97)?aMain:(best?best.a:aMain);}
+ const Fq=fit(alpha); const {P,Lc,Ln,g,rect,ca,sa}=Fq;
+ const nrm=i=>{const m=nrm0(i);return[m[0]*ca-m[1]*sa,m[0]*sa+m[1]*ca]};
+ const rn=nrm(main);
+ const roadDir=Math.abs(rn[1])>=Math.abs(rn[0])?(rn[1]<0?'S':'N'):(rn[0]>0?'E':'W');
+ const topAt=x=>{let t=-Infinity;for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n];if((a[0]<=x&&b[0]>x)||(b[0]<=x&&a[0]>x)){const yy=a[1]+(x-a[0])*(b[1]-a[1])/(b[0]-a[0]);if(yy>t)t=yy}}return t===-Infinity?Ln:t};
  const refTop=(x0,x1)=>{let m=Infinity;for(let x=x0;x<=x1+1e-9;x+=g){m=Math.min(m,topAt(x))}return m===Infinity?Ln:m};
  const front=R.reduce((t,i)=>t+len(i),0);
  const north=[-sa,ca]; // 진북 방향 (이 좌표계에서)
- const F={P,R,d,rect,Lc,Ln,alpha,front,roadDir,main,auto,g,refTop,north,nrm:i=>{const m=nrm(i);return[m[0]*ca-m[1]*sa,m[0]*sa+m[1]*ca]}};
+ const F={P,R,d,rect,Lc,Ln,alpha,front,roadDir,main,auto,g,refTop,north,nrm,alongRoad:Math.abs(alpha-alphaOf(main))<1e-3};
  SFC={key,F}; return F;
 }
 
@@ -1536,7 +1548,7 @@ function roadWOf(c){c=c||'';if(/광대/.test(c))return 25;if(/중로/.test(c))re
 // 예시 대지: 충남 아산시 탕정면 매곡리 697-1 (2026. 10. 29. 브이월드 LP_PA_CBND_BUBUN 수신, 진북 기준 m)
 const EX_ASAN={id:'4420033025106970001',pnu:'4420033025106970001',addr:'충청남도 아산시 탕정면 매곡리 697-1',src:'예시',
  poly:[[0,13.53],[1.01,16.77],[9.46,29.54],[16.67,35.95],[22.03,36.53],[24.64,33.3],[28.41,28.66],[26.75,26.37],[16.97,6.87],[15.07,3.2],[10.78,0]],
- road:[4,7,8],roadCls:'세로한면(가)',zones:['계획관리지역','자연취락지구','성장관리계획구역','상대보호구역','가축사육제한구역'],areaCad:551.6};
+ road:[4],roadCls:'세로한면(가)',zones:['계획관리지역','자연취락지구','성장관리계획구역','상대보호구역','가축사육제한구역'],areaCad:551.6};
 
 // ───────── 입력 ─────────
 const $=id=>document.getElementById(id);
