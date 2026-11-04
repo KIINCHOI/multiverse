@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MULTIVERSE · 단열재 두께 바로 찾기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+:root{--ink:#15202e;--sub:#5b6676;--paper:#f6f7f9;--card:#ffffff;--line:#d9dee5;--gold:#f0b400;--gold-soft:#fff3c4;--ok:#1e8a52;--ok-soft:#e3f4ea;--warn:#b7791f;--warn-soft:#fdf1d8;--bad:#c8102e;--bad-soft:#fbe4e8;--chip:#eef1f5}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ink:#e9edf3;--sub:#9aa5b4;--paper:#10161f;--card:#18202b;--line:#2c3644;--gold:#f0b400;--gold-soft:#3a3010;--ok:#4cc38a;--ok-soft:#173226;--warn:#e0a84a;--warn-soft:#3a2d12;--bad:#ff6b7f;--bad-soft:#3a1820;--chip:#222c39}}
+:root[data-theme="dark"]{--ink:#e9edf3;--sub:#9aa5b4;--paper:#10161f;--card:#18202b;--line:#2c3644;--gold:#f0b400;--gold-soft:#3a3010;--ok:#4cc38a;--ok-soft:#173226;--warn:#e0a84a;--warn-soft:#3a2d12;--bad:#ff6b7f;--bad-soft:#3a1820;--chip:#222c39}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-variant-numeric:tabular-nums;line-height:1.55}
+.wrap{max-width:560px;margin:0 auto;padding:18px 16px 40px}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px}
+.brand{font-weight:900;letter-spacing:.06em;font-size:18px}
+.brand b{color:var(--gold)}
+.demo{font-size:11px;color:var(--warn);background:var(--warn-soft);padding:2px 8px;border-radius:999px;white-space:nowrap}
+h1{font-size:22px;margin:4px 0 18px;font-weight:900}
+.q{margin:22px 0 10px;display:flex;gap:10px;align-items:baseline}
+.q .n{font-weight:900;color:var(--gold);font-size:15px}
+.q .t{font-weight:700;font-size:16px}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+button.chip{font:inherit;font-size:14px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer}
+button.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper);font-weight:700}
+button.chip:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+select{font:inherit;font-size:14px;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);width:100%}
+.need{margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.need .big{font-size:26px;font-weight:900}
+.need small{color:var(--sub);display:block;font-size:12px}
+.opts{display:flex;flex-direction:column;gap:8px;margin-top:12px;font-size:13px}
+.opts label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+.opts input{margin-top:3px;accent-color:#15202e}
+.list{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.item.bad{opacity:.62}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.name{font-weight:700;font-size:15px}
+.meta{font-size:12px;color:var(--sub)}
+.thk{text-align:right;white-space:nowrap}
+.thk .mm{font-size:24px;font-weight:900}
+.thk .spec{font-size:12px;color:var(--sub)}
+.ruler{position:relative;height:16px;margin:10px 0 4px;background:var(--chip);border-radius:3px;overflow:hidden}
+.ruler span{position:absolute;left:0;top:0;bottom:0;background:repeating-linear-gradient(135deg,var(--gold) 0 6px,#d99a00 6px 8px)}
+.ruler i{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.35}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tag{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--sub)}
+.tag.ok{background:var(--ok-soft);color:var(--ok);font-weight:700}
+.tag.warn{background:var(--warn-soft);color:var(--warn);font-weight:700}
+.tag.bad{background:var(--bad-soft);color:var(--bad);font-weight:700}
+.more{font:inherit;font-size:12px;background:none;border:none;color:var(--sub);text-decoration:underline;cursor:pointer;padding:6px 0 0}
+.detail{margin-top:8px;border-top:1px dashed var(--line);padding-top:8px;font-size:12px;display:none}
+.detail.open{display:block}
+.detail dl{display:grid;grid-template-columns:96px 1fr;gap:3px 10px;margin:0 0 8px}
+.detail dt{color:var(--sub)}
+.check{display:flex;flex-direction:column;gap:3px}
+.check div{display:flex;gap:6px}
+.saving{font-size:12px;color:var(--ok);margin-top:2px}
+.note{font-size:11.5px;color:var(--sub);margin-top:22px;line-height:1.7;border-top:1px solid var(--line);padding-top:12px}
+.empty{font-size:13px;color:var(--sub);padding:10px 2px}
+
+.tabs{display:flex;gap:6px;margin:4px 0 14px;border-bottom:1px solid var(--line)}
+.tabs button{font:inherit;font-size:14px;background:none;border:none;border-bottom:3px solid transparent;padding:8px 4px 9px;margin-right:10px;color:var(--sub);cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--ink);font-weight:700;border-bottom-color:var(--gold)}
+.pane{display:none}.pane.on{display:block}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub)}
+.form label.full{grid-column:1/-1}
+.form input,.form select{font:inherit;font-size:14px;padding:8px 10px;border:1.5px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);width:100%}
+.form .sec{grid-column:1/-1;font-size:13px;font-weight:700;color:var(--ink);margin-top:4px}
+.verdict{margin-top:12px;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px}
+.verdict.ok{border-color:var(--ok)}.verdict.warn{border-color:var(--warn)}.verdict.bad{border-color:var(--bad)}
+.verdict .h{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.verdict .h b{font-size:16px}
+.btn{font:inherit;font-size:15px;font-weight:700;border:none;border-radius:12px;padding:12px 16px;background:var(--ink);color:var(--paper);cursor:pointer;width:100%;margin-top:12px}
+.btn.ghost{background:none;color:var(--sub);border:1px solid var(--line);font-weight:500;font-size:13px;padding:8px 12px;width:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th,.tbl td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tbl th{color:var(--sub);font-weight:500;background:var(--chip)}
+.tbl tr.sel td{background:var(--gold-soft)}
+.tbl tr{cursor:pointer}
+.scroll{overflow-x:auto}
+pre{font-size:11.5px;background:var(--chip);border-radius:10px;padding:12px;overflow-x:auto;margin:10px 0 0;line-height:1.5}
+.new{font-size:11px;font-weight:700;color:var(--paper);background:var(--gold);padding:1px 7px;border-radius:999px;margin-left:6px;color:#15202e}
+.lead{font-size:13px;color:var(--sub);margin:0 0 12px}
+
+.srow{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 10px;font-size:12px}
+.srow label{display:flex;flex-direction:column;gap:3px;color:var(--sub)}
+.srow input,.srow select{font:inherit;font-size:13px;padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);width:100%}
+.srow .out{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;border-top:1px dashed var(--line);padding-top:6px;color:var(--ink)}
+.srow .x{font:inherit;border:none;background:none;color:var(--sub);cursor:pointer;font-size:12px}
+.score{display:flex;gap:4px;margin-top:8px}
+.score div{flex:1;text-align:center;font-size:11px;padding:6px 0;border-radius:6px;background:var(--chip);color:var(--sub)}
+.score div.on{background:var(--ink);color:var(--paper);font-weight:700}
+@media (prefers-reduced-motion: no-preference){.item{transition:opacity .2s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="brand">MULTI<b>VERSE</b></div><div class="demo">시연용 가상 데이터</div></header>
+<h1>단열재 두께 바로 찾기</h1>
+<div class="tabs" role="tablist"><button role="tab" data-t="find" aria-selected="true">두께 찾기</button><button role="tab" data-t="sun" aria-selected="false">태양열취득</button><button role="tab" data-t="reg" aria-selected="false">성적서 등록</button><button role="tab" data-t="pub" aria-selected="false">공개 데이터</button></div>
+<div class="pane on" id="p-find">
+
+<div class="q"><span class="n">1</span><span class="t">어디 현장이에요?</span></div>
+<div style="display:flex;gap:8px;margin-bottom:8px"><input id="addr" placeholder="현장 주소나 시·군 이름을 쓰세요 (예: 파주, 강릉, 경남 고성)" style="font:inherit;font-size:14px;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);flex:1;min-width:0" aria-label="현장 주소나 시군 이름"></div>
+<div id="addrres" style="font-size:13px;margin:-2px 0 8px;min-height:0"></div>
+<div class="meta" style="margin:2px 0 6px">지역을 알고 있으면 바로 고르세요</div>
+<div class="row" id="region"></div>
+<div class="row" style="margin-top:8px" id="use"></div>
+<div style="margin-top:8px"><select id="part" aria-label="부위"></select></div>
+<div class="need" id="need"></div>
+<div class="opts">
+<label><input type="checkbox" id="fire"> 외벽 마감재료 기준 때문에 준불연 이상만 보기</label>
+</div>
+
+<div class="q"><span class="n">2</span><span class="t">어떤 단열재 쓰시려고요?</span></div>
+<div class="row" id="family"></div>
+
+<div class="q"><span class="n">3</span><span class="t">최소 두께</span></div>
+<div class="list" id="list"></div>
+
+</div>
+
+<div class="pane" id="p-sun">
+<p class="lead">방위별 창 면적만 넣으면 EPI 7번 점수가 나옵니다. 차양이 있으면 길이만 더 넣으세요.</p>
+<div class="row" style="margin-bottom:10px"><button class="chip" id="exA">업무시설 예시</button><button class="chip" id="exB">커튼월 예시</button><button class="chip" id="exC">수업 과제 (검증용)</button></div>
+<div class="form" style="grid-template-columns:1fr 1fr">
+<label>거실 외피면적 (㎡, 지붕·바닥 제외)<input id="senv" type="number" step="1"></label>
+<label>유리<select id="sglass"></select></label>
+<label>용도<select id="skind"><option value="non">비주거</option><option value="res">주거 (공동주택)</option></select></label>
+<label>외단열 창 깊이 (단열+마감, mm)<input id="sext" type="number" step="10" min="0" placeholder="내단열이면 0"></label>
+<label class="full" style="flex-direction:row;align-items:center;gap:8px;color:var(--ink)"><input type="checkbox" id="s1000" style="width:auto"> 연면적 1,000㎡ 이상 (7번 0.6점 이상 의무)</label>
+<label class="full" id="sshgcw" style="display:none">유리 SHGC (KS L 2514 성적서 값)<input id="sshgc" type="number" step="0.001"></label>
+</div>
+<div class="list" id="srows" style="margin-top:10px"></div>
+<button class="btn ghost" id="sadd" style="margin-top:8px">창 묶음 추가</button>
+<div class="verdict" id="sres"></div>
+<div class="meta" id="snotes" style="margin-top:8px;line-height:1.7"></div>
+</div>
+<div class="pane" id="p-reg">
+<p class="lead">시험기관이 정해진 양식으로 성적서 값을 넣으면 판정이 바로 붙고, 등록하는 순간 두께 찾기에 반영됩니다. 원본 파일은 올리지 않고 값과 근거만 등록합니다.</p>
+<div class="form" id="form">
+<div class="sec">제품</div>
+<label>단열재 계열<select name="fam"></select></label>
+<label>범주·종류<input name="cat" value="범주 ⅡA"></label>
+<label class="full">제품명<input name="name" value="차 사 압출법보온판 특호"></label>
+<div class="sec">성적서</div>
+<label>발급기관<select name="lab"><option value="공인시험기관 ㄱ">공인시험기관 ㄱ (KOLAS)</option><option value="공인시험기관 ㄴ">공인시험기관 ㄴ (KOLAS)</option><option value="제조사 대비표">제조사 대비표</option></select></label>
+<label>성적서 번호<input name="no" value="CT-26-0901"></label>
+<label>발급일<input name="date" type="date" value="2026-09-15"></label>
+<label>성적서 용도<select name="purpose"><option>품질관리용</option><option selected>품질관리용 · 공공 DB 등록</option></select></label>
+<div class="sec">시험</div>
+<label>제품 KS<select name="ks"><option>KS M ISO 4898</option><option>KS L 9102</option><option>KS M 3809</option><option>(제품 KS 미기재)</option></select></label>
+<label>측정방법<select name="method"><option>KS L ISO 8301</option><option>KS L ISO 8302</option><option>KS L 9016</option><option>기타</option></select></label>
+<label>평균온도<select name="temp"><option>20℃</option><option selected>23℃</option><option>20±5℃</option><option>기타</option></select></label>
+<label>발포제 잔류<select name="blow"><option value="1" selected>있음</option><option value="0">없음</option></select></label>
+<label>초기 열전도율 (W/m·K)<input name="l0" type="number" step="0.001" value="0.026"></label>
+<label>장기 열전도율 (W/m·K)<input name="lt" type="number" step="0.0001" value="0.0291" placeholder="없으면 비움"></label>
+<label>난연 성능<select name="fire"><option>일반</option><option>난연</option><option>준불연</option><option>불연</option></select></label>
+<label>열전도율 값의 출처<select name="src"><option value="direct">열전도율 시험 (KS L 9016·ISO 8301·8302)</option><option value="back">열관류율 성적서에서 역산</option></select></label>
+<label style="flex-direction:row;align-items:center;gap:6px;color:var(--ink)"><input type="checkbox" name="match" checked style="width:auto"> 시료와 사용 제품의 모델명·자재 일치</label>
+<label>한 장 최대 두께 (mm)<input name="max" type="number" step="10" value="100"></label>
+</div>
+<div class="verdict" id="verdict"></div>
+<button class="btn" id="regbtn">DB에 등록</button>
+</div>
+<div class="pane" id="p-pub">
+<p class="lead">등록된 값은 누구나 같은 기준으로 비교할 수 있게 공개합니다. 다른 설계 프로그램도 같은 값을 가져다 쓸 수 있도록 아래와 같은 형식으로 제공합니다.</p>
+<div class="scroll"><table class="tbl" id="tbl"></table></div>
+<pre id="json"></pre>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px"><span class="meta">판정 규칙 2026.1 · 에너지절약설계기준 제2026-360호(2026. 7. 8. 시행) 기준</span><button class="btn ghost" id="reset">등록한 예시 지우기</button></div>
+</div>
+
+<div class="note">
+최소 두께는 실내·외 표면열전달저항을 뺀 나머지 열저항을 단열재 하나로 채운다고 보고 계산한 값이라, 구조체와 마감이 더해지면 실제 열관류율은 기준보다 더 낮아집니다. 규격 두께는 10mm 단위로 올림했고 한 장으로 어려우면 두 장 조합을 제안합니다.<br>
+제품·성적서·판정은 모두 시연용 가상 데이터입니다. 열관류율 기준과 지역 구분(별표1), 표면열전달저항(별표5), EPI 7번 표와 계산 방식은 「건축물의 에너지절약설계기준」 제2026-360호와 해설서 원문을 따릅니다. 최종 판단은 설계자가 근거를 확인해 합니다.
+</div>
+</div>
+
+<script>
+const REG=['중부1','중부2','남부','제주'];
+// 별표1 시연용 입력값 [중부1,중부2,남부,제주] — 현행 고시와 대조 필요
+const PARTS=[
+ {id:'wall_d',name:'외벽 · 외기 직접',apt:[0.150,0.170,0.220,0.290],non:[0.170,0.240,0.320,0.410],rs:0.153,wall:true},
+ {id:'wall_i',name:'외벽 · 외기 간접',apt:[0.210,0.240,0.310,0.410],non:[0.240,0.340,0.450,0.560],rs:0.220,wall:true},
+ {id:'roof_d',name:'최상층 지붕 · 외기 직접',apt:[0.150,0.150,0.180,0.250],non:[0.150,0.150,0.180,0.250],rs:0.129},
+ {id:'roof_i',name:'최상층 지붕 · 외기 간접',apt:[0.210,0.210,0.260,0.350],non:[0.210,0.210,0.260,0.350],rs:0.172},
+ {id:'floor_d',name:'최하층 바닥 · 외기 직접 · 바닥난방',apt:[0.150,0.170,0.220,0.290],non:[0.150,0.170,0.220,0.290],rs:0.129},
+ {id:'floor_i',name:'최하층 바닥 · 외기 간접 · 바닥난방',apt:[0.210,0.240,0.310,0.410],non:[0.210,0.240,0.310,0.410],rs:0.236}
+];
+const FAM=['전체','비드법(EPS)','압출법(XPS)','페놀폼(PF)','경질우레탄','그라스울','미네랄울'];
+const FIRE_RANK={'일반':0,'난연':1,'준불연':2,'불연':3};
+// 가상 DB — 실제 성적서 형식을 본떠 만든 예시
+const DB=[
+ {id:'KS-EPS',fam:'비드법(EPS)',name:'KS 기본값 (제품 무관)',cat:'Ⅱ종 A-1',lab:'KS 품질 값',no:'-',ks:'KS M ISO 4898',method:'KS 표 값',temp:'23℃',l0:0.032,lt:null,blow:false,fire:'일반',date:'-',max:200,form:'ks'},
+ {id:'KS-XPS',fam:'압출법(XPS)',name:'KS 기본값 (제품 무관)',cat:'Ⅰ종 A-1',lab:'KS 품질 값',no:'-',ks:'KS M ISO 4898',method:'KS 표 값',temp:'23℃',l0:0.026,lt:null,blow:true,fire:'일반',date:'-',max:100,form:'ks'},
+ {id:'KS-PF',fam:'페놀폼(PF)',name:'KS 기본값 (제품 무관)',cat:'Ⅰ종 A',lab:'KS 품질 값',no:'-',ks:'KS M ISO 4898',method:'KS 표 값',temp:'23℃',l0:0.022,lt:null,blow:true,fire:'일반',date:'-',max:100,form:'ks'},
+ {id:'KS-PUR',fam:'경질우레탄',name:'KS 기본값 (제품 무관)',cat:'Ⅰ종 D',lab:'KS 품질 값',no:'-',ks:'KS M ISO 4898',method:'KS 표 값',temp:'23℃',l0:0.023,lt:null,blow:true,fire:'일반',date:'-',max:150,form:'ks'},
+ {id:'MV-0001',fam:'비드법(EPS)',name:'가 사 비드법보온판',cat:'범주 ⅠA-1',lab:'공인시험기관 ㄱ',no:'TR-25-0442',ks:'KS M ISO 4898',method:'KS L 9016',temp:'23℃',l0:0.032,lt:null,blow:false,fire:'일반',date:'2026-02-10',max:200,form:'ok'},
+ {id:'MV-0002',fam:'비드법(EPS)',name:'가 사 비드법보온판 준불연',cat:'범주 ⅠB',lab:'제조사 대비표',no:'TR-26-0220',ks:'KS M ISO 4898',method:'KS L 9016',temp:'23℃',l0:0.040,lt:null,blow:false,fire:'준불연',date:'2026-09-01',max:200,form:'summary'},
+ {id:'MV-0003',fam:'압출법(XPS)',name:'나 사 압출법보온판',cat:'범주 ⅡA',lab:'공인시험기관 ㄴ',no:'CT-24-0145',ks:'KS M ISO 4898',method:'KS L ISO 8301',temp:'23℃',l0:0.027,lt:null,blow:true,fire:'일반',date:'2024-04-08',max:100,form:'ok'},
+ {id:'MV-0004',fam:'페놀폼(PF)',name:'다 사 페놀폼보드',cat:'범주 ⅠA',lab:'공인시험기관 ㄴ',no:'CT-24-0235',ks:'KS M ISO 4898',method:'KS L ISO 8301',temp:'23℃',l0:0.020,lt:0.0226,blow:true,fire:'준불연',fireNote:'1면 준불연',date:'2024-06-05',max:100,form:'ok'},
+ {id:'MV-0005',fam:'페놀폼(PF)',name:'라 사 페놀폼보드 외벽용',cat:'범주 ⅠC',lab:'공인시험기관 ㄴ',no:'CT-25-1080',ks:'KS M ISO 4898',method:'KS L ISO 8301',temp:'23℃',l0:0.021,lt:0.0240,blow:true,fire:'준불연',date:'2026-03-24',max:100,form:'ok'},
+ {id:'MV-0006',fam:'경질우레탄',name:'마 사 경질우레탄보드',cat:'범주 ⅠC',lab:'공인시험기관 ㄷ',no:'TX-24-0456',ks:'KS M ISO 4898',method:'KS L 9016',temp:'23℃',l0:0.023,lt:null,blow:true,fire:'일반',date:'2025-04-07',max:150,form:'ok'},
+ {id:'MV-0007',fam:'경질우레탄',name:'바 사 경질우레탄폼',cat:'2종 2호 (구 규격)',lab:'공인시험기관 ㄹ',no:'TA-23-1469',ks:'KS M 3809',method:'KS L 9016',temp:'20±5℃',l0:0.024,lt:null,blow:true,fire:'일반',date:'2023-11-07',max:150,form:'old'},
+ {id:'MV-0008',fam:'그라스울',name:'사 사 그라스울 보온판 48K',cat:'48K',lab:'공인시험기관 ㄱ',no:'TR-25-0711',ks:'KS L 9102',method:'KS L 9016',temp:'20℃',l0:0.034,lt:null,blow:false,fire:'불연',date:'2025-08-19',max:100,form:'ok'},
+ {id:'MV-0009',fam:'미네랄울',name:'아 사 미네랄울 보온판 2호',cat:'2호',lab:'공인시험기관 ㄷ',no:'TX-25-0302',ks:'KS L 9102',method:'KS L 9016',temp:'20℃',l0:0.035,lt:null,blow:false,fire:'불연',date:'2025-05-12',max:100,form:'ok'},
+ {id:'MV-0010',fam:'비드법(EPS)',name:'자 사 심재 준불연 보드',cat:'표기 없음',lab:'공인시험기관 ㄱ',no:'TR-24-0180',ks:'(제품 KS 미기재)',method:'KS L 9016',temp:'23℃',l0:0.039,lt:null,blow:false,fire:'준불연',date:'2024-05-21',max:200,form:'noks'}
+];
+function judge(p){
+ const c=[];
+ if(p.form==='ks'){c.push({ok:true,t:'한국산업표준 품질 값 — 성적서 없이 사용 가능 (해설서)'});c.push({ok:true,t:p.ks+' 표 값 · 평균온도 '+p.temp});if(p.blow)c.push({ok:true,t:'발포제 잔류 제품 · 장기 성능 적용 원칙은 업계 쟁점'});return {s:'ok',c}}
+ c.push({ok:true,t:'성적서 시료와 사용 제품의 모델명·자재 일치 (사용 시 확인 · 검토자에 따라 판단이 다를 수 있음)'});
+ c.push({ok:p.lab.startsWith('공인'),warn:p.form==='summary',t:p.form==='summary'?'공인시험기관 원 성적서 미첨부':'공인시험기관 성적서 (KOLAS)'});
+ c.push({ok:p.form!=='noks',t:'단열재 종류별 KS로 시험 ('+p.ks+')'});
+ c.push({ok:/9016|8301|8302/.test(p.method),t:'측정방법 '+p.method+' · 평균온도 '+p.temp});
+ c.push({ok:!(p.blow&&p.lt===null),warn:p.blow&&p.lt===null,t:p.blow?(p.lt?'발포제 잔류 제품 · 장기 열저항 값 있음':'발포제 잔류 제품 · 장기 열저항 값 없음'):'발포제 없는 제품 · 초기 열전도율 적용'});
+ c.push({ok:p.form!=='summary',warn:p.form==='summary',t:p.form==='summary'?'제조사 대비표 · 원 성적서 확인 필요':'원 성적서 형식'});
+ c.push({ok:p.form!=='old',warn:p.form==='old',t:p.form==='old'?'구 규격 표기 · 별표2 등급 대응 확인 필요':'별표2 등급 대응 가능'});
+ let s='ok'; if(c.some(x=>!x.ok&&!x.warn)) s='bad'; else if(c.some(x=>x.warn)) s='warn';
+ return {s,c};
+}
+const st={r:null,apt:null,part:'wall_d',fam:'전체',fire:false,open:{}};
+function grade(l){return l<=0.034?['가',0.034]:l<=0.040?['나',0.040]:l<=0.046?['다',0.046]:['라',0.051]}
+function spec(t,max){const n=Math.ceil(t/max);const each=Math.ceil(t/n/10)*10;return n===1?each+'T':each+'T × '+n+'장';}
+function el(h){const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild}
+function chips(id,items,cur,on){const r=document.getElementById(id);r.innerHTML='';items.forEach((v,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=v.label??v;b.setAttribute('aria-pressed',String((v.val??i)===cur));b.onclick=()=>on(v.val??i);r.appendChild(b)})}
+function render(){
+ chips('region',REG,st.r,v=>{st.r=v;render()});
+ chips('use',[{label:'공동주택',val:true},{label:'공동주택 외',val:false}],st.apt,v=>{st.apt=v;render()});
+ const sel=document.getElementById('part');
+ if(!sel.options.length){PARTS.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name;sel.appendChild(o)});sel.onchange=e=>{st.part=e.target.value;render()}}
+ sel.value=st.part;
+ const P=PARTS.find(p=>p.id===st.part);
+ if(st.r===null||st.apt===null){document.getElementById('need').innerHTML='<div class="meta">'+(st.r===null?'현장 주소를 입력해 고르거나 지역을 바로 선택하세요.':'공동주택인지 고르면 기준이 나옵니다.')+'</div>';chips('family',FAM,FAM.indexOf(st.fam),i=>{st.fam=FAM[i];render()});document.getElementById('list').innerHTML='<div class="empty">지역과 용도를 정하면 단열재별 최소 두께가 나옵니다.</div>';return}
+ const U=(st.apt?P.apt:P.non)[st.r];
+ const R=1/U-P.rs;
+ document.getElementById('need').innerHTML=`<div><small>열관류율 기준</small><span class="big">${U.toFixed(3)}</span> <small style="display:inline">W/㎡K 이하</small></div><div style="text-align:right"><small>단열재로 채울 열저항 · 표면저항 반영</small><span class="big">${R.toFixed(2)}</span> <small style="display:inline">㎡K/W</small></div>`;
+ document.getElementById('fire').disabled=!P.wall; if(!P.wall) st.fire=false;
+ document.getElementById('fire').checked=st.fire;
+ chips('family',FAM,FAM.indexOf(st.fam),i=>{st.fam=FAM[i];render()});
+ const rows=DB.filter(p=>st.fam==='전체'||p.fam===st.fam).filter(p=>!st.fire||FIRE_RANK[p.fire]>=2).map(p=>{
+  const j=p.fresh?judge2(p):judge(p); const lu=(p.blow&&p.lt)?p.lt:p.l0; const t=R*lu*1000; const [g,gl]=grade(lu); const tg=R*gl*1000;
+  return {p,j,lu,t,g,tg};
+ }).sort((a,b)=>({ok:0,warn:1,bad:2}[a.j.s]-{ok:0,warn:1,bad:2}[b.j.s])||a.t-b.t);
+ const L=document.getElementById('list'); L.innerHTML='';
+ if(!rows.length){L.innerHTML='<div class="empty">조건에 맞는 단열재가 없습니다. 단열재 종류를 전체로 바꾸거나 준불연 조건을 끄세요.</div>';return}
+ const maxmm=Math.max(...rows.map(r=>r.t),200);
+ rows.forEach(r=>{
+  const {p,j}=r; const label={ok:['ok','에너지절약계획서 적합'],warn:['warn','확인 필요'],bad:['bad','사용 불가']}[j.s];
+  const lam=(p.blow&&p.lt)?`장기 ${p.lt.toFixed(4)}`:`초기 ${p.l0.toFixed(3)}`;
+  const save=Math.round(r.tg-r.t);
+  const it=el(`<div class="item ${j.s==='bad'?'bad':''}">
+   <div class="top"><div><div class="name">${p.fam} · ${p.cat}${p.fresh?'<span class="new">새 등록</span>':''}</div><div class="meta">${p.name} · λ ${lam} W/m·K · ${p.fireNote||p.fire}</div></div>
+   <div class="thk"><div class="mm">${Math.ceil(r.t)}<small style="font-size:13px">mm</small></div><div class="spec">규격 ${spec(r.t,p.max)}</div></div></div>
+   <div class="ruler" aria-hidden="true"><span style="width:${(r.t/maxmm*100).toFixed(1)}%"></span><i style="left:${(r.tg/maxmm*100).toFixed(1)}%"></i></div>
+   ${save>0&&j.s!=='bad'?`<div class="saving">등급(${r.g}) 상한값으로 계산할 때보다 ${save}mm 얇음</div>`:''}
+   <div class="tags"><span class="tag ${label[0]}">${label[1]}</span>${p.blow&&!p.lt&&p.form!=='ks'?'<span class="tag warn">장기 열저항 미확인 · 초기값으로 계산</span>':''}${p.form==='ks'?'<span class="tag">KS 기본값 · 제품 성적서가 있으면 그 값 우선</span>':''}${p.fireNote?'<span class="tag warn">'+p.fireNote+' · 외벽 적용 조건 확인</span>':''}</div>
+   <button class="more" aria-expanded="${!!st.open[p.id]}">성적서와 판정 근거 ${st.open[p.id]?'접기':'보기'}</button>
+   <div class="detail ${st.open[p.id]?'open':''}"><dl>
+    <dt>DB 번호</dt><dd>${p.id}</dd><dt>발급</dt><dd>${p.lab} · ${p.no} · ${p.date}</dd><dt>시험규격</dt><dd>${p.ks}</dd><dt>측정</dt><dd>${p.method} · ${p.temp}</dd><dt>열전도율</dt><dd>초기 ${p.l0.toFixed(3)}${p.lt?' · 장기 '+p.lt.toFixed(4):''} W/m·K</dd></dl>
+    <div class="check">${j.c.map(x=>`<div><span style="color:var(${x.ok?'--ok':x.warn?'--warn':'--bad'});font-weight:700">${x.ok?'✓':x.warn?'!':'✕'}</span><span>${x.t}</span></div>`).join('')}</div></div>
+  </div>`);
+  it.querySelector('.more').onclick=()=>{st.open[p.id]=!st.open[p.id];render()};
+  L.appendChild(it);
+ });
+}
+
+const BASE_N=DB.length;
+try{const saved=JSON.parse(localStorage.getItem('mv_regs')||'[]');saved.forEach(x=>DB.push(x))}catch(e){}
+function save(){try{localStorage.setItem('mv_regs',JSON.stringify(DB.slice(BASE_N)))}catch(e){}}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',String(x===b)));document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+b.dataset.t));if(b.dataset.t==='pub')renderPub();if(b.dataset.t==='reg')renderVerdict()});
+const F=document.getElementById('form');
+const famSel=F.querySelector('[name=fam]');FAM.slice(1).forEach(f=>{const o=document.createElement('option');o.textContent=f;famSel.appendChild(o)});famSel.value='압출법(XPS)';
+function readForm(){const g=n=>F.querySelector('[name='+n+']').value;const lt=parseFloat(g('lt'));const lab=g('lab');
+ return {id:'MV-'+String(DB.length+1).padStart(4,'0'),fam:g('fam'),name:g('name')||'(제품명 없음)',cat:g('cat')||'표기 없음',lab,no:g('no'),ks:g('ks'),method:g('method'),temp:g('temp'),l0:parseFloat(g('l0'))||0,lt:isNaN(lt)?null:lt,blow:g('blow')==='1',fire:g('fire'),date:g('date'),max:parseInt(g('max'))||100,purpose:g('purpose'),src:g('src'),match:F.querySelector('[name=match]').checked,
+ form:lab==='제조사 대비표'?'summary':g('ks')==='(제품 KS 미기재)'?'noks':g('ks')==='KS M 3809'?'old':'ok',fresh:true}}
+function judge2(p){const j=judge(p);j.c=j.c.filter(x=>!x.t.startsWith('성적서 시료와'));j.c.unshift({ok:p.match!==false,warn:p.match===false,t:p.match===false?'시료와 사용 제품의 모델명·자재 일치 미확인':'시료와 사용 제품의 모델명·자재 일치'});if(p.src==='back')j.c.push({ok:false,t:'열관류율 성적서에서 역산한 열전도율은 인정되지 않음 (해설서)'});const tOk=/20|23/.test(p.temp)&&p.temp!=='기타';j.c.splice(3,0,{ok:tOk,t:'평균온도 20±5℃ 범위'});j.c.push({ok:/공공 DB/.test(p.purpose||''),warn:!/공공 DB/.test(p.purpose||''),t:/공공 DB/.test(p.purpose||'')?'성적서 용도에 공공 DB 등록 지정':'성적서 용도에 공공 DB 등록 미지정 · 의뢰인 동의 필요'});
+ if(!(p.l0>0&&p.l0<0.06))j.c.push({ok:false,t:'열전도율 값 범위 확인'});
+ let s='ok';if(j.c.some(x=>!x.ok&&!x.warn))s='bad';else if(j.c.some(x=>x.warn))s='warn';return {s,c:j.c}}
+function renderVerdict(){const p=readForm();const j=judge2(p);const V=document.getElementById('verdict');const lab={ok:'에너지절약계획서 적합',warn:'확인 필요',bad:'사용 불가'}[j.s];
+ V.className='verdict '+j.s;V.innerHTML=`<div class="h"><b>${lab}</b><span class="meta">입력하는 동안 자동 판정</span></div><div class="check">${j.c.map(x=>`<div><span style="color:var(${x.ok?'--ok':x.warn?'--warn':'--bad'});font-weight:700">${x.ok?'✓':x.warn?'!':'✕'}</span><span>${x.t}</span></div>`).join('')}</div>`}
+F.addEventListener('input',renderVerdict);F.addEventListener('change',renderVerdict);
+document.getElementById('regbtn').onclick=()=>{const p=readForm();DB.push(p);save();st.fam='전체';document.querySelector('.tabs [data-t=find]').click();render();document.getElementById('list').scrollIntoView({behavior:'smooth'})};
+let pubSel=null;
+function renderPub(){const T=document.getElementById('tbl');T.innerHTML='<tr><th>DB 번호</th><th>계열 · 범주</th><th>적용 λ</th><th>판정</th></tr>';
+ DB.forEach(p=>{const j=p.fresh?judge2(p):judge(p);const lu=(p.blow&&p.lt)?p.lt:p.l0;const tr=document.createElement('tr');if(pubSel===p.id)tr.className='sel';
+  tr.innerHTML=`<td>${p.id}${p.fresh?'<span class="new">새 등록</span>':''}</td><td>${p.fam}<br><span class="meta">${p.cat}</span></td><td>${lu.toFixed(4)}<br><span class="meta">${(p.blow&&p.lt)?'장기':'초기'}</span></td><td><span class="tag ${j.s}">${{ok:'적합',warn:'확인 필요',bad:'불가'}[j.s]}</span></td>`;
+  tr.onclick=()=>{pubSel=p.id;renderPub()};T.appendChild(tr)});
+ const p=DB.find(x=>x.id===pubSel)||DB[DB.length-1];const j=p.fresh?judge2(p):judge(p);
+ document.getElementById('json').textContent=JSON.stringify({db_id:p.id,family:p.fam,category:p.cat,product:p.name,report:{issuer:p.lab,number:p.no,issued:p.date,original_file:'게시하지 않음'},test:{product_standard:p.ks,method:p.method,mean_temperature:p.temp},lambda:{initial:p.l0,long_term:p.lt,applied:(p.blow&&p.lt)?'long_term':'initial'},fire_performance:p.fire,verdict:{status:j.s,rule_version:'2026.1',basis:'에너지절약설계기준 제2026-360호 제6조제1호라목, 별표2'}},null,2)}
+document.getElementById('reset').onclick=()=>{DB.splice(BASE_N);save();pubSel=null;renderPub();render()};
+
+
+// 별표1 지역 구분 (시연용 입력, 현행 고시와 대조 필요)
+const SGG={
+ '경기':['수원','성남','의정부','안양','부천','광명','평택','동두천','안산','고양','과천','구리','남양주','오산','시흥','군포','의왕','하남','용인','파주','이천','안성','김포','화성','광주','양주','포천','여주','연천','가평','양평'],
+ '강원':['춘천','원주','강릉','동해','태백','속초','삼척','홍천','횡성','영월','평창','정선','철원','화천','양구','인제','고성','양양'],
+ '충북':['청주','충주','제천','보은','옥천','영동','증평','진천','괴산','음성','단양'],
+ '충남':['천안','공주','보령','아산','서산','논산','계룡','당진','금산','부여','서천','청양','홍성','예산','태안'],
+ '전북':['전주','군산','익산','정읍','남원','김제','완주','진안','무주','장수','임실','순창','고창','부안'],
+ '전남':['목포','여수','순천','나주','광양','담양','곡성','구례','고흥','보성','화순','장흥','강진','해남','영암','무안','함평','영광','장성','완도','진도','신안'],
+ '경북':['포항','경주','김천','안동','구미','영주','영천','상주','문경','경산','의성','청송','영양','영덕','청도','고령','성주','칠곡','예천','봉화','울진','울릉'],
+ '경남':['창원','진주','통영','사천','김해','밀양','거제','양산','의령','함안','창녕','고성','남해','하동','산청','함양','거창','합천']
+};
+const METRO={'서울':1,'인천':1,'대전':1,'세종':1,'부산':2,'대구':2,'울산':2,'광주광역':2,'제주':3};
+const PROV_ALIAS=[['경기','경기'],['강원','강원'],['충청북','충북'],['충북','충북'],['충청남','충남'],['충남','충남'],['전라북','전북'],['전북','전북'],['전남','전남'],['전라남','전남'],['경상북','경북'],['경북','경북'],['경상남','경남'],['경남','경남']];
+function zoneOf(prov,city){
+ if(prov==='경기') return ['연천','포천','가평','남양주','의정부','양주','동두천','파주'].includes(city)?0:1;
+ if(prov==='강원') return ['고성','속초','양양','강릉','동해','삼척'].includes(city)?1:0;
+ if(prov==='충북') return city==='제천'?0:1;
+ if(prov==='충남'||prov==='전북') return 1;
+ if(prov==='경북') return ['봉화','청송'].includes(city)?0:['울진','영덕','포항','경주','청도','경산'].includes(city)?2:1;
+ if(prov==='경남') return ['거창','함양'].includes(city)?1:2;
+ if(prov==='전남') return 2;
+ return null;
+}
+const PROV_FULL={'경기':'경기도','강원':'강원특별자치도','충북':'충청북도','충남':'충청남도','전북':'전북특별자치도','전남':'전라남도','경북':'경상북도','경남':'경상남도'};
+(function(){return;const dl=document.getElementById('sgg');const seen=new Set();Object.entries(SGG).forEach(([pv,cs])=>cs.forEach(c=>{const v=PROV_FULL[pv]+' '+c;if(!seen.has(v)){seen.add(v);const o=document.createElement('option');o.value=v;dl.appendChild(o)}}));['서울','인천','대전','세종','부산','대구','울산','광주광역시','제주'].forEach(v=>{const o=document.createElement('option');o.value=v;dl.appendChild(o)})})();
+function lookup(q){
+ q=q.replace(/\s+/g,'');if(!q) return null;
+ if(q.includes('군위')) return [{label:'대구광역시 군위',z:1}];
+ if(q.startsWith('대구')) return [{label:'대구광역시 (군위 제외)',z:2},{label:'대구광역시 군위',z:1}];
+ if(q.includes('제주')) return [{label:'제주',z:3}];
+ if(q.includes('광주광역')) return [{label:'광주광역시',z:2}];
+ for(const m of ['서울','인천','대전','세종','부산','대구','울산']) if(q.startsWith(m)||q===m) return [{label:m,z:METRO[m]}];
+ let prov=null; for(const [k,v] of PROV_ALIAS) if(q.includes(k)){prov=v;break}
+ const cands=[];
+ Object.entries(SGG).forEach(([pv,cs])=>{if(prov&&pv!==prov) return;cs.forEach(c=>{const rest=prov?q.replace(/^(경기도?|강원(특별자치)?도?|충청북도|충북|충청남도|충남|전라북도|전북(특별자치도)?|전라남도|전남|경상북도|경북|경상남도|경남)/,''):q;if(rest.startsWith(c)) cands.push({label:PROV_FULL[pv]+' '+c,z:zoneOf(pv,c)})})});
+ if(!cands.length && q.startsWith('광주')) return [{label:'광주광역시',z:2},{label:'경기도 광주시',z:1}];
+ if(!cands.length && prov) return [{label:PROV_FULL[prov]+' (시·군을 함께 적어 주세요)',z:null}];
+ if(q.startsWith('광주')&&!prov) cands.unshift({label:'광주광역시',z:2});
+ return cands.length?cands:[];
+}
+function allPlaces(){const out=[];['서울','인천','대전','세종'].forEach(m=>out.push({label:m,key:m,z:1}));['부산','울산'].forEach(m=>out.push({label:m,key:m,z:2}));out.push({label:'대구광역시 (군위 제외)',key:'대구',z:2});out.push({label:'대구광역시 군위',key:'대구군위',z:1});out.push({label:'광주광역시',key:'광주광역시',z:2});out.push({label:'제주',key:'제주',z:3});
+ Object.entries(SGG).forEach(([pv,cs])=>cs.forEach(c=>out.push({label:PROV_FULL[pv]+' '+c,key:PROV_FULL[pv]+c+pv,city:c,z:zoneOf(pv,c)})));return out}
+const PLACES=allPlaces();
+function suggest(q){q=q.replace(/\s+/g,'').replace(/(특별자치시|특별자치도|특별시|광역시)$/,'');if(!q) return [];
+ const exact=lookup(q)||[];const lab=new Set(exact.filter(x=>x.z!==null).map(x=>x.label));
+ const part=PLACES.filter(p=>!lab.has(p.label)&&(p.key.includes(q)||(p.city&&p.city.startsWith(q.replace(/(시|군|구)$/,'')))));
+ return [...exact.filter(x=>x.z!==null),...part].slice(0,8)}
+function pick(x){st.r=x.z;document.getElementById('addr').value=x.label;document.getElementById('addrres').innerHTML=`<b>${x.label}</b> → <b style="color:var(--ok)">${REG[x.z]}지역</b> 기준을 적용했습니다. <button class="more" id="clr" style="padding:0 0 0 6px">다시 고르기</button>`;document.getElementById('clr').onclick=()=>{document.getElementById('addr').value='';document.getElementById('addrres').innerHTML='';document.getElementById('addr').focus()};render()}
+function showAddr(){const q=document.getElementById('addr').value;const R=document.getElementById('addrres');const c=suggest(q);
+ if(!q.trim()){R.innerHTML='';return}
+ if(!c.length){R.innerHTML='<span style="color:var(--bad)">찾지 못했습니다. 시·군 이름이나 도 이름을 함께 적거나, 아래에서 지역을 바로 고르세요.</span>';return}
+ R.innerHTML='<div class="meta" style="margin-bottom:4px">해당하는 곳을 고르세요</div><div class="row">'+c.map((x,i)=>`<button class="chip" data-i="${i}" style="padding:5px 11px;font-size:13px">${x.label} <span class="meta">${REG[x.z]}</span></button>`).join('')+'</div>';
+ R.querySelectorAll('button').forEach(b=>b.onclick=()=>pick(c[+b.dataset.i]));R._c=c}
+document.getElementById('addr').addEventListener('keydown',e=>{if(e.key==='Enter'){const c=document.getElementById('addrres')._c;if(c&&c.length){e.preventDefault();pick(c[0])}}});
+document.getElementById('addr').addEventListener('input',showAddr);
+
+
+// EPI 건축부문 7번 — 에너지절약설계기준 제2026-360호 별지 제1호서식 주5, 해설서(2025)
+const DIRS=['남','남서','서','북서','북','북동','동','동남'];
+const SOLAR={'남':256,'남서':329,'서':340,'북서':211,'북':138,'북동':243,'동':336,'동남':325};
+const T2=[[1,1,1,1,1,1,1,1],[0.57,0.74,0.79,0.79,0.89,0.78,0.79,0.73],[0.48,0.55,0.63,0.64,0.83,0.64,0.63,0.54],[0.45,0.42,0.51,0.54,0.79,0.54,0.50,0.42],[0.43,0.35,0.42,0.48,0.76,0.48,0.42,0.36],[0.41,0.33,0.36,0.43,0.73,0.43,0.37,0.33]];
+const T3=[[1,1,1,1,1,1,1,1],[0.73,0.84,0.88,0.76,0.68,0.79,0.89,0.82],[0.61,0.72,0.79,0.61,0.56,0.64,0.80,0.67],[0.54,0.60,0.74,0.46,0.47,0.50,0.75,0.54],[0.50,0.51,0.70,0.38,0.42,0.42,0.71,0.46],[0.45,0.43,0.65,0.28,0.34,0.31,0.66,0.39]];
+const GLASS=[['복층 일반 12mm',0.719],['복층 로이 12mm',0.581],['복층 로이+아르곤 12mm',0.583],['삼중 일반 12mm',0.633],['삼중 로이 12mm',0.520],['삼중 로이+아르곤 12mm',0.517],['사중 로이 12mm',0.474],['사중 로이+아르곤 12mm',0.468],['성적서 값 직접 입력',null]];
+const T6=[[30,[0.21,0.27,0.33,0.41,0.47]],[35,[0.17,0.23,0.29,0.35,0.41]],[40,[null,0.19,0.23,0.29,0.35]],[45,[null,0.17,0.21,0.25,0.31]],[50,[null,null,0.19,0.23,0.27]],[Infinity,[null,null,0.17,0.19,0.23]]];
+const r3=x=>Math.round(x*1000)/1000; // 소수점 넷째 자리에서 반올림 (해설서)
+function tab(T,dir,r){const c=DIRS.indexOf(dir);r=Math.max(0,Math.min(1,r3(r||0)));const i=r/0.2;const lo=Math.min(4,Math.floor(i+1e-9)),hi=lo+1;const f=i-lo;return r3(T[lo][c]+(T[hi][c]-T[lo][c])*f)}
+const score7=v=>v<19?1:v<24?0.9:v<29?0.8:v<34?0.7:v<39?0.6:0;
+let SUN={env:400,glass:'복층 로이 12mm',shgc:null,kind:'non',big:true,ext:0,rows:[]};
+const ROW=(dir,a,P=0,H=2.0)=>({dir,a,P,H,W:1.5,mov:1});
+const EX={
+ A:()=>({env:400,glass:'복층 로이 12mm',kind:'non',big:true,ext:0,rows:[ROW('남',56),ROW('동',24),ROW('서',24),ROW('북',48)]}),
+ B:()=>({env:400,glass:'복층 일반 12mm',kind:'non',big:true,ext:0,rows:[ROW('남',140),ROW('동',40),ROW('서',40),ROW('북',20)]}),
+ C:()=>({env:312,glass:'성적서 값 직접 입력',shgc:0.5,kind:'non',big:false,ext:0,rows:[ROW('동',8),ROW('서',8),ROW('남',12,2,2),ROW('남',16),ROW('북',8)]})};
+function g0(){return SUN.glass==='성적서 값 직접 입력'?(SUN.shgc||0):GLASS.find(x=>x[0]===SUN.glass)[1]}
+function rowGain(r,opt={}){const g=opt.g??g0();const fr=0.9;const ext=(opt.ext??0)/1000;
+ let fh=tab(T2,r.dir,r.H>0?r.P/r.H:0),fv=1;
+ if(ext>0){ if(r.P===0) fh=tab(T2,r.dir,ext/(r.H||2)); fv=tab(T3,r.dir,ext/(r.W||1.5)); }
+ const mov=opt.mov?.[r.dir]??r.mov; const t=r3(g*fr);
+ return {q:SOLAR[r.dir]*fh*fv*mov*t*r.a,fh,fv,mov,t,g}}
+function total(opt={}){const rows=opt.rows||SUN.rows;return rows.reduce((s,r)=>s+rowGain(r,opt).q,0)/(SUN.env||1)}
+function m2(){const A=SUN.rows.reduce((s,r)=>s+r.a,0);if(!A||!SUN.env)return null;const g=g0();const wwr=A/SUN.env*100;const row=T6.find(t=>wwr<=t[0])[1];const pts=[1,0.9,0.8,0.7,0.6];let b=0;for(let i=0;i<5;i++){if(row[i]!==null&&g<=row[i]+1e-9){b=pts[i];break}}return {wwr,g,b,lim:row[4]}}
+function nextAction(cur){const cands=[];const H=r=>r.H||2;
+ SUN.rows.forEach((r,i)=>{if(r.a>0&&r.P<Math.min(1,0.5*H(r))-1e-9){const P=Math.min(1,Math.round(0.5*H(r)*10)/10);const rows=SUN.rows.map((x,j)=>j===i?{...x,P}:x);cands.push({t:`${r.dir}측 창에 차양 ${P.toFixed(1)}m`,v:total({rows,ext:SUN.ext})})}});
+ const gi=GLASS.findIndex(x=>x[0]===SUN.glass);const better=GLASS.filter(x=>x[1]!==null&&x[1]<g0()-0.03).sort((a,b)=>b[1]-a[1])[0];
+ if(better) cands.push({t:`유리를 ${better[0]}로`,v:total({g:better[1],ext:SUN.ext})});
+ ['동','서'].forEach(d=>{if(SUN.rows.some(r=>r.dir===d&&r.a>0&&r.mov===1)) cands.push({t:`${d}측에 외부 가동형 차양(블라인드)`,v:total({mov:{[d]:0.34},ext:SUN.ext})})});
+ cands.forEach(c=>c.b=score7(c.v));cands.sort((a,b)=>a.v-b.v);return cands[0]&&cands[0].v<cur-0.05?cands[0]:null}
+function chain(r){const x=rowGain(r,{ext:SUN.ext});const s1=x.fh*x.fv*x.mov,s2=s1*x.g,s3=s1*x.t;const bar=(w,c)=>`<span style="display:block;height:6px;border-radius:3px;background:${c};width:${(w*100).toFixed(0)}%"></span>`;
+ return `<div style="display:grid;grid-template-columns:72px 1fr 34px;gap:3px 6px;align-items:center;font-size:11px;color:var(--sub);margin-top:6px">
+ <span>들어오는 햇빛</span>${bar(1,'#f0b400')}<span>100%</span>
+ <span>차양 지나서</span>${bar(s1,'#e8a400')}<span>${Math.round(s1*100)}%</span>
+ <span>유리 지나서</span>${bar(s2,'#d08a00')}<span>${Math.round(s2*100)}%</span>
+ <span>창틀 빼고</span>${bar(s3,'#b06f00')}<span><b style="color:var(--ink)">${Math.round(s3*100)}%</b></span></div>`}
+function renderSunForm(){
+ const gs=document.getElementById('sglass');if(!gs.options.length)GLASS.forEach(x=>{const o=document.createElement('option');o.textContent=x[0];gs.appendChild(o)});
+ gs.value=SUN.glass;document.getElementById('senv').value=SUN.env;document.getElementById('skind').value=SUN.kind;document.getElementById('s1000').checked=SUN.big;document.getElementById('sext').value=SUN.ext||'';
+ document.getElementById('sshgcw').style.display=SUN.glass==='성적서 값 직접 입력'?'flex':'none';document.getElementById('sshgc').value=SUN.shgc??'';
+ const W=document.getElementById('srows');W.innerHTML='';
+ SUN.rows.forEach((r,i)=>{const over=r.P>1?`<div style="font-size:11px;color:var(--bad);margin-top:4px">외벽 중심선에서 1m를 넘는 ${(r.P-1).toFixed(2)}m는 건축면적에 산입됩니다 (건축법 시행령 제119조제1항제2호가목). 재생에너지 설비 차양을 단 제로에너지건축물 인증 건축물은 2m까지.</div>`:'';
+  const d=el(`<div class="srow" style="grid-template-columns:1fr 1fr 1fr 1fr">
+  <label>방위<select data-k="dir">${DIRS.map(x=>`<option ${x===r.dir?'selected':''}>${x}</option>`).join('')}</select></label>
+  <label>창 면적 ㎡<input data-k="a" type="number" step="1" min="0" value="${r.a}"></label>
+  <label>차양 길이 m<input data-k="P" type="number" step="0.1" min="0" value="${r.P}"></label>
+  <label>차양~창 하단 m<input data-k="H" type="number" step="0.1" min="0" value="${r.H}"></label>
+  <div style="grid-column:1/-1">${chain(r)}<div class="meta" style="margin-top:3px">차양 길이는 외벽 중심선부터, 건축면적 제외 최대 1m${i>3?` · <button class="x" data-del="${i}">이 묶음 삭제</button>`:''}</div>${over}</div></div>`);
+  d.querySelectorAll('[data-k]').forEach(inp=>inp.onchange=()=>{const k=inp.dataset.k;r[k]=k==='dir'?inp.value:parseFloat(inp.value)||0;renderSun()});
+  const del=d.querySelector('[data-del]');if(del)del.onclick=()=>{SUN.rows.splice(i,1);renderSun()};W.appendChild(d)})}
+function renderSun(){renderSunForm();
+ const avg=total(),b=score7(avg);const res=SUN.kind==='res';const must=SUN.big&&!res;const fail=must&&b<0.6;
+ const ext=SUN.ext>0?total({ext:SUN.ext}):null;const bx=ext!==null?score7(ext):null;
+ const M=m2();const A=SUN.rows.reduce((s,r)=>s+r.a,0);const wwr=SUN.env?A/SUN.env*100:0;
+ const noShade=total({rows:SUN.rows.map(r=>({...r,P:0}))});const wmax=noShade>0?wwr*39/noShade:null;
+ const na=nextAction(ext??avg);
+ const R=document.getElementById('sres');R.className='verdict '+(fail?'bad':b>=0.6||!must?'ok':'warn');
+ R.innerHTML=`<div class="h"><b>평균 태양열취득 ${avg.toFixed(1)} W/㎡</b><span class="meta">창면적비 ${wwr.toFixed(0)}%</span></div>
+ <div class="score">${[[19,1],[24,0.9],[29,0.8],[34,0.7],[39,0.6]].map(([l,p])=>`<div class="${p===b?'on':''}">${p}점<br>${l}미만</div>`).join('')}</div>
+ <div style="margin-top:8px;font-size:14px">7번 배점 <b>${b}점</b>${must?(fail?' · <b style="color:var(--bad)">의무 0.6점 미달</b>':' · <span style="color:var(--ok);font-weight:700">의무 충족</span>'):''}${res&&SUN.big?' · <span class="meta">공동주택은 7번 의무 대상 아님</span>':''}</div>
+ ${ext!==null?`<div style="margin-top:6px;font-size:13px;padding:6px 8px;border-radius:8px;background:var(--gold-soft)">외단열 창 깊이 ${SUN.ext}mm를 일사조절 구조체로 인정하면 <b>${ext.toFixed(1)} W/㎡ · ${bx}점</b> <span class="meta">(현행 해설서상 인정 여부 미정 — 제안 기준)</span></div>`:''}
+ ${na?`<div style="margin-top:8px;font-size:13px">다음으로 효과가 큰 조치: <b>${na.t}</b> → ${na.v.toFixed(1)} W/㎡ (${na.b}점)</div>`:''}
+ ${wmax?`<div class="meta" style="margin-top:4px">이 유리로 차양 없이 0.6점을 받으려면 창면적비 약 ${Math.floor(wmax)}% 이하</div>`:''}
+ ${M?`<div style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px;font-size:13px">계산법-2 (유리 SHGC ${M.g.toFixed(3)}, 창면적비 ${M.wwr.toFixed(0)}%) → <b>${M.b}점</b>${M.b>b?' · <b style="color:var(--ok)">계산법-2가 유리합니다</b>':''}<div class="meta">이 창면적비에서 0.6점은 SHGC ${M.lim} 이하. 차양은 반영되지 않습니다.</div></div>`:''}`;
+ const notes=['유리 SHGC는 KS L 2514 시험성적서 값이 있으면 그 값을 쓰고, 없을 때만 표5 값을 씁니다.'];
+ if(g0()<0.55) notes.push('SHGC를 낮출 때는 가시광선 투과율 하한(복층 40%, 삼중 30%, 사중 20%)을 확인하세요.');
+ if(SUN.rows.some(r=>r.P>0)) notes.push('외부 차양은 낙하·화재 안전성과 주변 건물 빛반사 영향을 함께 검토하세요 (제7조제3호바목).');
+ notes.push('거실 투광부만 계산하며, 커튼월 스팬드럴·방풍구조 문과 비냉난방 공간에 면한 외피는 빼고 넣습니다. 방위는 입면 중앙 법선 방향 기준 8방위입니다.');
+ document.getElementById('snotes').innerHTML=notes.map(n=>'· '+n).join('<br>')}
+document.getElementById('sglass').onchange=e=>{SUN.glass=e.target.value;renderSun()};
+document.getElementById('sshgc').onchange=e=>{SUN.shgc=parseFloat(e.target.value)||0;renderSun()};
+document.getElementById('senv').onchange=e=>{SUN.env=parseFloat(e.target.value)||0;renderSun()};
+document.getElementById('skind').onchange=e=>{SUN.kind=e.target.value;renderSun()};
+document.getElementById('s1000').onchange=e=>{SUN.big=e.target.checked;renderSun()};
+document.getElementById('sext').onchange=e=>{SUN.ext=parseFloat(e.target.value)||0;renderSun()};
+document.getElementById('sadd').onclick=()=>{SUN.rows.push(ROW('남',0));renderSun()};
+['A','B','C'].forEach(k=>document.getElementById('ex'+k).onclick=()=>{SUN=EX[k]();renderSun()});
+SUN=EX.A();renderSun();
+
+
+
+document.getElementById('fire').onchange=e=>{st.fire=e.target.checked;render()};
+render();
+</script>
+</body>
+</html>
