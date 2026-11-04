@@ -127,6 +127,20 @@ main.rep-open .notes{right:calc(min(380px,100% - 24px) + 24px)}
 .hpbar i{display:block;height:100%;background:#2c6153}
 .hint{position:absolute;right:12px;top:12px;background:rgba(255,255,255,.92);color:#1c2420;border:1px solid #d5dad4;border-radius:6px;padding:6px 10px;font-size:12px;max-width:260px}
 .hint b{font-weight:600}
+.keys{display:grid;grid-template-columns:78px 1fr;gap:7px 10px;align-items:center;margin:2px 0 9px;padding-bottom:8px;border-bottom:1px solid #e3e7e2}
+.keys>span:nth-child(even){font-weight:600;font-size:12px;line-height:1.25}
+.keys small{display:block;font-weight:400;font-size:10.5px;color:#5d6862}
+.kg{display:inline-flex;align-items:center;gap:4px;justify-self:center}
+.kg.wasd{display:inline-grid;grid-template-columns:repeat(3,21px);gap:2px}
+.kg.wasd .kc:nth-child(1){grid-column:2;grid-row:1}.kg.wasd .kc:nth-child(2){grid-column:1;grid-row:2}.kg.wasd .kc:nth-child(3){grid-column:2;grid-row:2}.kg.wasd .kc:nth-child(4){grid-column:3;grid-row:2}
+.kc{display:inline-flex;align-items:center;justify-content:center;min-width:21px;height:21px;padding:0 5px;box-sizing:border-box;border:1px solid #b8bfb9;border-bottom-width:3px;border-radius:5px;background:linear-gradient(#fff,#f1f3f0);font:600 11px/1 "IBM Plex Sans KR",system-ui,sans-serif;font-style:normal;color:#1c2420}
+.kc-w{min-width:46px}.kc-sp{min-width:68px}.kc-m{padding:0 4px}
+.kt{font-size:10.5px;color:#5d6862}
+.kgd{position:absolute;left:calc(244px + (100% - 244px)/2);bottom:16px;transform:translateX(-50%);display:flex;gap:16px;align-items:center;padding:9px 16px;border-radius:12px;background:rgba(18,24,21,.58);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);color:#fff;font-size:12.5px;font-weight:600;pointer-events:none;transition:opacity .5s;white-space:nowrap;z-index:5}
+.kgd .it{display:flex;align-items:center;gap:7px}.kgd .kg.wasd{grid-template-columns:repeat(3,19px)}.kgd .kc{min-width:19px;height:19px;font-size:10.5px}.kgd .kc-w{min-width:42px}.kgd .kc-sp{min-width:60px}
+.kgd .end{font-weight:400;font-size:11px;color:#d6ddd8}
+@media (max-width:900px){.kgd{left:50%;bottom:244px}}
+@media (max-width:640px),(pointer:coarse){.kgd{display:none!important}}
 #joy{position:absolute;left:24px;bottom:24px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.35);border:1.5px solid rgba(28,36,32,.35);display:none;touch-action:none}
 #joy i{position:absolute;left:40px;top:40px;width:40px;height:40px;border-radius:50%;background:rgba(28,36,32,.45)}
 #jump{position:absolute;right:24px;bottom:34px;width:64px;height:64px;border-radius:50%;display:none;background:rgba(255,255,255,.55);border:1.5px solid rgba(28,36,32,.35);color:#1c2420;font-weight:700}
@@ -167,7 +181,21 @@ footer a{color:var(--accent)}
  <button id="bUnfold" class="unfold" type="button" hidden aria-label="메뉴 펼치기">▾ 메뉴</button>
  <div class="hud"><div class="chip" id="where">불러오는 중…</div><div class="chip" id="hp" hidden></div><div class="mission" id="mission" hidden></div><div class="chip" id="inspChip" hidden></div><div class="chip" id="score" hidden></div><div class="chip" id="bud" hidden></div></div>
  <div class="log" id="log"></div>
- <div class="hint" id="help"><b>걷기</b> W A S D·방향키 · <b>보기</b> 끌기 · <b>뛰기</b> Shift(두 배) · <b>점프</b> Space<br><b>검사관</b>: 처음 한 번은 시청 건축과 → 소방 → 에너지 → 이용자 대표 → 종합 판정 순서로 현관 밖에 찾아옵니다. 나가서 만나야 검사를 시작하고, 끝나면 현관 밖에서 검사지를 줍니다. 2분 넘게 기다리게 하면 화가 나서 돌아갑니다. 그 뒤에는 "검사관"으로 원하는 검사관만 부릅니다. <b>설계 멘토</b>는 검사관이 모두 다녀간 뒤부터, 검사관이 없을 때만 들러 조언을 하나씩 줍니다. 알림은 오른쪽으로 밀면 사라집니다.<br><b>찾기</b>: 검사관이 남긴 번호 표시까지 걸어가면 "지적 자리 찾기"가 올라갑니다.<br><b>걷는 사람</b>: 휠체어 이용자·어린이·노인으로 바꿔 걸어 보세요. 휠체어는 2cm 넘는 턱과 계단을 지나가지 못합니다. 승강기는 휠체어 이용자·노인만 타고, 카 안에 들어가면 층을 고릅니다(불이 나면 멈춤).<br><b>예비비</b>: 임시 조치·하자 보수·치료비·이행강제금은 건축주 예비비(100)에서 빠집니다. 근본 해결은 IFC를 고쳐 같은 파일 이름으로 다시 올리는 것이고, 해결한 수정 과제마다 하자 해결 도장을 받습니다.<br><b>보고서</b>: "보고서"에서 PDF로 받으면 항목마다 측정값·기준·법령·고치는 방법과 층별 평면이 들어갑니다.<br><b>이 자리 햇빛</b>: 선 자리에서 오늘 하루 직사광이 드는 시간을 잽니다.<br><b>자동 화재</b>: 계단까지 가장 먼 자리에 들어서면 불이 나고 연기가 퍼집니다. 방화문과 피난계단은 연기를 막아 안전지대가 됩니다. <b>피난 미션</b>은 지금 자리에서 바로 시작합니다.<br><b>사건</b>: 바닥이 없거나 난간이 없으면 떨어지고, 천장·계단이 낮으면 머리를 부딪힙니다. <b>비·눈 오는 날</b>(동지는 눈)에는 지붕이 덮지 못한 실로 비·눈이 들어오고, 고치지 않으면 경고 5·7·9번째에 마감 젖음 → 천장재 낙하 → 바닥 붕괴로 번집니다.</div>
+ <div class="hint" id="help"><div class="keys" aria-label="조작 키">
+  <span class="kg wasd"><i class="kc k-w">W</i><i class="kc">A</i><i class="kc">S</i><i class="kc">D</i></span><span>걷기<small>앞 · 왼쪽 · 뒤 · 오른쪽</small></span>
+  <span class="kg wasd"><i class="kc k-w">↑</i><i class="kc">←</i><i class="kc">↓</i><i class="kc">→</i></span><span>걷기 · 돌기<small>↑↓ 앞뒤, ←→ 몸을 돌림</small></span>
+  <span class="kg"><i class="kc kc-m" aria-hidden="true"><svg viewBox="0 0 14 20" width="11" height="16"><rect x="1" y="1" width="12" height="18" rx="6" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="7" y1="1.5" x2="7" y2="7" stroke="currentColor" stroke-width="1.6"/></svg></i><span class="kt">끌기</span></span><span>둘러보기<small>화면을 끌어 보는 방향을 바꿈</small></span>
+  <span class="kg"><i class="kc kc-w">Shift</i></span><span>달리기<small>누른 채 걸으면 두 배 빠르게</small></span>
+  <span class="kg"><i class="kc kc-sp">Space</i></span><span>점프<small>휠체어 이용자는 점프하지 않음</small></span>
+ </div><b>검사관</b>: 처음 한 번은 시청 건축과 → 소방 → 에너지 → 이용자 대표 → 종합 판정 순서로 현관 밖에 찾아옵니다. 나가서 만나야 검사를 시작하고, 끝나면 현관 밖에서 검사지를 줍니다. 2분 넘게 기다리게 하면 화가 나서 돌아갑니다. 그 뒤에는 "검사관"으로 원하는 검사관만 부릅니다. <b>설계 멘토</b>는 검사관이 모두 다녀간 뒤부터, 검사관이 없을 때만 들러 조언을 하나씩 줍니다. 알림은 오른쪽으로 밀면 사라집니다.<br><b>찾기</b>: 검사관이 남긴 번호 표시까지 걸어가면 "지적 자리 찾기"가 올라갑니다.<br><b>걷는 사람</b>: 휠체어 이용자·어린이·노인으로 바꿔 걸어 보세요. 휠체어는 2cm 넘는 턱과 계단을 지나가지 못합니다. 승강기는 휠체어 이용자·노인만 타고, 카 안에 들어가면 층을 고릅니다(불이 나면 멈춤).<br><b>예비비</b>: 임시 조치·하자 보수·치료비·이행강제금은 건축주 예비비(100)에서 빠집니다. 근본 해결은 IFC를 고쳐 같은 파일 이름으로 다시 올리는 것이고, 해결한 수정 과제마다 하자 해결 도장을 받습니다.<br><b>보고서</b>: "보고서"에서 PDF로 받으면 항목마다 측정값·기준·법령·고치는 방법과 층별 평면이 들어갑니다.<br><b>이 자리 햇빛</b>: 선 자리에서 오늘 하루 직사광이 드는 시간을 잽니다.<br><b>자동 화재</b>: 계단까지 가장 먼 자리에 들어서면 불이 나고 연기가 퍼집니다. 방화문과 피난계단은 연기를 막아 안전지대가 됩니다. <b>피난 미션</b>은 지금 자리에서 바로 시작합니다.<br><b>사건</b>: 바닥이 없거나 난간이 없으면 떨어지고, 천장·계단이 낮으면 머리를 부딪힙니다. <b>비·눈 오는 날</b>(동지는 눈)에는 지붕이 덮지 못한 실로 비·눈이 들어오고, 고치지 않으면 경고 5·7·9번째에 마감 젖음 → 천장재 낙하 → 바닥 붕괴로 번집니다.</div>
+ <div class="kgd" id="keyguide" hidden aria-hidden="true">
+  <span class="it"><span class="kg wasd"><i class="kc">W</i><i class="kc">A</i><i class="kc">S</i><i class="kc">D</i></span>걷기</span>
+  <span class="it"><i class="kc">←</i><i class="kc">→</i>돌기</span>
+  <span class="it"><i class="kc kc-m"><svg viewBox="0 0 14 20" width="10" height="14"><rect x="1" y="1" width="12" height="18" rx="6" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="7" y1="1.5" x2="7" y2="7" stroke="currentColor" stroke-width="1.6"/></svg></i>끌어서 둘러보기</span>
+  <span class="it"><i class="kc kc-w">Shift</i>달리기</span>
+  <span class="it"><i class="kc kc-sp">Space</i>점프</span>
+  <span class="it end"><i class="kc">H</i>안내 다시 보기</span>
+ </div>
  <canvas id="map" width="440" height="440" aria-label="평면 위 현재 위치"></canvas>
  <div class="sunbox" id="sunbox" hidden></div>
  <div id="joy"><i></i></div><button id="jump" type="button">점프</button>
@@ -2595,7 +2623,7 @@ $('day').onchange=setSun; $('hour').oninput=setSun;
 // ───────── 둘러보기 / 걷기 ─────────
 let mode='orbit';
 function toOrbit(reset){
- mode='orbit'; orbit.enabled=true; $('bOrbit').setAttribute('aria-pressed','true'); $('bWalk').setAttribute('aria-pressed','false');
+ mode='orbit'; orbit.enabled=true; kgShow(false); $('bOrbit').setAttribute('aria-pressed','true'); $('bWalk').setAttribute('aria-pressed','false');
  $('joy').style.display='none'; $('jump').style.display='none';
  if(reset){const s=M.box.getSize(new THREE.Vector3()),r=Math.max(s.x,s.y,s.z,8);cam.fov=45;cam.updateProjectionMatrix();orbit.target.set(0,s.y*0.35,0);cam.position.set(r*1.1,r*0.8,r*1.3);}
 }
@@ -2609,7 +2637,12 @@ const WHO={adult:{nm:'일반 성인',eye:1.6,rad:0.28,step:0.36,spd:1,jump:true}
 let PER=WHO.adult,PID='adult',EYE=1.6,RAD=0.28,PSTEP=0.36;
 function setWho(k){PID=k;PER=WHO[k];EYE=PER.eye;RAD=PER.rad;PSTEP=PER.step;if(mode==='walk'){settle();P.vy=0}
  note({key:'who',title:`${PER.nm}${k==='adult'?'으로':'로'} 걷습니다`,sub:PER.say||'',ttl:5000})}
-function toWalk(){if($('help'))$('help').hidden=true;if($('setup'))$('setup').hidden=true;$('tGame')&&$('tGame').setAttribute('aria-selected','true');$('tSetup')&&$('tSetup').setAttribute('aria-selected','false');
+// PC 조작 안내: 걸어 들어가면 아래쪽에 키 모양으로 띄움. 3초 넘게 걷고 화면을 한 번 끌면(또는 ←→로 돌면) 익힌 것으로 보고 사라짐. 익힌 뒤에는 6초만, H로 다시 봄 (휴대폰은 이동바가 있어 띄우지 않음)
+var KG={walkT:0,drag:false,shown:0,learned:false};try{KG.learned=localStorage.getItem('mvw-keysok')==='1'}catch(_){}
+function kgShow(on){const el=$('keyguide');if(!el)return;if(on){el.hidden=false;void el.offsetWidth;el.style.opacity='1';KG.shown=performance.now()}else{el.style.opacity='0';setTimeout(()=>{if(el.style.opacity==='0')el.hidden=true},550)}}
+function kgTick(dt,moving){const el=$('keyguide');if(!el||el.hidden||el.style.opacity==='0')return;if(moving)KG.walkT+=dt;const ok=KG.walkT>3&&KG.drag,age=(performance.now()-KG.shown)/1000;
+ if(ok&&!KG.learned){KG.learned=true;try{localStorage.setItem('mvw-keysok','1')}catch(_){}}if(ok||age>(KG.learned?6:45))kgShow(false)}
+function toWalk(){if($('help'))$('help').hidden=true;setTimeout(()=>kgShow(true),400);if($('setup'))$('setup').hidden=true;$('tGame')&&$('tGame').setAttribute('aria-selected','true');$('tSetup')&&$('tSetup').setAttribute('aria-selected','false');
  mode='walk'; orbit.enabled=false; $('bWalk').setAttribute('aria-pressed','true'); $('bOrbit').setAttribute('aria-pressed','false');
  if(matchMedia('(pointer:coarse)').matches){$('joy').style.display='block';$('jump').style.display='block'}
  cam.fov=70; cam.updateProjectionMatrix();
@@ -2623,11 +2656,11 @@ function toWalk(){if($('help'))$('help').hidden=true;if($('setup'))$('setup').hi
 }
 $('bWalk').onclick=toWalk; $('bOrbit').onclick=()=>{toOrbit(true);hpShow()};
 // 입력
-const K={};addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;K[e.code]=true;if(mode==='walk'&&['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault()});
+const K={};addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;K[e.code]=true;if(mode==='walk'&&e.code==='KeyH'){const el=$('keyguide');kgShow(!el||el.hidden||el.style.opacity==='0');if(el&&!el.hidden){KG.walkT=0;KG.drag=false}}if(mode==='walk'&&(e.code==='ArrowLeft'||e.code==='ArrowRight'))KG.drag=true;if(mode==='walk'&&['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault()});
 addEventListener('keyup',e=>{K[e.code]=false});
 let look=null;
 renderer.domElement.addEventListener('pointerdown',e=>{if(mode!=='walk')return;look={id:e.pointerId,x:e.clientX,y:e.clientY};renderer.domElement.setPointerCapture(e.pointerId)});
-renderer.domElement.addEventListener('pointermove',e=>{if(!look||e.pointerId!==look.id)return;P.yaw-=(e.clientX-look.x)*0.004;P.pitch=Math.max(-1.3,Math.min(1.3,P.pitch-(e.clientY-look.y)*0.004));look.x=e.clientX;look.y=e.clientY});
+renderer.domElement.addEventListener('pointermove',e=>{if(!look||e.pointerId!==look.id)return;if(Math.abs(e.clientX-look.x)+Math.abs(e.clientY-look.y)>2)KG.drag=true;P.yaw-=(e.clientX-look.x)*0.004;P.pitch=Math.max(-1.3,Math.min(1.3,P.pitch-(e.clientY-look.y)*0.004));look.x=e.clientX;look.y=e.clientY});
 renderer.domElement.addEventListener('pointerup',e=>{if(look&&e.pointerId===look.id)look=null});
 const joy={x:0,y:0,id:null};
 $('joy').addEventListener('pointerdown',e=>{joy.id=e.pointerId;$('joy').setPointerCapture(e.pointerId);joyMove(e)});
@@ -2647,14 +2680,14 @@ function step(dt){
  const f=(K.KeyW||K.ArrowUp?1:0)-(K.KeyS||K.ArrowDown?1:0)-joy.y, s=(K.KeyD?1:0)-(K.KeyA?1:0)+joy.x;
  if(K.ArrowLeft)P.yaw+=1.8*dt; if(K.ArrowRight)P.yaw-=1.8*dt;
  if(K.Space&&P.ground&&PER.jump){P.vy=4.2;P.ground=false}
- const sp=(+$('spd').value)*PER.spd*(K.ShiftLeft||K.ShiftRight?2:1)*Math.min(1,Math.hypot(f,s));
+ const sp=(+$('spd').value)*PER.spd*(K.ShiftLeft||K.ShiftRight?2:1)*Math.min(1,Math.hypot(f,s));kgTick(dt,Math.hypot(f,s)>0.1);
  const fw=new THREE.Vector3(-Math.sin(P.yaw),0,-Math.cos(P.yaw)), rt=new THREE.Vector3(Math.cos(P.yaw),0,-Math.sin(P.yaw));
  const mv=fw.multiplyScalar(f).add(rt.multiplyScalar(s)); const before=P.pos.clone();
  if(mv.lengthSq()>1e-6){mv.normalize();const len=sp*dt;
   // 미끄러지며 이동: 전체 → x만 → z만
   for(const d of [mv,new THREE.Vector3(Math.sign(mv.x),0,0),new THREE.Vector3(0,0,Math.sign(mv.z))]){
    if(d.lengthSq()<1e-6)continue; const dd=d.clone().normalize(); const l=d===mv?len:len*Math.abs(d===mv?1:(dd.x?mv.x:mv.z));
-   if(!blocked(P.pos,dd,l)){P.pos.addScaledVector(dd,l);P._mv=true;break}
+   if(!blocked(P.pos,dd,l)&&!wheelEdge(P.pos,dd,l)){P.pos.addScaledVector(dd,l);P._mv=true;break}
   }
   if(!P._mv&&PID==='wheel'&&f>0)wheelStuck(mv);P._mv=false}
  // 위아래
@@ -2698,7 +2731,7 @@ const REGEN={wait:4,rate:4};
 function regenStep(dt){if(mode!=='walk'||HP>=100||HP<=0)return;if(F&&!F.done&&F.inSmoke)return;if(PID==='elder'&&P.on&&M.stairs.includes(P.on))return;
  if((performance.now()-lastHurt)/1000<REGEN.wait)return;const was=Math.round(HP);HP=Math.min(100,HP+REGEN.rate*dt);if(Math.round(HP)!==was)hpShow()}
 function hpShow(){const el=$('hp');el.hidden=mode!=='walk';el.innerHTML=`체력 <b>${Math.max(0,Math.round(HP))}</b><span class="hpbar"><i style="width:${Math.max(0,HP)}%;background:${HP>50?'#2c6153':HP>25?'#a46a00':'#a8322a'}"></i></span>`}
-function ev(key,title,why,dmg,bad,at){
+function ev(key,title,why,dmg,bad,at,pos){
  const now=performance.now(); if(seen.has(key)&&now-seen.get(key)<4000)return; seen.set(key,now);
  dmg=(dmg||0)*TOUGH; HP-=dmg; if(dmg>0)lastHurt=now; const w=whereNow(); let where=at!=null?at:[w.st,w.room].filter(Boolean).join(' ');
  if(at==null&&P.on&&M.stairs.includes(P.on)&&P.on.userData.n&&!where.includes(P.on.userData.n))where+=` · ${P.on.userData.n}`;
@@ -2706,7 +2739,7 @@ function ev(key,title,why,dmg,bad,at){
  const typ=key.replace(/[-\d.]+$/,''),g=typ+'|'+where,sh=quietNow()?false:evShow(typ,g,dmg); // 검사 중에는 횟수를 쓰지 않고 기록만
  if(sh)note({key:'ev'+typ,kind:bad?'bad':'warn',title:esc(title)+(dmg?` <span class="dm">−${Math.round(dmg)}</span>`:''),sub:esc(where)+(sh===2?' · 같은 종류는 이제 보고서에만 적습니다':''),ttl:3200});
  else if(dmg)hpShow();
- const r=REP.get(g)||{title,where,why,bad,n:0,dmg:0,pos:P.pos.clone()}; r.n++; r.dmg+=dmg||0; r.title=title; r.why=why; REP.set(g,r); repDirty=true; repBtn();
+ const r=REP.get(g)||{title,where,why,bad,n:0,dmg:0,pos:(pos||P.pos).clone()}; r.n++; r.dmg+=dmg||0; r.title=title; r.why=why; REP.set(g,r); repDirty=true; repBtn();
  hpShow();scoreShow();
  if(HP<=0)onKO();
 }
@@ -2744,13 +2777,13 @@ function exitWatch(){if(mode!=='walk')return;const now=inBuilding();if(now&&!LAS
 const AIR={peak:null};
 function events(prevY,climbed){
  // 떨어짐: 공중에 있던 최고점과 착지점의 차이
- if(!P.ground){AIR.peak=Math.max(AIR.peak??P.pos.y,P.pos.y)}
+ if(!P.ground){if(AIR.peak==null){const w=whereNow();AIR.from={p:P.pos.clone(),s:[w.st,w.room].filter(Boolean).join(' ')}}AIR.peak=Math.max(AIR.peak??P.pos.y,P.pos.y)}
  else if(AIR.peak!=null){const drop=AIR.peak-P.pos.y; AIR.peak=null;
   if(drop>1.5){const inside=P.pos.x>M.box.min.x&&P.pos.x<M.box.max.x&&P.pos.z>M.box.min.z&&P.pos.z<M.box.max.z;
-   const lowPar=!inside;
+   const lowPar=!inside,w2=whereNow(),to=[w2.st,w2.room].filter(Boolean).join(' '),fr=AIR.from,at=fr&&fr.s&&fr.s!==to?`${fr.s}에서 떨어져 ${to||'바깥'}에 닿음`:null;
    ev('fall'+Math.round(P.pos.x)+Math.round(P.pos.z),`${drop.toFixed(1)}m 아래로 떨어졌습니다`,
     lowPar?'건물 가장자리에 난간이 없거나 낮습니다. 옥상광장이나 2층 이상 노대 둘레에는 높이 1.2m 이상 난간을 둡니다(건축법 시행령 제40조). 모델에서 난간·파라펫을 확인하세요.'
-          :'바닥이 비어 있습니다. 슬래브가 빠졌거나 바닥 개구부에 난간이 없습니다. 모델에서 이 위치의 슬래브(IfcSlab)를 확인하세요.',Math.min(45,(drop-1.2)*14),true)}}
+          :'바닥이 비어 있습니다. 슬래브가 빠졌거나 바닥 개구부에 난간이 없습니다. 모델에서 이 위치의 슬래브(IfcSlab)를 확인하세요.',Math.min(45,(drop-1.2)*14),true,at,fr&&fr.p)}AIR.from=null}
  if(P.ground){
   // 머리 부딪힘: 서 있는 자리 위로 1.95m 안에 무언가 있음
   const c=hitDist(new THREE.Vector3(P.pos.x,P.pos.y+0.3,P.pos.z),UP,EYE+0.05,M.solids);
@@ -2765,6 +2798,13 @@ function events(prevY,climbed){
   if(climbed>0.22&&climbed<=PSTEP+0.06)ev('step'+Math.round(P.pos.x)+Math.round(P.pos.z),'발이 걸렸습니다',`한 번에 ${Math.round(climbed*100)}cm를 올라섰습니다. 계단 단높이는 용도별 기준(같은 규칙 제15조제2항) 안에 있어야 하고, 실 사이 바닥 높이 차이도 걸려 넘어지는 원인이 됩니다.`,3,false);
  }
 }
+// 휠체어는 5cm 넘게 낮아지는 곳(계단 첫 단, 바닥 끝)으로 나가지 않음. 2~5cm 턱은 덜컹 사건으로 남김 (2026. 11. 4.)
+let edgeT=0;
+function wheelEdge(from,dd,l){if(PID!=='wheel'||!P.ground)return false;const fx=from.x+dd.x*(l+RAD*0.7),fz=from.z+dd.z*(l+RAD*0.7),h=groundAt(fx,from.y,fz),drop=h?from.y-h.point.y:Infinity;
+ if(drop<=0.05)return false;const now=performance.now();if(now-edgeT>2500){edgeT=now;const st=h&&M.stairs.includes(h.object);
+  if(st||drop<=0.62)noteLite({key:'wedge',kind:'warn',title:'계단 앞에서 멈췄습니다',sub:'휠체어는 계단으로 내려갈 수 없습니다. 승강기를 쓰세요.',ttl:2500});
+  else ev('wheeledge'+Math.round(fx)+Math.round(fz),'난간 없는 바닥 끝에서 멈췄습니다',`휠체어 바로 앞이 ${drop>30?'바닥 없이':drop.toFixed(1)+'m 아래로'} 뚫려 있습니다. 아래층으로 열린 가장자리에는 높이 1.2m 이상 난간을 둡니다(건축법 시행령 제40조, 실내건축 기준 제6조). 모델에서 이 자리의 난간과 슬래브를 확인하세요.`,0,true)}
+ return true}
 // 휠체어가 막혔을 때: 앞에 무엇이 있는지 보고 알려 줌
 let stuckT=0;
 function wheelStuck(dir){const now=performance.now();if(now-stuckT<1500)return;stuckT=now;
@@ -2966,7 +3006,8 @@ function drawMap(){
  for(let k=4;k>=0;k--){x.strokeStyle=col[k];x.lineWidth=lw[k];x.beginPath();for(let i=0;i<MAP.kinds.length;i++){if(MAP.kinds[i]!==k)continue;const s=MAP.segs;const j=i*4;x.moveTo(X(s[j]),Z(s[j+1]));x.lineTo(X(s[j+2]),Z(s[j+3]))}x.stroke()}
  x.fillStyle='#5d6862';x.font='600 20px "IBM Plex Sans KR",sans-serif';x.textAlign='center';MAP.labels.forEach(l=>x.fillText(l.n,X(l.x),Z(l.z)+7));
  mapFire(x,X,Z,sc);
- if(INSP.call&&INSP.call.phase==='wait'&&INSP.npc){const p=INSP.npc.position,rr=11+((performance.now()/90)%16);x.strokeStyle='#ffb21f';x.lineWidth=4;x.beginPath();x.arc(X(p.x),Z(p.z),rr,0,7);x.stroke();const t=meas().stAt(p.y);if(Math.abs(p.y-(mode==='walk'?P.pos.y:M.box.min.y))>=1.5){x.fillStyle='#a46a00';x.font='700 18px sans-serif';x.textAlign='center';x.fillText(t.s,X(p.x),Z(p.z)-16)}}
+ if(INSP.call&&INSP.call.meet&&INSP.call.phase!=='show'){const q=INSP.call.r.pos;x.strokeStyle='#ffb21f';x.lineWidth=3;x.beginPath();x.moveTo(X(q.x)-7,Z(q.z)-7);x.lineTo(X(q.x)+7,Z(q.z)+7);x.moveTo(X(q.x)+7,Z(q.z)-7);x.lineTo(X(q.x)-7,Z(q.z)+7);x.stroke()}
+ if(INSP.call&&INSP.call.phase!=='show'&&INSP.npc){const p=INSP.npc.position,rr=11+((performance.now()/90)%16);x.strokeStyle='#ffb21f';x.lineWidth=4;x.beginPath();x.arc(X(p.x),Z(p.z),rr,0,7);x.stroke();const t=meas().stAt(p.y);if(Math.abs(p.y-(mode==='walk'?P.pos.y:M.box.min.y))>=1.5){x.fillStyle='#a46a00';x.font='700 18px sans-serif';x.textAlign='center';x.fillText(t.s,X(p.x),Z(p.z)-16)}}
  if(INSP.npc&&Math.abs(INSP.npc.position.y-(mode==='walk'?P.pos.y:M.box.min.y))<1.5){const p=INSP.npc.position;x.fillStyle=INS[INSP.kind].c;x.beginPath();x.arc(X(p.x),Z(p.z),9,0,7);x.fill();x.fillStyle='#fff';x.font='700 12px sans-serif';x.textAlign='center';x.fillText('검',X(p.x),Z(p.z)+4)}
  // 바깥 문
  x.fillStyle='#2c6153';M.exits.forEach(e=>{const c=e.box.getCenter(new THREE.Vector3());x.beginPath();x.arc(X(c.x),Z(c.z),7,0,7);x.fill()});
@@ -3123,7 +3164,7 @@ function nm(n){return n&&n.sp?[n.sp.s,n.sp.n].filter(Boolean).join(' '):(n&&n.y>
 const spName=sp=>[sp.s,sp.n].filter(Boolean).join(' ');
 // 결과 한 줄: 문장·기준·조항·고치는 방법은 규칙표에서
 function RF(id,grade,where,pos,measured,o){const r=RULES[id]||{};o=o||{};const ok=grade==='적합';
- return {id,insp:INSPK[r.insp]||o.insp||'',grade,title:o.title||(ok?(NAMES[id]||id):(r.say||NAMES[id]||id)),where:where||'',pos:pos||null,measured:measured||'',std:o.std||r.std||'',law:o.law||r.law||'',fix:ok?'':(o.fix||r.fix||''),tag:o.tag||r.tag||'',note:o.note||''}}
+ return {id,insp:INSPK[r.insp]||o.insp||'',grade,title:o.title||(ok?(NAMES[id]||id):(r.say||NAMES[id]||id)),where:where||'',pos:pos||null,measured:measured||'',std:o.std||r.std||'',law:o.law||r.law||'',fix:ok?'':(o.fix||r.fix||''),tag:o.tag||r.tag||'',note:o.note||'',box:o.box||null}}
 // ───────── 측정 ─────────
 const NONLIV=/계단|화장실|복도|통로|로비|현관|홀$|창고|기계|전기실|옥탑|EV|승강기|엘리베이터|샤프트|발코니|테라스|다용도|드레스|탕비|부속|주차|entry|hall$|corridor|stair|toilet|wc/i;
 const CORR=/복도|통로|corridor/i;
@@ -3200,7 +3241,8 @@ function guardEdges(){const N=NAV,out=[],rc=new THREE.Raycaster(),objs=M.solids.
   for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1]]){const ks=N.col.get((n.i+di)*100000+n.j+dj)||[];const su=N.surf.get((n.i+di)*100000+n.j+dj)||[];if(su.some(y=>y>n.y-0.62&&y<n.y+2.2))continue;
    const low=ks.map(k=>N.nodes[k]).filter(m=>m.y<n.y-0.62);const drop=low.length?n.y-Math.max(...low.map(m=>m.y)):n.y-M.box.min.y;if(drop<1.0)continue;
    let h=0;for(const hh of [0.3,0.6,0.9,1.15]){rc.set(new V(n.x-di*0.2,n.y+hh,n.z-dj*0.2),new V(di,0,dj));rc.far=0.85;if(rc.intersectObjects(objs,false).length)h=hh;else break}
-   if(h>=1.15)continue;out.push({n,h,drop,stairHole:low.some(m=>m.stair)})}}return out}
+   if(h>=1.15)continue;const ci=n.i+di,cj=n.j+dj,hole=[[1,0],[-1,0],[0,1],[0,-1]].every(([ai,aj])=>{for(let k=1;k<=12;k++){const su2=N.surf.get((ci+ai*k)*100000+cj+aj*k)||[];if(su2.some(y=>Math.abs(y-n.y)<0.1))return true}return false}); // 뚫린 칸에서 네 방향 모두 6m 안에 같은 높이 바닥이 있으면 바닥 구멍
+   out.push({n,h,drop,stairHole:low.some(m=>m.stair),hole,hx:n.x+di*N.cs,hz:n.z+dj*N.cs})}}return out}
 // ───────── 승강기 앞 활동공간 (장애인등편의법 시행규칙 별표1 제9호가목(2): 승강기 전면 1.4m×1.4m 이상) ─────────
 // 층마다 카의 네 면 가운데 승강로 벽으로 막히지 않고 밖에 걸을 바닥이 있는 면(승강장)을 찾아, 그 앞 1.4m×1.4m 상자에 걸리는 요소를 찾음
 function elevFront(){const L=elevs(),out=[];if(!L.length||!NAV)return out;const V=THREE.Vector3,rc=new THREE.Raycaster();
@@ -3390,10 +3432,11 @@ function runChecks(kind){
    R.push(RF('EGR-STAIR-2',g.length<2?'위반':'적합',t.s,null,`${why} · 계단 ${g.length}개`,{std:'직통계단 2개소 이상'}));
    if(g.length>=2){const d=Math.hypot(g[0].x-g[1].x,g[0].z-g[1].z),req=E.diag/(E.spk?3:2);R.push(RF('STAIR-2-SEP',d<req?'위반':'적합',t.s,new THREE.Vector3(g[0].x,t.y,g[0].z),`두 계단 ${d.toFixed(1)}m`,{std:`${req.toFixed(1)}m 이상 (대각선 ${E.diag.toFixed(1)}m의 ${E.spk?'1/3, 스프링클러 있음':'1/2'})`}))}}
   // 난간
-  if(N){const groups=new Map();for(const e of guardEdges()){const k=nm(e.n)+'|'+(e.h===0?0:1)+'|'+(e.stairHole?1:0);const g=groups.get(k)||{...e,cnt:0};g.cnt++;groups.set(k,g)}
+  if(N){const groups=new Map();for(const e of guardEdges()){const k=nm(e.n)+'|'+(e.h===0?0:1)+'|'+(e.stairHole?1:0)+'|'+(e.hole?1:0);const g=groups.get(k)||{...e,cnt:0,bb:{x0:Infinity,z0:Infinity,x1:-Infinity,z1:-Infinity}};g.cnt++;g.bb.x0=Math.min(g.bb.x0,e.hx);g.bb.z0=Math.min(g.bb.z0,e.hz);g.bb.x1=Math.max(g.bb.x1,e.hx);g.bb.z1=Math.max(g.bb.z1,e.hz);groups.set(k,g)}
    for(const g of groups.values()){const roof=!g.n.sp,p=new THREE.Vector3(g.n.x,g.n.y,g.n.z),ms=`${g.h===0?'난간 없음':`약 ${(g.h+0.1).toFixed(1)}m 이하`} · 약 ${(g.cnt*0.5).toFixed(1)}m 구간, 아래로 ${g.drop.toFixed(1)}m`;
     if(roof&&!E.cl.some(c=>c.hi>=g.n.y-0.6)&&!E.doors.some(x=>Math.abs(x.d.box.min.y-g.n.y)<0.4&&x.d.box.max.y>g.n.y+1.5))continue; // 계단·문으로 나갈 수 없는 지붕은 제외
-    if(roof)R.push(RF('GUARD-ROOF','위반',nm(g.n),p,ms,{std:'1.2m 이상',title:g.h===0?'옥상·테라스 가장자리에 난간이 없습니다.':'옥상·테라스 난간이 낮습니다.'}));
+    const hb=g.hole&&roof?{x0:g.bb.x0-0.25,z0:g.bb.z0-0.25,x1:g.bb.x1+0.25,z1:g.bb.z1+0.25}:null,hs=hb?' (평면의 점선 구간)':'';
+    if(roof)R.push(RF('GUARD-ROOF','위반',g.hole?'옥상 바닥 구멍 둘레':nm(g.n),hb?new THREE.Vector3((hb.x0+hb.x1)/2,g.n.y,(hb.z0+hb.z1)/2):p,ms+hs,{std:'1.2m 이상',box:hb,title:g.hole?(g.h===0?'옥상 바닥 구멍 둘레에 난간이 없습니다.':'옥상 바닥 구멍 둘레 난간이 낮습니다.'):g.h===0?'옥상·테라스 가장자리에 난간이 없습니다.':'옥상·테라스 난간이 낮습니다.'}));
     else{const multi=MULTI();R.push(RF('GUARD-INNER',multi?'위반':g.h===0?'보완':'권고',nm(g.n),p,ms,{std:multi?'1.2m 이상, 살 간격 10cm 이하':'1.2m 이상 권장 (실내건축 기준 적용 건축물만 법정)',title:g.stairHole?'계단 구멍 가장자리가 열려 있어 떨어질 수 있습니다.':undefined}))}}}
   // 계단
   if(N){const low=N.nodes.filter(n=>n.stair&&n.clear<2.1);if(low.length){const n=low.reduce((a,b)=>a.clear<b.clear?a:b);R.push(RF('STAIR-HEADROOM',big?'위반':'권고',nm(n)+' 계단',P3(n),`최소 ${n.clear.toFixed(2)}m`,{std:'2.1m 이상'}))}}
@@ -3501,9 +3544,9 @@ function runChecks(kind){
   const B=M.box,H=B.max.y-B.min.y,side={N:0,S:0,E:0,W:0},len={N:B.max.x-B.min.x,S:B.max.x-B.min.x,E:B.max.z-B.min.z,W:B.max.z-B.min.z};
   for(const w of E.wins)if(w.ext)side[w.face]+=w.area;
   const nmS={N:'북',S:'남',E:'동',W:'서'},txt=Object.keys(side).map(k=>`${nmS[k]} ${Math.round(side[k]/(len[k]*H)*100)}%`).join(' · '),hi=Object.keys(side).filter(k=>side[k]/(len[k]*H)>0.5&&k!=='S');
-  R.push(RF('EN-WWR',hi.length?'권고':'적합',txt,null,txt,{std:'동·서·북 50% 이하 (실무)'}));
+  R.push(RF('EN-WWR',hi.length?'권고':'적합',txt,null,txt,{std:'동·서·북 50% 이하 (실무)',note:'창면적비는 계단실·화장실까지 모든 외창을 세고, 에너지 계산서의 태양열취득(EPI 7번)은 거실 창만 셉니다.'}));
   {const S=solarCalc();if(S.Q!=null){const worst=[...S.per.entries()].filter(([r,p])=>p.env>0).sort((a,b)=>b[1].gain/b[1].env-a[1].gain/a[1].env)[0];
-   R.push(RF('EN-SOLAR',S.b<=0.7?'권고':'적합',worst&&S.b<=0.7?spName(worst[0].sp):'거실 전체',worst&&S.b<=0.7?worst[0].sp.box.getCenter(V3()):null,`${S.Q.toFixed(1)} W/㎡ → ${S.b}점 × ${S.a} = ${(S.a*S.b).toFixed(1)}점${S.gAssumed?' (유리 SHGC 가정)':''}`,
+   R.push(RF('EN-SOLAR',S.b<=0.7?'권고':'적합',worst&&S.b<=0.7?`건물 전체 평균 (가장 더운 실: ${spName(worst[0].sp)})`:'거실 전체',worst&&S.b<=0.7?worst[0].sp.box.getCenter(V3()):null,`${S.Q.toFixed(1)} W/㎡ → ${S.b}점 × ${S.a} = ${(S.a*S.b).toFixed(1)}점${S.gAssumed?' (유리 SHGC 가정)':''}`,
     {insp:'energy',std:'거실 외피면적당 평균 태양열취득: 19 W/㎡ 미만 1점, 19~24 0.9, 24~29 0.8, 29~34 0.7, 34~39 0.6 (계산법-1)',law:'건축물의 에너지절약설계기준 별지 제1호서식 에너지성능지표 건축부문 7번·주5) [2026. 7. 8.]',tag:'법정 기준(계산법) · 권고 문턱은 실무 판단',
      title:S.b<=0.7?'창으로 들어오는 여름 햇빛이 많아 냉방부하가 큽니다.':undefined,fix:'서·동쪽 창을 줄이거나 수평 차양(남)·세로 핀(동·서)을 두고, SHGC가 낮은 유리를 쓰세요. 창 타입 속성에 SolarHeatGainTransmittance를 넣으면 가정값 대신 그 값으로 계산합니다.'}))}}
   const shade=G.children.some(m=>m.userData&&(m.userData.t==='IFCMEMBER'||(m.userData.t==='IFCSLAB'&&m.geometry.boundingBox.max.z>B.max.z+0.3&&m.geometry.boundingBox.min.y>1)));
@@ -3511,11 +3554,11 @@ function runChecks(kind){
   else R.push(RF('EN-SHADE',shade?'적합':'권고','',null,shade?'차양·핀 있음':'없음',{std:'남측 수평 차양, 동·서 세로 핀 (실무)'}));
  }
  if(kind==='user'){
-  for(const r of REP.values()){if(/안전지대| 방문$/.test(r.title))continue;R.push({...RF('USR-EVENT','권고',r.where,null,`${r.n}번 겪음${r.bad?' · 안전':''}`),title:r.title,fix:r.why.replace(/<[^>]+>/g,''),std:''})}
+  // 걸으며 겪은 일은 보고서의 따로 된 장에만 싣고 이용자 대표 항목에는 넣지 않음 (2026. 11. 4., 중복 제거)
   const bf=bfRow(A),gr=c=>c==='의'?'위반':'권고',bfNote=bf.note||'';
   const pub=E.rooms.filter(r=>r.liv&&!/침실|방$|주방|가족실/.test(r.sp.n));
   if(bf.tgt){
-   if(E.main)R.push(RF('USR-DOOR-W',E.main.eff<0.9?gr(bf.door):'적합','주출입구',E.main.c,`유효폭 약 ${E.main.eff.toFixed(2)}m (문 폭 ${E.main.w.toFixed(2)}m − 0.1)`,{std:'통과유효폭 0.9m 이상',note:bfNote}));
+   if(E.main)R.push(RF('USR-DOOR-W',E.main.eff<0.9?gr(bf.door):'적합','주출입구',E.main.c,`유효폭 약 ${E.main.eff.toFixed(2)}m · 문 폭 ${E.main.w.toFixed(2)}m에서 0.1m 뺌`,{std:'통과유효폭 0.9m 이상',note:bfNote}));
    for(const r of pub){const ds=E.doors.filter(x=>x.rooms.includes(r));if(!ds.length)continue;const best=ds.reduce((a,b)=>a.eff>b.eff?a:b);if(best.eff<0.9)R.push(RF('USR-DOOR-W',gr(bf.door),spName(r.sp),best.c,`가장 넓은 문 유효폭 약 ${best.eff.toFixed(2)}m`,{std:'통과유효폭 0.9m 이상',note:bfNote}))}
    if(E.step){const h=Math.round(E.step.h*100);R.push(RF('USR-ENTRY-STEP',!E.site?'확인 필요':h>2?gr(bf.step):'적합','주출입구',E.main&&E.main.c,`${E.step.ok?'턱':'높이 차'} ${h}cm`,{std:'2cm 이하 (넘으면 1/12 경사로)',note:E.site?'':'대지(IfcSite)가 모델에 없어 바깥 땅 높이를 알 수 없습니다.',title:E.site?undefined:'대지 높이가 모델에 없어 현관 턱을 확인하지 못했습니다.',fix:E.site?undefined:'대지(IfcSite)에 지형이나 바깥 바닥 높이를 넣으면 현관 턱을 잽니다.'}))}
    for(const r of E.rooms.filter(q=>q.corr))if(r.width<1.18)R.push(RF('USR-CORR-BF',gr(bf.corr),spName(r.sp),r.sp.box.getCenter(V3()),`${r.width.toFixed(2)}m`,{std:'유효폭 1.2m 이상'}));
@@ -3753,6 +3796,7 @@ function planCanvas(h,marks){const S=sliceAt(h),cv=document.createElement('canva
  x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height);const col=['#2b302d','#9b6b43','#5f9cc4','#8f8a83','#c9bda6'],lw=[2.6,2.2,2,1.2,1];
  for(let k=4;k>=0;k--){x.strokeStyle=col[k];x.lineWidth=lw[k];x.beginPath();for(let i=0;i<S.kinds.length;i++){if(S.kinds[i]!==k)continue;const j=i*4;x.moveTo(X(S.segs[j]),Z(S.segs[j+1]));x.lineTo(X(S.segs[j+2]),Z(S.segs[j+3]))}x.stroke()}
  x.fillStyle='#6b746f';x.font='500 17px "IBM Plex Sans KR",sans-serif';x.textAlign='center';S.labels.forEach(l=>x.fillText(l.n,X(l.x),Z(l.z)+6));
+ for(const m of marks)if(m.box){x.save();x.setLineDash([7,5]);x.strokeStyle=m.c;x.lineWidth=2.2;x.strokeRect(X(m.box.x0),Z(m.box.z0),(m.box.x1-m.box.x0)*sc,(m.box.z1-m.box.z0)*sc);x.restore()}
  for(const m of marks){const px=X(m.p.x),pz=Z(m.p.z);x.fillStyle=m.c;x.beginPath();x.arc(px,pz,15,0,7);x.fill();x.strokeStyle='#fff';x.lineWidth=2.5;x.stroke();x.fillStyle='#fff';x.font='700 14px "IBM Plex Sans KR",sans-serif';x.fillText(m.t,px,pz+5)}
  x.fillStyle='#2b302d';x.font='600 15px "IBM Plex Sans KR",sans-serif';x.textAlign='left';x.fillText('N ↑',16,26);return cv}
 function snap3D(){const B=M.box,c=B.getCenter(new THREE.Vector3()),r=B.getSize(new THREE.Vector3()).length();const pp=cam.position.clone(),pq=cam.quaternion.clone(),hv=INSP.npc&&INSP.npc.visible;
@@ -3778,7 +3822,7 @@ function reportDoc(){
   h+=`<div class="pb newpage"><div class="sh" style="border-color:${I.c}"><span class="av" style="background:${I.c}">${I.av}</span><div><h2>${I.nm}</h2><div class="sm">${I.rl} · ${verdictOf(k,INSP.res[k])}</div></div></div>${GUIDE[k]?`<div class="why"><b>이 기준이 있는 이유</b>${GUIDE[k].map(t=>`<p>${esc(t)}</p>`).join('')}</div>`:''}</div>`;
   // 층별 평면 + 번호
   const byS=new Map();for(const r of rest){if(!r.pos)continue;const t=E.stAt(r.pos.y);if(!byS.has(t))byS.set(t,[]);byS.get(t).push(r)}
-  for(const [t,rs] of byS)h+=`<div class="pb"><div class="sm"><b>${esc(t.s)}</b> 평면 — 번호는 아래 항목 번호입니다.</div><img class="plan" src="${planCanvas(t.y+1.1,rs.map(r=>({p:r.pos,t:r.pno,c:gcol[r.grade]}))).toDataURL('image/png')}" alt=""></div>`;
+  for(const [t,rs] of [...byS].sort((a,b)=>a[0].y-b[0].y))h+=`<div class="pb"><div class="sm"><b>${esc(t.s)}</b> 평면 — 번호는 아래 항목 번호입니다.</div><img class="plan" src="${planCanvas(t.y+1.1,rs.map(r=>({p:r.pos,t:r.pno,c:gcol[r.grade],box:r.box}))).toDataURL('image/png')}" alt=""></div>`;
   for(const r of rest)h+=`<div class="pb item" style="border-left-color:${gcol[r.grade]}"><div class="ih"><span class="no">${r.pno}</span><span class="gb" style="color:${gcol[r.grade]};border-color:${gcol[r.grade]}">${r.grade}</span><b>${esc(r.title)}</b></div>
    <table class="kv">${r.where?`<tr><th>위치</th><td>${esc(r.where)}</td></tr>`:''}${r.measured?`<tr><th>측정</th><td>${esc(r.measured)}</td></tr>`:''}${r.std?`<tr><th>기준</th><td>${esc(r.std)}</td></tr>`:''}${r.law&&r.law!=='—'?`<tr><th>법령</th><td>${esc(r.law)}</td></tr>`:''}${r.fix?`<tr><th>고치는 방법</th><td>${esc(r.fix)}</td></tr>`:''}${r.tag?`<tr><th>꼬리표</th><td>${esc(r.tag)}${r.id?` · ${r.id}`:''}</td></tr>`:''}${r.note?`<tr><th>참고</th><td>${esc(r.note)}</td></tr>`:''}</table></div>`;
   if(!rest.length)h+=`<div class="pb"><p>고칠 것이 없습니다.</p></div>`;
@@ -3788,7 +3832,7 @@ function reportDoc(){
  const items=[...REP.values()].filter(r=>r.why&&!/ 방문$|현관에 왔습니다|검사 완료/.test(r.title));
  if(items.length){h+=`<div class="pb newpage"><h2>걸으며 겪은 일</h2><p class="sm">걷는 동안 몸으로 겪은 사건입니다. 게임 중에는 같은 종류의 알림을 두 번까지만 띄우고, 나머지는 여기에 자리와 함께 모았습니다. 같은 결함이 검사관 항목에도 있으면 그쪽에서 판정합니다.</p></div>`;
   items.forEach((r,i)=>r.wno='W'+(i+1));const byW=new Map();for(const r of items){if(!r.pos)continue;const t=E.stAt(r.pos.y);if(!byW.has(t))byW.set(t,[]);byW.get(t).push(r)}
-  for(const [t,rs] of byW)h+=`<div class="pb"><div class="sm"><b>${esc(t.s)}</b> 평면 — W 번호는 아래 사건 번호이고, 처음 겪은 자리입니다.</div><img class="plan" src="${planCanvas(t.y+1.1,rs.map(r=>({p:r.pos,t:r.wno,c:r.bad?'#a8322a':'#b07a12'}))).toDataURL('image/png')}" alt=""></div>`;
+  for(const [t,rs] of [...byW].sort((a,b)=>a[0].y-b[0].y))h+=`<div class="pb"><div class="sm"><b>${esc(t.s)}</b> 평면 — W 번호는 아래 사건 번호이고, 처음 겪은 자리입니다.</div><img class="plan" src="${planCanvas(t.y+1.1,rs.map(r=>({p:r.pos,t:r.wno,c:r.bad?'#a8322a':'#b07a12'}))).toDataURL('image/png')}" alt=""></div>`;
   for(const r of items)h+=`<div class="pb item" style="border-left-color:${r.bad?'#a8322a':'#b07a12'}"><div class="ih"><span class="no">${r.wno}</span><span class="gb" style="color:${r.bad?'#a8322a':'#b07a12'};border-color:currentColor">${r.bad?'안전':'불편'}</span><b>${esc(r.title)}</b></div><table class="kv"><tr><th>자리</th><td>${esc(r.where||'')}</td></tr><tr><th>겪은 횟수</th><td>${r.n}번${r.dmg?` · 체력 −${Math.round(r.dmg)}`:''}</td></tr><tr><th>문제</th><td>${r.why}</td></tr></table></div>`}
  if(F&&F.done)h+=`<div class="pb">${fireReport()}</div>`;
  h+=mentorHTML();h+=clientHTML();
@@ -3815,6 +3859,15 @@ async function pdfReport(){
  finally{host.classList.remove('on');host.innerHTML=''}}
 function printReport(){$('printArea').innerHTML=reportDoc();try{window.print()}catch(e){note({kind:'warn',title:'이 화면에서는 인쇄가 막혀 있습니다',sub:'PC 브라우저에서 파일을 열어 주세요.',ttl:5000})}}
 
+// 휠체어로 닿을 수 있는 곳: 계단을 빼고 높이 차 3cm 이하로 이어진 바닥 + 승강기가 서는 층의 승강장 (2026. 11. 4.)
+let WR=null;
+function wheelReach(){if(!NAV)return null;const me=mode==='walk'?(nodeAt(P.pos)||nearestNode(P.pos)):null;if(WR&&WR.nav===NAV&&(!me||WR.ok[me.k]))return WR.ok;const N=NAV.nodes,ok=new Uint8Array(N.length),q=[];
+ const push=n=>{if(n&&!n.stair&&!ok[n.k]){ok[n.k]=1;q.push(n.k)}};
+ const lands=elevs().map(e=>{const b=e.box;return N.filter(n=>!n.out&&!n.stair&&e.fl.some(t=>Math.abs(n.y-t.y)<0.3)&&n.x>=b.min.x-1.2&&n.x<=b.max.x+1.2&&n.z>=b.min.z-1.2&&n.z<=b.max.z+1.2)}),used=new Set();
+ push(entrance().inN);push(me);
+ for(;;){while(q.length){const n=N[q.pop()];for(const e of n.adj){const m=N[e[0]];if(!m.stair&&Math.abs(m.y-n.y)<=0.03)push(m)}}
+  let more=false;lands.forEach((L,i)=>{if(used.has(i)||!L.some(n=>ok[n.k]))return;used.add(i);L.forEach(push);more=true});if(!more)break}
+ WR={nav:NAV,ok};return ok}
 function nearestNode(p){if(!NAV)return null;let b=null,bd=Infinity;for(const n of NAV.nodes){if(n.out)continue;const d=Math.hypot(n.x-p.x,n.z-p.z)+Math.abs(n.y-p.y)*3;if(d<bd){bd=d;b=n}}return b}
 function pathTo(a,b){const N=NAV.nodes,D=new Float64Array(N.length).fill(Infinity),prev=new Int32Array(N.length).fill(-1),H=heap();D[a.k]=0;H.push(a.k,0);
  while(H.size){const [d,k]=H.pop();if(k===b.k)break;if(d>D[k])continue;for(const e of N[k].adj){const nd=d+e[1];if(nd<D[e[0]]){D[e[0]]=nd;prev[e[0]]=k;H.push(e[0],nd)}}}
@@ -3850,24 +3903,43 @@ function inspTour(dt){const r=INSP.route,npc=INSP.npc;if(!npc)return;
  $('inspChip').hidden=false;$('inspChip').innerHTML=`<b>${INS[INSP.kind].av}</b> 검사 중 ${Math.round(Math.min(99,INSP.done/INSP.len*100))}%`}
 // 검사관이 위반 자리에서 학생을 부름: 30초 기다리고, 오면 그 자리를 가리키며 한 줄로 설명. 안 와도 벌칙 없음, 오면 현장 확인 도장(설계 점수 +2)
 function inspCall(r){const I=INS[INSP.kind],t=meas().stAt(r.pos.y),here=meas().stAt(P.pos.y+0.05);INSP.call={r,t:30,phase:'wait'};const npc=INSP.npc;if(npc&&npc.userData.mark)npc.userData.mark.visible=true;
- note({key:'insp-call',kind:'bad',title:`${esc(I.nm)}${ig(I.nm)} ${esc(t.s)}에서 부릅니다`,sub:`위반을 찾았습니다. 지도에서 깜빡이는 자리로 오세요${t!==here?` (지금 ${esc(here.s)})`:''}. 30초 기다리고, 안 와도 괜찮습니다.`,ttl:5000})}
-function callStep(dt){const C=INSP.call,npc=INSP.npc,U=npc.userData,I=INS[INSP.kind];C.t-=dt;
+ // 휠체어로 걸을 때: 위반 자리에 휠체어로 닿을 수 없으면 그 층에서 휠체어가 닿는 가장 가까운 곳으로 검사관이 옮겨 가서 부름. 그 층에 승강기가 서지 않으면 검사관이 학생에게 옴
+ let how='';const ok=PID==='wheel'&&mode==='walk'?wheelReach():null;
+ if(ok){const N=NAV.nodes,q=r.pos,d2=(n,p)=>Math.hypot(n.x-p.x,n.z-p.z);let m=null,far=false;
+  const same=N.filter(n=>ok[n.k]&&!n.out&&Math.abs(n.y-t.y)<0.3);
+  if(same.length){m=same.reduce((a,b)=>d2(a,q)<d2(b,q)?a:b);if(d2(m,q)<1.2)m=null}
+  else{far=true;const fw=new THREE.Vector3(-Math.sin(P.yaw),0,-Math.cos(P.yaw)),want={x:P.pos.x+fw.x*1.6,z:P.pos.z+fw.z*1.6};
+   const c=N.filter(n=>ok[n.k]&&Math.abs(n.y-P.pos.y)<0.3&&d2(n,P.pos)>0.9&&d2(n,P.pos)<3);m=c.length?c.reduce((a,b)=>d2(a,want)<d2(b,want)?a:b):(nodeAt(P.pos)||nearestNode(P.pos))}
+  if(m){const cur=nodeAt(npc.position)||nearestNode(npc.position),path=cur?pathTo(cur,m):[];Object.assign(INSP.call,{phase:'go',path:path.length>1?path:[m,m],pi:0,ps:0,meet:m,far});how=far?'far':'meet'}}
+ if(how==='far')note({key:'insp-call',kind:'bad',title:`${esc(I.nm)}${ig(I.nm)} 학생에게 옵니다`,sub:`${esc(t.s)}에서 위반을 찾았는데, 그 층은 승강기가 서지 않아 휠체어로 갈 수 없습니다. 검사관이 내려와 설명하니 그 자리에서 기다리세요.`,ttl:5500});
+ else if(how==='meet')note({key:'insp-call',kind:'bad',title:`${esc(I.nm)}${ig(I.nm)} ${esc(t.s)}에서 부릅니다`,sub:`위반 자리는 휠체어로 갈 수 없어, 그 층에서 휠체어가 닿는 곳에서 기다립니다.${t!==here?` 승강기로 ${esc(t.s)}에 오세요 (지금 ${esc(here.s)}).`:' 지도에서 깜빡이는 자리로 오세요.'} 30초 기다리고, 안 와도 괜찮습니다.`,ttl:5500});
+ else note({key:'insp-call',kind:'bad',title:`${esc(I.nm)}${ig(I.nm)} ${esc(t.s)}에서 부릅니다`,sub:`위반을 찾았습니다. 지도에서 깜빡이는 자리로 오세요${t!==here?` (지금 ${esc(here.s)}${PID==='wheel'?', 승강기로 오세요':''})`:''}. 30초 기다리고, 안 와도 괜찮습니다.`,ttl:5000})}
+// 부르기가 끝나면 검사관이 서 있는 자리에서 원래 돌던 길로 돌아감 (순간이동 없이)
+function callResume(){const npc=INSP.npc,r=INSP.route;if(!npc||!r||INSP.ri>=r.length-1)return;const a=r[INSP.ri];if(Math.hypot(a.x-npc.position.x,a.z-npc.position.z,a.y-npc.position.y)<0.3)return;
+ const cur=nodeAt(npc.position)||nearestNode(npc.position),an=nearestNode(new THREE.Vector3(a.x,a.y,a.z)),back=cur&&an?pathTo(cur,an):[];
+ const ins=back.slice(1).map(n=>({x:n.x,y:n.y,z:n.z}));ins.push({x:a.x,y:a.y,z:a.z});const p0={x:npc.position.x,y:npc.position.y,z:npc.position.z};let L=0,pv=p0;for(const q of ins){L+=Math.hypot(q.x-pv.x,q.z-pv.z,q.y-pv.y);pv=q}
+ r[INSP.ri]=p0;r.splice(INSP.ri+1,0,...ins);INSP.len+=L;INSP.seg=0}
+function callStep(dt){const C=INSP.call,npc=INSP.npc,U=npc.userData,I=INS[INSP.kind];
+ if(C.phase==='go'){npcPose(npc,true);const p=C.path;if(C.pi>=p.length-1){const m=C.meet;npc.position.set(m.x,m.y,m.z);C.phase='wait';C.t=30;return}
+  const a=p[C.pi],b=p[C.pi+1],L=Math.hypot(b.x-a.x,b.z-a.z,b.y-a.y)||0.01;C.ps+=2.4*dt/L;if(C.ps>=1){C.ps=0;C.pi++;return}
+  npc.position.set(a.x+(b.x-a.x)*C.ps,a.y+(b.y-a.y)*C.ps,a.z+(b.z-a.z)*C.ps);npc.position.y+=Math.abs(Math.sin(performance.now()/160))*0.04;npc.rotation.y=Math.atan2(b.x-a.x,b.z-a.z);return}
+ C.t-=dt;
  if(C.phase==='wait'){npcPose(npc,false);npc.rotation.y=Math.atan2(P.pos.x-npc.position.x,P.pos.z-npc.position.z);
   if(mode==='walk'&&Math.hypot(npc.position.x-P.pos.x,npc.position.z-P.pos.z)<2.6&&Math.abs(npc.position.y-P.pos.y)<1.3){C.phase='show';C.t=5;U.point=true;U.mark.visible=false;
-   const q=C.r.pos,dv=new THREE.Vector3(P.pos.x-q.x,0,P.pos.z-q.z);if(dv.lengthSq()>0.01){dv.normalize();const np=new THREE.Vector3(q.x-dv.x*1.0,npc.position.y,q.z-dv.z*1.0),nn=nearestNode(np);if(nn&&Math.hypot(nn.x-np.x,nn.z-np.z)<0.6&&Math.abs(nn.y-npc.position.y)<0.9)npc.position.set(nn.x,nn.y,nn.z)} // 그 자리 너머로 비켜서서 학생과 마주 보고 가리킴
+   const q=C.r.pos,dv=new THREE.Vector3(P.pos.x-q.x,0,P.pos.z-q.z);if(!C.meet&&dv.lengthSq()>0.01){dv.normalize();const np=new THREE.Vector3(q.x-dv.x*1.0,npc.position.y,q.z-dv.z*1.0),nn=nearestNode(np);if(nn&&Math.hypot(nn.x-np.x,nn.z-np.z)<0.6&&Math.abs(nn.y-npc.position.y)<0.9)npc.position.set(nn.x,nn.y,nn.z)} // 그 자리 너머로 비켜서서 학생과 마주 보고 가리킴
    npc.rotation.y=Math.atan2(q.x-npc.position.x,q.z-npc.position.z);
    const g=new THREE.Group(),ring=new THREE.Mesh(new THREE.TorusGeometry(0.42,0.04,8,32),new THREE.MeshBasicMaterial({color:0xffc83d,transparent:true,opacity:0.95,depthTest:false})),arr=new THREE.Mesh(new THREE.ConeGeometry(0.13,0.32,12),new THREE.MeshBasicMaterial({color:0xffc83d,depthTest:false}));
    const col=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,2.2,8),new THREE.MeshBasicMaterial({color:0xffc83d,transparent:true,opacity:0.55,depthTest:false}));col.position.y=1.1;
    ring.rotation.x=Math.PI/2;arr.rotation.x=Math.PI;arr.position.y=2.45;ring.renderOrder=arr.renderOrder=col.renderOrder=12;g.add(ring,arr,col);g.position.copy(q);g.position.y=meas().stAt(q.y).y>q.y-2.5&&C.r.pos.y-meas().stAt(q.y).y<1.6?q.y:meas().stAt(q.y).y+0.05;scene.add(g);C.fx=g;
    const p=(INSP.pinList||[]).find(x=>x.r===C.r);if(p&&!p.found){p.found=true;p.s.material.map=pinTex(p.r,true);p.s.material.needsUpdate=true}
    INSP.field=(INSP.field||0)+1;scoreShow();
-   note({insp:true,kind:'bad',title:`${esc(I.av)}: "${esc(C.r.title)}"`,sub:`${esc(C.r.measured||'')}${C.r.std?` · 기준 ${esc(C.r.std)}`:''}`,ttl:5000});
+   note({insp:true,kind:'bad',title:`${esc(I.av)}: "${esc(C.r.title)}"`,sub:`${C.meet?`${C.far?`${esc(meas().stAt(q.y).s)}에는 휠체어로 올라갈 수 없어 제가 내려왔습니다. `:'저기 노란 기둥이 그 자리입니다. '}`:''}${esc(C.r.where?C.r.where+' · ':'')}${esc(C.r.measured||'')}${C.r.std?` · 기준 ${esc(C.r.std)}`:''}`,ttl:C.meet?6500:5000});if(C.meet)C.t=6.5;
    setTimeout(()=>note({insp:true,kind:'ok',title:'현장 확인 도장을 받았습니다',sub:`검사관과 그 자리를 같이 봤습니다 · 설계 점수 +2 (지금 ${INSP.field}개)`,ttl:3000}),1600)}
-  else if(C.t<=0){U.mark.visible=false;note({insp:true,title:`${esc(I.av)}: "나중에 번호 표시로 보세요."`,sub:'검사를 이어 갑니다.',ttl:2500});INSP.call=null;INSP.pause=0.4}
+  else if(C.t<=0){U.mark.visible=false;note({insp:true,title:`${esc(I.av)}: "나중에 번호 표시로 보세요."`,sub:'검사를 이어 갑니다.',ttl:2500});INSP.call=null;callResume();INSP.pause=0.4}
   return}
  // 가리키기
  npcPose(npc,false);if(C.fx){const k=1+Math.sin(performance.now()/140)*0.12;C.fx.children[0].scale.set(k,k,k);C.fx.children[1].position.y=2.45+Math.abs(Math.sin(performance.now()/200))*0.15}
- if(C.t<=0){if(C.fx)scene.remove(C.fx);U.point=false;INSP.call=null;INSP.pause=0.4}}
+ if(C.t<=0){if(C.fx)scene.remove(C.fx);U.point=false;INSP.call=null;callResume();INSP.pause=0.4}}
 // ───────── 건축주 면담 (마지막 관문): 종합 판정 뒤 준비 시간 → 현관 밖에서 만나 위반·보완을 하나씩 묻는 3지선다 ─────────
 // 문제는 건축기사 출제 범위(건축법규·건축계획)의 문형을 응용해 규칙표의 기준·법령으로 만든 초안입니다(기출 문제 아님, 선생님 검수 대기).
 // 정답은 늘 첫 번째(a[0])이고 화면에서 섞어서 보여 줌
