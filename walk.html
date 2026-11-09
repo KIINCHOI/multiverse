@@ -144,6 +144,7 @@ main.rep-open .notes{right:calc(min(380px,100% - 24px) + 24px)}
 @media (max-width:640px),(pointer:coarse){.kgd{display:none!important}}
 #joy{position:absolute;left:24px;bottom:24px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.35);border:1.5px solid rgba(28,36,32,.35);display:none;touch-action:none}
 #joy i{position:absolute;left:40px;top:40px;width:40px;height:40px;border-radius:50%;background:rgba(28,36,32,.45)}
+#viewBtn{position:absolute;right:30px;bottom:112px;width:52px;height:52px;border-radius:50%;display:none;background:rgba(255,255,255,.55);border:1.5px solid rgba(28,36,32,.35);color:#1c2420;font-weight:700;font-size:12px}
 #jump{position:absolute;right:24px;bottom:34px;width:64px;height:64px;border-radius:50%;display:none;background:rgba(255,255,255,.55);border:1.5px solid rgba(28,36,32,.35);color:#1c2420;font-weight:700}
 .drop{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(44,97,83,.18);border:3px dashed #2c6153;font-size:18px;font-weight:700;color:#1c2420;pointer-events:none}
 .drop.on{display:flex}
@@ -202,7 +203,7 @@ footer a{color:var(--accent)}
  </div>
  <canvas id="map" width="440" height="440" aria-label="평면 위 현재 위치"></canvas>
  <div class="sunbox" id="sunbox" hidden></div>
- <div id="joy"><i></i></div><button id="jump" type="button">점프</button>
+ <div id="joy"><i></i></div><button id="jump" type="button">점프</button><button id="viewBtn" type="button" aria-label="시점 바꾸기">1인칭</button>
  <div class="drop" id="drop">IFC 파일을 놓으세요</div>
  <div class="msg" id="msg"></div>
  <aside class="report" id="report" hidden aria-label="점검 결과"></aside>
@@ -230,9 +231,14 @@ footer a{color:var(--accent)}
      <p class="w">지역을 고르지 않으면 서울(중부2) 기준으로 계산하고 보고서에 "가정"으로 적습니다. 정북 일조·건축선·대지 안의 공지·조경·건폐율은 대지 정보가 있어야 하므로 지금은 검사하지 않습니다. MULTIVERSE Plan 대지 파일을 함께 올리는 기능을 준비하고 있습니다.</p>
     </fieldset>
     <fieldset><legend>3. 걷는 사람</legend>
-     <label class="f">누구로 걸을까요<select id="who" aria-label="걷는 사람"><option value="adult">일반 성인</option><option value="wheel">휠체어 이용자</option><option value="child">어린이</option><option value="elder">노인</option></select></label>
+     <label class="f">누구로 걸을까요<select id="who" aria-label="걷는 사람"><option value="adult">건축학과 학생 (일반 성인)</option><option value="wheel">휠체어 이용자</option><option value="child">어린이</option><option value="elder">노인</option></select></label>
      <label class="f">걸음 속도<select id="spd" aria-label="걸음 속도"><option value="1.4">실제 걸음</option><option value="4.2" selected>빠르게</option><option value="7">아주 빠르게</option></select></label>
-     <p class="w">휠체어 이용자는 2cm 넘는 턱과 계단을 지나가지 못합니다. 승강기는 휠체어 이용자와 노인만 탈 수 있고, 카 안으로 들어가면 층을 고릅니다. 불이 나면 멈춥니다. 다친 뒤 4초가 지나면 체력이 저절로 돌아옵니다(화재 연기 속, 노인이 계단을 오르는 동안은 돌아오지 않음).</p>
+     <label class="f">학생 머리<select id="lookHair" aria-label="학생 머리 모양"><option value="short">짧은 머리</option><option value="bob">단발</option><option value="long">묶은 머리</option><option value="curly">곱슬</option></select></label>
+     <label class="f">머리 색<select id="lookHc" aria-label="학생 머리 색"><option value="black">검정</option><option value="brown">갈색</option><option value="light">밝은 갈색</option></select></label>
+     <label class="f">눈 모양<select id="lookEye" aria-label="학생 눈 모양"><option value="round">동그란 눈</option><option value="narrow">가는 눈</option><option value="droopy">처진 눈</option><option value="upturned">올라간 눈</option></select></label>
+     <label class="f">얼굴형<select id="lookFace" aria-label="학생 얼굴형"><option value="round">둥근 얼굴</option><option value="oval">갸름한 얼굴</option><option value="square">각진 얼굴</option></select></label>
+     <label class="f">점퍼 색<select id="lookJk" aria-label="학생 점퍼 색"><option value="teal">청록</option><option value="navy">남색</option><option value="red">빨강</option><option value="green">초록</option><option value="purple">보라</option><option value="orange">주황</option></select></label>
+     <p class="w">머리·눈·얼굴형·점퍼 색은 건축학과 학생에게만 적용되고 이 브라우저에 저장됩니다. 휠체어 이용자는 2cm 넘는 턱과 계단을 지나가지 못합니다. 승강기는 누구나 탈 수 있고, 카 안으로 들어가면 층을 고릅니다. 불이 나면 멈춥니다. 다친 뒤 4초가 지나면 체력이 저절로 돌아옵니다(화재 연기 속, 노인이 계단을 오르는 동안은 돌아오지 않음).</p>
     </fieldset>
     <fieldset><legend>4. 날씨와 시간</legend>
      <label class="f">날짜<select id="day" aria-label="날짜"><option value="355">동지</option><option value="80" selected>춘분·추분</option><option value="172">하지</option></select></label>
@@ -2628,13 +2634,13 @@ $('day').onchange=setSun; $('hour').oninput=setSun;
 let mode='orbit';
 function toOrbit(reset){
  mode='orbit'; orbit.enabled=true; kgShow(false); if(AV)AV.visible=false; if($('xhair'))$('xhair').hidden=true; $('bOrbit').setAttribute('aria-pressed','true'); $('bWalk').setAttribute('aria-pressed','false');
- $('joy').style.display='none'; $('jump').style.display='none';
+ $('joy').style.display='none'; $('jump').style.display='none'; $('viewBtn').style.display='none';
  if(reset){const s=M.box.getSize(new THREE.Vector3()),r=Math.max(s.x,s.y,s.z,8);cam.fov=45;cam.updateProjectionMatrix();orbit.target.set(0,s.y*0.35,0);cam.position.set(r*1.1,r*0.8,r*1.3);}
 }
 const P={pos:new THREE.Vector3(),vy:0,yaw:0,pitch:0,ground:true};
 const STEP=0.36,GRAV=9.8; // STEP: 보행 격자(검사)용 기준 단높이
 // 걷는 사람: 눈높이, 몸 반지름, 넘을 수 있는 턱(PSTEP+0.05m까지 오름), 속도 배율
-const WHO={adult:{nm:'일반 성인',eye:1.6,rad:0.28,step:0.36,spd:1,jump:true},
+const WHO={adult:{nm:'건축학과 학생',eye:1.6,rad:0.28,step:0.36,spd:1,jump:true},
  wheel:{nm:'휠체어 이용자',eye:1.2,rad:0.36,step:-0.02,spd:0.75,jump:false,say:'2cm 넘는 턱과 계단은 지나갈 수 없습니다. 승강기 안으로 들어가면 층을 고를 수 있습니다.'},
  child:{nm:'어린이 (7살)',eye:1.0,rad:0.2,step:0.24,spd:0.85,jump:true,say:'눈높이가 1m입니다. 높은 단은 힘들어합니다.'},
  elder:{nm:'노인',eye:1.5,rad:0.28,step:0.24,spd:0.55,jump:false,say:'천천히 걷고, 계단을 오를 때마다 체력이 조금씩 줄어듭니다. 낮은 턱에도 발이 걸립니다.'}};
@@ -2648,14 +2654,29 @@ function kgTick(dt,moving){const el=$('keyguide');if(!el||el.hidden||el.style.op
  if(ok&&!KG.learned){KG.learned=true;try{localStorage.setItem('mvw-keysok','1')}catch(_){}}if(ok||age>(KG.learned?6:45))kgShow(false)}
 // 시점: 3인칭(기본, 내 모습이 보임)·1인칭(V로 바꿈). 3인칭 카메라는 등 뒤에서 따라오고, 벽에 막히면 앞으로 당김 (2026. 11. 10.)
 var VIEW='3';try{if(localStorage.getItem('mvw-view')==='1')VIEW='1'}catch(_){}
+function viewToggle(){VIEW=VIEW==='3'?'1':'3';try{localStorage.setItem('mvw-view',VIEW)}catch(_){}const vb=$('viewBtn');if(vb)vb.textContent=VIEW==='3'?'1인칭':'3인칭';const touch=matchMedia('(pointer:coarse)').matches;noteLite({key:'view',title:VIEW==='3'?'3인칭: 내 모습이 보입니다':'1인칭: 걷는 사람의 눈높이로 봅니다',sub:touch?'오른쪽 아래 버튼으로 다시 바꿉니다':'V로 다시 바꿉니다',ttl:2200})}
 let AV=null,AVK=null;const CAMS={d:null};
-function avatarMake(k){const C={adult:{jk:0x2f7d8c,pt:0x2b3440,hair:0x2b2420,shirt:0xffffff,shoe:0xf2f2ee,cuff:0x1f5d69},child:{jk:0xf2b632,pt:0x3d5a99,hair:0x2b2420,shoe:0xd8402f,zipC:0xc98a10},
-  elder:{jk:0x8c7a66,pt:0x4a4f57,hair:0xdedede,brow:0xc8c8c8,glasses:true,shirt:0xf2efe6,zip:false,shoe:0x3a2a1e},wheel:{jk:0x5d6fb0,pt:0x2b3440,hair:0x3b2a1e,shoe:0x1e1f22}}[k];
- const g=humanBody(C),U=g.userData,{add,CY,BX,Mt}=U;
- if(k==='elder'){const cane=add(U.handR,CY(0.013,0.013,0.82),0x5a3d22,0,-0.41,0.04);add(U.handR,CY(0.014,0.014,0.09),0x5a3d22,0,-0.02,0.07).rotation.x=Math.PI/2;U.stoop=0.16}
- if(k==='child'){g.scale.setScalar(0.62);U.head.scale.setScalar(1.25)}
+// 내 모습: 일반 성인은 "건축학과 학생"(노란 안전모, 등에 멘 도면통, 가슴 주머니의 삼각 스케일, 소매가 흰 학과 점퍼). 머리 모양·머리 색·점퍼 색을 고를 수 있음 (2026. 11. 10.)
+const LOOK_HAIR={short:'짧은 머리',bob:'단발',long:'묶은 머리',curly:'곱슬'},LOOK_HC={black:0x1e1a18,brown:0x4a3020,light:0x8a6040},LOOK_JK={teal:0x2f7d8c,navy:0x2c3e66,red:0xb23a3a,green:0x3d7a4a,purple:0x6a4a9a,orange:0xd9772a};
+function lookGet(){let L={hair:'short',hc:'black',jk:'teal',eye:'round',face:'round'};try{Object.assign(L,JSON.parse(localStorage.getItem('mvw-look')||'{}'))}catch(_){}return L}
+function avatarMake(k){const L=lookGet();
+ const C={adult:{jk:LOOK_JK[L.jk]||0x2f7d8c,sleeve:0xf1eee6,cuff:LOOK_JK[L.jk]||0x2f7d8c,pt:0x2b3440,hair:LOOK_HC[L.hc]||0x1e1a18,hairStyle:L.hair,eyeShape:L.eye,faceShape:L.face,shirt:0xffffff,shoe:0xf2f2ee,zipC:0xf1eee6,cheek:true},
+  child:{jk:0xf2b632,pt:0x3d5a99,hair:0x2b2420,shoe:0xd8402f,zipC:0xc98a10,cheek:true,freckle:true,headScale:1.45,headY:0.78},
+  elder:{jk:0x8c7a66,pt:0x4a4f57,hair:0xdedede,brow:0xc8c8c8,glasses:true,wrinkle:true,eyeShape:'droopy',shirt:0xf2efe6,zip:false,shoe:0x3a2a1e},wheel:{jk:0x5d6fb0,pt:0x2b3440,hair:0x3b2a1e,shoe:0x1e1f22,cheek:true}}[k];
+ const g=humanBody(C),U=g.userData,{add,CY,SP,BX,Mt}=U,up=U.chest,fz=U.fz;
+ if(k==='adult'){const hd=U.head; // 노란 안전모
+  add(hd,new THREE.SphereGeometry(0.163,18,8,0,Math.PI*2,0,Math.PI*0.5),0xf2c230,0,0.03,0);add(hd,CY(0.19,0.19,0.015,22),0xf2c230,0,0.035,0.03);add(hd,BX(0.028,0.03,0.2),0xe0b020,0,0.185,0,false);
+  const tb=add(up,CY(0.045,0.045,0.78),0x2c3e66,-0.06,0.36,-0.16);tb.rotation.z=-0.55;add(tb,CY(0.05,0.05,0.06),0xe0702a,0,0.4,0,false); // 도면통
+  add(up,CY(0.016,0.016,0.2,3),0xe8e4d8,0.09,0.44,fz(0.44)+0.006,false); // 삼각 스케일
+  add(up,new THREE.CircleGeometry(0.035,16),0xf1eee6,-0.09,0.45,fz(0.45)+0.005,false); // 학과 마크
+  add(up,new THREE.CircleGeometry(0.022,16),LOOK_JK[L.jk]||0x2f7d8c,-0.09,0.45,fz(0.45)+0.007,false);
+  const sh=new THREE.Group();g.add(sh);U.sheet=sh;sh.visible=false;sh.matrixAutoUpdate=false; // 기다릴 때 꺼내 보는 도면: 두 손 사이에 매 프레임 놓음
+  const pm=new THREE.Mesh(new THREE.PlaneGeometry(1,0.32),new THREE.MeshLambertMaterial({map:sheetTex(),side:THREE.DoubleSide}));sh.add(pm);
+  for(const y of [0.16,-0.16]){const r=add(sh,CY(0.011,0.011,1.0,8),0xf4f1e8,0,y,0.004,false);r.rotation.z=Math.PI/2}}
+ if(k==='elder'){add(U.handR,CY(0.013,0.013,0.82),0x5a3d22,0,-0.41,0.04);add(U.handR,CY(0.014,0.014,0.09),0x5a3d22,0,-0.02,0.07).rotation.x=Math.PI/2;U.stoop=0.16}
+ if(k==='child')g.scale.setScalar(0.62);
  if(k==='elder')g.scale.setScalar(0.95);
- if(k==='wheel'){U.body.position.y=-0.4;U.seated=true;U.wheels=[]; // 휠체어: 바퀴살·손잡이 바퀴가 있는 큰 바퀴, 앞바퀴, 좌석, 등받이, 발판
+ if(k==='wheel'){U.body.position.y=-0.4;U.seated=true;U.wheels=[];
   const fr=0x9aa3ad,bk=0x2a2d31;
   for(const s of [-1,1]){const spin=new THREE.Group();spin.position.set(0.3*s,0.3,-0.06);g.add(spin);const w=new THREE.Group();w.rotation.y=Math.PI/2;spin.add(w);U.wheels.push(spin);
    w.add(new THREE.Mesh(new THREE.TorusGeometry(0.29,0.022,8,28),Mt(bk)));const rim=new THREE.Mesh(new THREE.TorusGeometry(0.25,0.008,6,24),Mt(fr));rim.position.z=0.035*s;w.add(rim);
@@ -2664,16 +2685,69 @@ function avatarMake(k){const C={adult:{jk:0x2f7d8c,pt:0x2b3440,hair:0x2b2420,shi
    add(g,CY(0.035,0.035,0.025),bk,0.22*s,0.06,0.36).rotation.z=Math.PI/2;add(g,CY(0.01,0.01,0.16),fr,0.22*s,0.14,0.36);
    add(g,BX(0.025,0.025,0.46),fr,0.23*s,0.46,0.1);add(g,CY(0.013,0.013,0.55),fr,0.23*s,0.73,-0.22);add(g,BX(0.025,0.025,0.12),bk,0.23*s,1.0,-0.27)}
   add(g,BX(0.46,0.06,0.44),bk,0,0.45,0.06);add(g,BX(0.44,0.38,0.03),bk,0,0.7,-0.22);add(g,BX(0.38,0.02,0.16),bk,0,0.09,0.42)}
+ // 머리 위 효과(땀방울·별·느낌표·하트): 반응할 때만 보임
+ const fx=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,depthTest:false}));fx.scale.set(0.42,0.42,1);fx.position.set(0.22,2.02,0);fx.visible=false;fx.renderOrder=12;g.add(fx);U.fx=fx;
  g.traverse(o=>{if(o.isMesh){o.userData.avatar=true;o.material.transparent=true}});return g}
-function avPose(dt){const U=AV.userData,mv=P.moving&&P.ground;
- if(U.seated){humanPose(U,mv,{seated:true});const lp=U.lp||P.pos.clone(),d=P.pos.distanceTo(lp),fwd=new THREE.Vector3(-Math.sin(P.yaw),0,-Math.cos(P.yaw)),sg=Math.sign(P.pos.clone().sub(lp).dot(fwd))||1;
-  for(const w of U.wheels)w.rotation.x+=sg*d/0.29;U.lp=P.pos.clone();return}
- humanPose(U,mv,{freq:P.climbT>0?5:AVK==='elder'?6:AVK==='child'?10:8.5,k:0.4,cane:AVK==='elder',noLook:true,stoop:(P.duckT>0?0.6:0)+(U.stoop||0)})}
+// 도면 놓기: 두 손 가운데에, 손 사이 너비보다 조금 넓게, 얼굴 쪽을 보게, 손 중심보다 7.8cm 얼굴 쪽에 둠 → 손 전체가 도면 뒤에 있어 도면을 뚫지 않음(꼭짓점 검사로 확인)
+function sheetPlace(U){const g=AV,V=THREE.Vector3;g.updateMatrixWorld(true);const hl=U.handL.children[0].getWorldPosition(new V()),hr=U.handR.children[0].getWorldPosition(new V()),hd=U.head.getWorldPosition(new V());
+ g.worldToLocal(hl);g.worldToLocal(hr);g.worldToLocal(hd);const m=hl.clone().add(hr).multiplyScalar(0.5),X=hr.clone().sub(hl),w=X.length()+0.02,n=hd.clone().sub(m).normalize();
+ const x=X.clone().sub(n.clone().multiplyScalar(X.dot(n))).normalize(),y=new V().crossVectors(n,x);const h=Math.max(0.05,Math.min(1,(U.drawA||0)*1.4));
+ const M=new THREE.Matrix4().makeBasis(x.multiplyScalar(w),y.multiplyScalar(h),n);M.setPosition(m.addScaledVector(n,0.078));U.sheet.matrix.copy(M)}
+let SHEETTEX=null;function sheetTex(){if(SHEETTEX)return SHEETTEX;const c=document.createElement('canvas');c.width=256;c.height=180;const x=c.getContext('2d');
+ x.fillStyle='#fbfaf5';x.fillRect(0,0,256,180);x.strokeStyle='#2c3e66';x.lineWidth=4;x.strokeRect(22,20,170,120);x.lineWidth=2;
+ x.beginPath();x.moveTo(110,20);x.lineTo(110,90);x.moveTo(22,90);x.lineTo(150,90);x.moveTo(150,90);x.lineTo(150,140);x.stroke();
+ x.beginPath();x.arc(110,90,18,Math.PI,Math.PI*1.5);x.stroke();x.beginPath();x.arc(150,118,14,Math.PI*0.5,Math.PI);x.stroke();
+ x.lineWidth=1;x.beginPath();x.moveTo(22,152);x.lineTo(192,152);x.moveTo(22,148);x.lineTo(22,156);x.moveTo(192,148);x.lineTo(192,156);x.stroke();
+ x.strokeRect(204,120,42,48);x.fillStyle='#2c3e66';x.fillRect(208,126,30,4);x.fillRect(208,136,22,3);x.fillRect(208,144,26,3);
+ x.fillStyle='rgba(44,62,102,.15)';x.fillRect(24,22,85,67);return SHEETTEX=new THREE.CanvasTexture(c)}
+const FXTEX={};function fxTex(kind){if(FXTEX[kind])return FXTEX[kind];const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.lineJoin='round';
+ const drop=(cx,cy,r)=>{x.beginPath();x.moveTo(cx,cy-r*1.6);x.quadraticCurveTo(cx+r,cy-r*0.2,cx+r,cy+r*0.3);x.arc(cx,cy+r*0.3,r,0,Math.PI);x.quadraticCurveTo(cx-r,cy-r*0.2,cx,cy-r*1.6);x.fill();x.stroke()};
+ x.lineWidth=5;x.strokeStyle='#fff';
+ if(kind==='sweat'){x.fillStyle='#5fb4e8';drop(50,62,17);drop(90,46,11)}
+ if(kind==='star'){x.fillStyle='#f6c531';for(const [cx,cy,r] of [[46,58,26],[92,40,16]]){x.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*0.45:r;x.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr)}x.closePath();x.fill();x.stroke()}}
+ if(kind==='bang'){x.fillStyle='#e8503a';x.beginPath();x.arc(64,64,40,0,7);x.fill();x.stroke();x.fillStyle='#fff';x.font='900 64px sans-serif';x.textAlign='center';x.fillText('!',64,86)}
+ if(kind==='heart'){x.fillStyle='#ef6b8a';x.beginPath();x.moveTo(64,100);x.bezierCurveTo(10,60,30,18,64,42);x.bezierCurveTo(98,18,118,60,64,100);x.fill();x.stroke()}
+ if(kind==='drip'){x.fillStyle='#7fb2d9';drop(40,50,12);drop(70,70,12);drop(98,44,12)}
+ if(kind==='smoke'){x.fillStyle='rgba(90,90,90,.85)';for(const [cx,cy,r] of [[44,70,24],[76,56,28],[96,80,18]]){x.beginPath();x.arc(cx,cy,r,0,7);x.fill()}}
+ return FXTEX[kind]=new THREE.CanvasTexture(c)}
+// 반응 동작: 설계 문제를 몸으로 겪는 모습 (3인칭에서 보임)
+const REACT={head:{d:1.6,fx:'star',ex:'sad',sq:0.8},hot:{d:3,fx:'sweat',ex:'worried',sq:0.3},rain:{d:2.2,fx:'drip',ex:'worried',sq:0.5},trip:{d:1.2,fx:'bang',ex:'o'},stop:{d:1.2,ex:'worried'},
+ surprise:{d:1.6,fx:'bang',ex:'o'},fall:{d:1.6,fx:'bang',ex:'o',sq:0.6},smoke:{d:1.2,fx:'smoke',ex:'worried',sq:0.7},tired:{d:2,fx:'sweat',ex:'sad',sq:0.4},joy:{d:1.6,fx:'heart',ex:'grin'},stretch:{d:1.8,ex:'smile',sq:0.9}};
+function avReact(kind){if(!AV||!REACT[kind])return;const U=AV.userData,R=REACT[kind];if(U.emote&&U.emote.k==='fall'&&kind!=='fall'&&U.emote.t<U.emote.d)return;U.emote={k:kind,t:0,d:R.d};if(R.fx){U.fx.material.map=fxTex(R.fx);U.fx.material.needsUpdate=true}}
+function avPose(dt){const U=AV.userData,mv=P.moving&&P.ground,t=performance.now()/1000;
+ for(const j of ['armL','armR'])U[j].rotation.z=0;U.upper.rotation.z=0;AV.position.y=P.pos.y;
+ if(U.seated){humanPose(U,mv,{seated:true});const lp=U.lp||P.pos.clone(),d=Math.hypot(P.pos.x-lp.x,P.pos.z-lp.z);for(const w of U.wheels)w.rotation.x+=d/0.29;U.lp=P.pos.clone()}
+ else{const v=P.spd||0,stride=(AVK==='child'?0.95:AVK==='elder'?1.1:1.45),w=Math.min(13,Math.max(4,2*Math.PI*v/stride));U.ph=(U.ph||0)+(mv?w*dt:0);
+  humanPose(U,mv,{ph:U.ph,amp:Math.min(0.75,0.38+v*0.07),k:0.35,cane:AVK==='elder',noLook:true,stoop:(P.duckT>0?0.6:0)+(U.stoop||0)+(v>3?0.12:0)})}
+ // 오래 서 있으면 두리번거리고 가끔 기지개
+ U.idle=mv?0:(U.idle||0)+dt;const draw=!!U.sheet&&U.idle>4&&!U.emote;U.drawA=(U.drawA||0)+((draw?1:0)-(U.drawA||0))*Math.min(1,dt*(draw?2.5:9));
+ if(U.drawA>0.02){const A=U.drawA,lk=draw&&((U.idle-4)%8)>6,lp=(a,b)=>a+(b-a)*A;
+  U.armL.rotation.x=lp(U.armL.rotation.x,-0.95);U.armR.rotation.x=lp(U.armR.rotation.x,-0.95);U.elbowL.rotation.x=lp(U.elbowL.rotation.x,-1.25);U.elbowR.rotation.x=lp(U.elbowR.rotation.x,-1.25);
+  U.armL.rotation.z=0.1*A;U.armR.rotation.z=-0.1*A;U.head.rotation.x+=((lk?0:0.42)*A-U.head.rotation.x)*Math.min(1,dt*4);U.head.rotation.y+=((lk?Math.sin(t*0.9)*0.55:Math.sin(t*0.5)*0.08)-U.head.rotation.y)*Math.min(1,dt*3)}
+ if(U.sheet){U.sheet.visible=U.drawA>0.04;if(U.sheet.visible)sheetPlace(U)}
+ else{U.head.rotation.x*=0.85;if(U.idle>5&&!U.emote){U.head.rotation.y=Math.sin(t*0.7)*0.45;if(U.idle>9&&AVK==='child'){avReact('stretch');U.idle=5.01}}else if(mv)U.head.rotation.y*=0.85}
+ if(typeof F!=='undefined'&&F&&!F.done&&F.inSmoke&&(!U.emote||U.emote.k==='smoke'))avReact('smoke');
+ let ex=U.expr0,sq=0;const E=U.emote;
+ if(E){E.t+=dt;const R=REACT[E.k],a=Math.min(1,E.t*7,(E.d-E.t)*5),A=Math.max(0,a);const L=U.armL,Rr=U.armR,eL=U.elbowL,eR=U.elbowR,mix=(o,k,v)=>{o.rotation[k]+= (v-o.rotation[k])*A};
+  if(E.k==='head'){mix(L,'x',-2.5);mix(Rr,'x',-2.5);mix(eL,'x',-1.5);mix(eR,'x',-1.5);mix(L,'z',-0.5);mix(Rr,'z',0.5);mix(U.upper,'x',0.25)}
+  if(E.k==='hot'){mix(Rr,'x',-2.3);mix(eR,'x',-1.7);Rr.rotation.z=A*(0.25+Math.sin(t*18)*0.25)}
+  if(E.k==='rain'){mix(L,'x',-2.9);mix(Rr,'x',-2.9);mix(eL,'x',-0.9);mix(eR,'x',-0.9);mix(L,'z',-0.3);mix(Rr,'z',0.3)}
+  if(E.k==='trip'){U.upper.rotation.z=Math.sin(E.t*16)*0.28*A;mix(L,'z',-0.9);mix(Rr,'z',0.9)}
+  if(E.k==='stop')U.head.rotation.y=Math.sin(E.t*12)*0.45*A;
+  if(E.k==='surprise'){mix(L,'z',-0.5);mix(Rr,'z',0.5);mix(eL,'x',-1.2);mix(eR,'x',-1.2);AV.position.y+=Math.max(0,Math.sin(E.t*9))*0.06*A}
+  if(E.k==='fall'){L.rotation.x=-2.6+Math.sin(E.t*14)*0.5*A;Rr.rotation.x=-2.6-Math.sin(E.t*14)*0.5*A;mix(L,'z',-0.4);mix(Rr,'z',0.4)}
+  if(E.k==='smoke'){mix(Rr,'x',-1.4);mix(eR,'x',-2.1);mix(U.upper,'x',0.45)}
+  if(E.k==='tired'){mix(U.upper,'x',0.4);mix(L,'x',-0.5);mix(Rr,'x',-0.5)}
+  if(E.k==='joy'){mix(L,'x',-2.8);mix(Rr,'x',-2.8);mix(L,'z',-0.35);mix(Rr,'z',0.35);AV.position.y+=Math.abs(Math.sin(E.t*9))*0.14*A}
+  if(E.k==='stretch'){mix(L,'x',-3.0);mix(Rr,'x',-3.0);mix(eL,'x',-0.2);mix(eR,'x',-0.2)}
+  ex=R.ex||ex;sq=(R.sq||0)*A;U.fx.visible=!!R.fx&&A>0.05;if(U.fx.visible){U.fx.position.y=2.02+Math.sin(t*5)*0.03}
+  if(E.t>=E.d){U.emote=null;U.fx.visible=false}}
+ faceSet(U,ex,sq);faceTick(U,dt)}
 function camUpdate(dt){const duck=P.duckT>0,eyeT=EYE*(duck?0.72:1);P.eyeS=P.eyeS==null?eyeT:P.eyeS+(eyeT-P.eyeS)*Math.min(1,dt*10);
  const xh=$('xhair');if(xh)xh.hidden=!(mode==='walk'&&VIEW==='1');
  if(AVK!==PID){if(AV)scene.remove(AV);AV=avatarMake(PID);AVK=PID;scene.add(AV)}
  if(VIEW==='1'){AV.visible=false;cam.position.set(P.pos.x,P.pos.y+P.eyeS,P.pos.z);cam.rotation.set(P.pitch,P.yaw,0,'YXZ');return}
- AV.visible=mode==='walk';AV.position.copy(P.pos);AV.rotation.y=P.yaw+Math.PI;avPose(dt);
+ AV.visible=mode==='walk';AV.position.copy(P.pos);{const tgt=P.moving&&P.face!=null?P.face:(AV.userData.face??P.yaw+Math.PI);let d=tgt-AV.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));AV.rotation.y+=d*Math.min(1,dt*(AVK==='wheel'?6:12));AV.userData.face=AV.rotation.y}avPose(dt);
  const pc=Math.max(-0.75,Math.min(0.45,P.pitch)),cp=Math.cos(pc),fw=new THREE.Vector3(-Math.sin(P.yaw)*cp,Math.sin(pc),-Math.cos(P.yaw)*cp);
  const head=new THREE.Vector3(P.pos.x,P.pos.y+P.eyeS+0.1,P.pos.z),D=PID==='child'?2.3:2.9,back=fw.clone().negate(),rt=new THREE.Vector3(Math.cos(P.yaw),0,-Math.sin(P.yaw)),want=head.clone().addScaledVector(back,D).addScaledVector(rt,0.45);want.y+=0.6; // 어깨 너머(오른쪽 뒤 위)에서 봄
  const dir=want.clone().sub(head),L=dir.length();dir.normalize();const rc=new THREE.Raycaster(head,dir,0,L+0.25);const hit=rc.intersectObjects(M.solids,false).find(h=>!(h.object.userData&&h.object.userData.t==='CARFLOOR'));
@@ -2682,7 +2756,7 @@ function camUpdate(dt){const duck=P.duckT>0,eyeT=EYE*(duck?0.72:1);P.eyeS=P.eyeS
  cam.position.copy(head).addScaledVector(dir,CAMS.d);const tg=head.clone().addScaledVector(fw,5).addScaledVector(rt,0.45*Math.min(1,CAMS.d/L));tg.y-=0.25;cam.lookAt(tg)}
 function toWalk(){if($('help'))$('help').hidden=true;setTimeout(()=>kgShow(true),400);if($('setup'))$('setup').hidden=true;$('tGame')&&$('tGame').setAttribute('aria-selected','true');$('tSetup')&&$('tSetup').setAttribute('aria-selected','false');
  mode='walk'; orbit.enabled=false; $('bWalk').setAttribute('aria-pressed','true'); $('bOrbit').setAttribute('aria-pressed','false');
- if(matchMedia('(pointer:coarse)').matches){$('joy').style.display='block';$('jump').style.display='block'}
+ if(matchMedia('(pointer:coarse)').matches){$('joy').style.display='block';$('jump').style.display='block';$('viewBtn').style.display='block';$('viewBtn').textContent=VIEW==='3'?'1인칭':'3인칭'}
  cam.fov=70; cam.updateProjectionMatrix();
  // 출구 앞 2.5m 바깥에서 문을 바라보고 시작
  const d=M.exits[0]||M.doors[0];
@@ -2694,7 +2768,7 @@ function toWalk(){if($('help'))$('help').hidden=true;setTimeout(()=>kgShow(true)
 }
 $('bWalk').onclick=toWalk; $('bOrbit').onclick=()=>{toOrbit(true);hpShow()};
 // 입력
-const K={};addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;K[e.code]=true;if(mode==='walk'&&e.code==='KeyV'&&!e.repeat){VIEW=VIEW==='3'?'1':'3';try{localStorage.setItem('mvw-view',VIEW)}catch(_){}noteLite({key:'view',title:VIEW==='3'?'3인칭: 내 모습이 보입니다':'1인칭: 걷는 사람의 눈높이로 봅니다',sub:'V로 다시 바꿉니다',ttl:2200})}if(mode==='walk'&&e.code==='KeyH'){const el=$('keyguide');kgShow(!el||el.hidden||el.style.opacity==='0');if(el&&!el.hidden){KG.walkT=0;KG.drag=false}}if(mode==='walk'&&(e.code==='ArrowLeft'||e.code==='ArrowRight'))KG.drag=true;if(mode==='walk'&&['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault()});
+const K={};addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;K[e.code]=true;if(mode==='walk'&&e.code==='KeyV'&&!e.repeat)viewToggle();if(mode==='walk'&&e.code==='KeyH'){const el=$('keyguide');kgShow(!el||el.hidden||el.style.opacity==='0');if(el&&!el.hidden){KG.walkT=0;KG.drag=false}}if(mode==='walk'&&(e.code==='ArrowLeft'||e.code==='ArrowRight'))KG.drag=true;if(mode==='walk'&&['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault()});
 addEventListener('keyup',e=>{K[e.code]=false});
 let look=null;
 renderer.domElement.addEventListener('pointerdown',e=>{if(mode!=='walk')return;look={id:e.pointerId,x:e.clientX,y:e.clientY};renderer.domElement.setPointerCapture(e.pointerId)});
@@ -2707,6 +2781,7 @@ $('joy').addEventListener('pointermove',e=>{if(e.pointerId===joy.id)joyMove(e)})
 $('joy').addEventListener('pointerup',e=>{if(e.pointerId===joy.id){joy.id=null;joy.x=joy.y=0;$('joy').firstElementChild.style.transform=''}});
 function joyMove(e){const r=$('joy').getBoundingClientRect();let x=(e.clientX-r.left-60)/50,y=(e.clientY-r.top-60)/50;const l=Math.hypot(x,y);if(l>1){x/=l;y/=l}joy.x=x;joy.y=y;$('joy').firstElementChild.style.transform=`translate(${x*40}px,${y*40}px)`}
 $('jump').addEventListener('pointerdown',()=>{if(P.ground){P.vy=4.2;P.ground=false}});
+$('viewBtn').addEventListener('pointerdown',e=>{e.preventDefault();viewToggle()}); // 휴대폰 시점 바꾸기 (2026. 11. 10.)
 // 충돌
 const ray=new THREE.Raycaster();
 function hitDist(o,d,max,list){ray.set(o,d);ray.far=max;const h=ray.intersectObjects(list,false);return h.length?h[0]:null}
@@ -2730,7 +2805,7 @@ function step(dt){
  if(K.Space&&P.ground&&PER.jump){P.vy=4.2;P.ground=false}
  const sp=(+$('spd').value)*PER.spd*(K.ShiftLeft||K.ShiftRight?2:1)*Math.min(1,Math.hypot(f,s))*(P.climbT>0?0.45:1)*(P.duckT>0?0.6:1);kgTick(dt,Math.hypot(f,s)>0.1);P.moving=Math.hypot(f,s)>0.1;
  const fw=new THREE.Vector3(-Math.sin(P.yaw),0,-Math.cos(P.yaw)), rt=new THREE.Vector3(Math.cos(P.yaw),0,-Math.sin(P.yaw));
- const mv=fw.multiplyScalar(f).add(rt.multiplyScalar(s)); const before=P.pos.clone();
+ const mv=fw.multiplyScalar(f).add(rt.multiplyScalar(s)); const before=P.pos.clone();P.spd=sp;if(mv.lengthSq()>1e-6)P.face=Math.atan2(mv.x,mv.z); // 3인칭 모습이 움직이는 쪽을 봄
  if(mv.lengthSq()>1e-6){mv.normalize();const len=sp*dt;
   // 미끄러지며 이동: 전체 → x만 → z만
   for(const d of [mv,new THREE.Vector3(Math.sign(mv.x),0,0),new THREE.Vector3(0,0,Math.sign(mv.z))]){
@@ -2764,7 +2839,7 @@ function whereNow(){
 let HOT=null,hotSeen=new Set(),hotSp=null;
 function hotTick(){if(quietNow()||(F&&!F.done))return; // 화재 대피 중에는 띄우지 않음
 const sp=spaceNow();if(sp===hotSp)return;hotSp=sp;if(!sp||hotSeen.has(sp))return;if(!HOT){try{HOT=hotRooms()}catch(_){HOT=new Map()}}const h=HOT.get(sp);if(!h)return;hotSeen.add(sp);
- topToast('☀ 여름 오후에는 이 방이 덥겠습니다',`${sp.n}${h.west>0?` · 서쪽 창 ${h.west.toFixed(1)}㎡`:''} · 자세한 숫자는 보고서 에너지 계산서`,3000)}
+ avReact('hot');topToast('☀ 여름 오후에는 이 방이 덥겠습니다',`${sp.n}${h.west>0?` · 서쪽 창 ${h.west.toFixed(1)}㎡`:''} · 자세한 숫자는 보고서 에너지 계산서`,3000)}
 // 위쪽 가운데 짧은 안내 (막지 않음, 눌리지 않음, 저절로 사라짐)
 function topToast(t,sub,ms){return noteLite({key:'hot',kind:'warn',title:esc(t),sub:sub?esc(sub):'',ttl:ms||3000})}
 // ───────── 사건 (설계 문제를 몸으로 겪기) ─────────
@@ -2784,7 +2859,7 @@ function ev(key,title,why,dmg,bad,at,pos){
  dmg=(dmg||0)*TOUGH; HP-=dmg; if(dmg>0)lastHurt=now; const w=whereNow(); let where=at!=null?at:[w.st,w.room].filter(Boolean).join(' ');
  if(at==null&&P.on&&M.stairs.includes(P.on)&&P.on.userData.n&&!where.includes(P.on.userData.n))where+=` · ${P.on.userData.n}`;
  // 화면에는 짧게, 같은 종류는 두 번까지만(같은 자리는 한 번). 자세한 위치와 이유는 보고서에 모음
- const typ=key.replace(/[-\d.]+$/,''),g=typ+'|'+where,sh=quietNow()?false:evShow(typ,g,dmg); // 검사 중에는 횟수를 쓰지 않고 기록만
+ const typ=key.replace(/[-\d.]+$/,''),g=typ+'|'+where,_rx={head:'head',stairhead:'head',lowdoor:'head',hard:'trip',trip:'trip',step:'trip',wheelstep:'stop',wheeldrop:'trip',wheelstair:'stop',wheelnarrow:'stop',narrow:'stop',wheeledge:'surprise',fall:'fall',leakw:'rain',wet:'rain',dmg:'rain',smoke:'smoke',stairsmoke:'smoke',elderstair:'tired',safe:'joy'}[typ];if(_rx)avReact(_rx);const sh=quietNow()?false:evShow(typ,g,dmg); // 검사 중에는 횟수를 쓰지 않고 기록만
  if(sh)note({key:'ev'+typ,kind:bad?'bad':'warn',title:esc(title)+(dmg?` <span class="dm">−${Math.round(dmg)}</span>`:''),sub:esc(where)+(sh===2?' · 같은 종류는 이제 보고서에만 적습니다':''),ttl:3200});
  else if(dmg)hpShow();
  const r=REP.get(g)||{title,where,why,bad,n:0,dmg:0,pos:(pos||P.pos).clone()}; r.n++; r.dmg+=dmg||0; r.title=title; r.why=why; REP.set(g,r); repDirty=true; repBtn();
@@ -3433,7 +3508,7 @@ function mentArrive(force){if(INSP.stage){note({key:'ment-call',av:INS.mentor.av
 function mentCard(){const x=MENT.cur;if(!x)return;const I=INS.mentor,a=x.a;
  note({key:'ment',av:I.av,color:I.c,title:`설계 멘토: "${esc(a.say)}"`,html:`<small>${esc(x.r.where)}</small><small>${esc(a.why)}</small><small class="w">${a.area} · ${a.tag}${a.tag==='실무 경험'?' (법정 기준 아님)':''}</small>`,
   actions:(x.r.pos?[{t:'그 자리 표시',primary:true,fn:()=>{mentHeard();mentPin(x)}}]:[]).concat([{t:'고맙습니다',fn:mentHeard}]),onClose:()=>{MENT.later=performance.now()}})}
-function mentHeard(){const x=MENT.cur;if(!x||MENT.stage!=='waiting')return;closeKey('ment');MENT.seen.push(x.a.id);mentSave();MENT.heard.push({id:x.a.id,where:x.r.where});MENT.stage='leaving';MENT.leaveT=0;MENT.t=0;MENT.wait=90;repDirty=true;repBtn();
+function mentHeard(){const x=MENT.cur;if(!x||MENT.stage!=='waiting')return;npcFace(MENT.npc,'grin',4);npcNod(MENT.npc,2);closeKey('ment');MENT.seen.push(x.a.id);mentSave();MENT.heard.push({id:x.a.id,where:x.r.where});MENT.stage='leaving';MENT.leaveT=0;MENT.t=0;MENT.wait=90;repDirty=true;repBtn();
  const left=mentAll().filter(y=>!MENT.seen.includes(y.a.id)).length;note({kind:'ok',title:'멘토 노트에 적었습니다',sub:left?`보고서의 "설계 멘토 노트"에 들어갔습니다. 나중에 또 들를게요 (남은 조언 ${left}개).`:'보고서의 "설계 멘토 노트"에 들어갔습니다. 이 설계에 드릴 조언은 다 드렸습니다.',ttl:3500})}
 function mentPin(x){if(MENT.pin)scene.remove(MENT.pin.s);const cv=document.createElement('canvas');cv.width=64;cv.height=64;const c=cv.getContext('2d');c.fillStyle=INS.mentor.c;c.beginPath();c.arc(32,32,28,0,7);c.fill();c.fillStyle='#fff';c.font='800 34px sans-serif';c.textAlign='center';c.fillText('?',32,44);
  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false}));s.scale.set(0.5,0.5,1);s.position.copy(x.r.pos).add(new THREE.Vector3(0,0.9,0));s.renderOrder=10;scene.add(s);MENT.pin={s,x}}
@@ -3652,36 +3727,74 @@ function humanBody(o){const g=new THREE.Group(),U=g.userData,Mt=c=>new THREE.Mes
  const up=new THREE.Group();up.position.set(0,0.88,0);body.add(up);U.upper=up;
  add(up,SP(0.165,14,8),PT,0,0.0,0).scale.set(1,0.5,DZ);add(up,CY(0.166,0.166,0.035,16),o.belt||0x2a2522,0,0.03,0,false).scale.set(1,1,DZ);
  const prof=[[0.163,0.02],[0.158,0.12],[0.152,0.22],[0.165,0.34],[0.19,0.46],[0.205,0.54],[0.19,0.6],[0.12,0.645],[0.06,0.66]].map(([r,y])=>new THREE.Vector2(r,y));
- const tor=add(up,new THREE.LatheGeometry(prof,18),JK,0,0,0);tor.scale.z=DZ;U.torso=tor;
+ const ch=new THREE.Group();ch.scale.y=0.85;up.add(ch);U.chest=ch; // 가슴: 몸통과 옷 장식 (세로 0.85배, 목이 보이게 2026. 11. 10.)
+ const tor=add(ch,new THREE.LatheGeometry(prof,18),JK,0,0,0);tor.scale.z=DZ;U.torso=tor;
  const fz=y=>{let r=0.16;for(let i=1;i<prof.length;i++)if(y<=prof[i].y){const a=prof[i-1],b=prof[i];r=a.x+(b.x-a.x)*(y-a.y)/(b.y-a.y);break}return r*DZ+0.004}; // 앞면 z
  U.fz=fz;
- if(o.zip!==false)add(up,BX(0.012,0.5,0.006),o.zipC||0x9aa3ad,0,0.33,fz(0.33),false); // 지퍼
- if(o.shirt){add(up,BX(0.1,0.07,0.01),o.shirt,0,0.585,fz(0.585),false)} // 셔츠 깃
- for(const s of [-1,1])add(up,BX(0.075,0.055,0.008),o.pocketC||JK,0.085*s,0.17,fz(0.17)+0.002,false); // 주머니
+ if(o.zip!==false)add(ch,BX(0.012,0.5,0.006),o.zipC||0x9aa3ad,0,0.33,fz(0.33),false); // 지퍼
+ if(o.shirt){add(ch,BX(0.1,0.07,0.01),o.shirt,0,0.585,fz(0.585),false)} // 셔츠 깃
+ for(const s of [-1,1])add(ch,BX(0.075,0.055,0.008),o.pocketC||JK,0.085*s,0.17,fz(0.17)+0.002,false); // 주머니
  // 팔: 어깨 관절 → 팔꿈치 관절 → 아래팔 → 손
- for(const s of [-1,1]){const am=new THREE.Group();am.position.set(0.232*s,0.54,0);up.add(am);add(am,SP(0.066,10,8),SL,0,0,0,false);
+ for(const s of [-1,1]){const am=new THREE.Group();am.position.set(0.232*s,0.46,0);up.add(am);add(am,SP(0.066,10,8),SL,0,0,0,false);
   add(am,CY(0.06,0.052,0.29),SL,0,-0.145,0);const el=new THREE.Group();el.position.set(0,-0.29,0);am.add(el);add(el,SP(0.052,10,8),SL,0,0,0,false);
   add(el,CY(0.051,0.044,0.25),SL,0,-0.125,0);add(el,CY(0.046,0.046,0.03),o.cuff||SL,0,-0.24,0,false);
   const hd=new THREE.Group();hd.position.set(0,-0.27,0);el.add(hd);add(hd,BX(0.07,0.09,0.035),SKIN,0,-0.04,0).geometry.translate(0,0,0);add(hd,SP(0.022,8,6),SKIN,-0.04*s,-0.025,0.02,false);
   U[s<0?'armL':'armR']=am;U[s<0?'elbowL':'elbowR']=el;U[s<0?'handL':'handR']=hd}
- // 목과 머리
- add(up,CY(0.055,0.062,0.1),SKIN,0,0.68,0);const hd=new THREE.Group();hd.position.set(0,0.76,0);up.add(hd);U.head=hd;
- add(hd,SP(0.14,16,12),SKIN,0,0,0).scale.set(0.94,1.06,1);
- for(const s of [-1,1]){add(hd,SP(0.02,10,8),0xffffff,0.047*s,0.014,0.115,false).scale.set(1.15,0.85,0.6);add(hd,SP(0.0105,8,6),0x2a2018,0.047*s,0.014,0.128,false); // 눈
-  add(hd,BX(0.044,0.008,0.01),o.brow||0x3a2e26,0.049*s,0.05,0.126,false).rotation.z=-0.1*s; // 눈썹
-  add(hd,SP(0.03,8,6),SKIN,0.132*s,0,0,false).scale.set(0.5,1,0.8)} // 귀
- add(hd,SP(0.02,8,6),0xe3b48c,0,-0.018,0.14,false).scale.set(1,1.2,1); // 코
- add(hd,BX(0.05,0.01,0.01),0x9a5a50,0,-0.068,0.124,false); // 입
- const hc=o.hair||0x2b2420;
- if(o.hairStyle!=='bald'){const hair=add(hd,new THREE.SphereGeometry(0.148,16,8,0,Math.PI*2,0,Math.PI*0.52),hc,0,0.012,-0.012,false);hair.rotation.x=0.42;hair.scale.set(0.96,1.05,1.02);
-  add(hd,SP(0.1,12,8),hc,0,-0.01,-0.07,false).scale.set(1.3,1.1,0.8)} // 뒤통수
- if(o.glasses)for(const s of [-1,1]){const r=new THREE.Mesh(new THREE.TorusGeometry(0.03,0.006,6,14),Mt(0x1c2024));r.position.set(0.05*s,0.015,0.135);hd.add(r)}
+ // 목과 머리 (4~5등신, 2026. 11. 10.). 얼굴은 인물마다 다름: 얼굴형(round·oval·square), 눈 모양(round·narrow·droopy·upturned), 눈썹 굵기·각도, 코 크기,
+ // 속눈썹·입술색(여성), 주름(나이), 콧수염·턱수염, 주근깨. 표정은 입 다섯 가지 + 눈썹 자세로 바뀜(faceSet)
+ add(up,CY(0.052,0.06,0.1),SKIN,0,0.585,0);const hd=new THREE.Group();hd.position.set(0,o.headY||0.745,0);hd.scale.setScalar(o.headScale||1.25);up.add(hd);U.head=hd;
+ const fs=o.faceShape||'round',FS={round:[0.97,1.0,1.0],oval:[0.9,1.08,0.97],square:[0.97,1.0,1.0]}[fs]||[0.95,1.04,1];
+ add(hd,SP(0.14,18,14),SKIN,0,0,0).scale.set(FS[0],FS[1],FS[2]);
+ if(fs==='square')add(hd,BX(0.2,0.08,0.18),SKIN,0,-0.085,0.015,false).geometry.translate(0,0,0); // 각진 턱
+ if(fs==='round')for(const s of [-1,1])add(hd,SP(0.05,8,6),SKIN,0.075*s,-0.055,0.075,false); // 둥근 볼살
+ const es=o.eyeShape||'round',ESY={round:1,narrow:0.55,droopy:0.85,upturned:0.85}[es]||1,ERZ={droopy:-0.22,upturned:0.22}[es]||0;
+ U.eyes=[];U.brows=[];for(const s of [-1,1]){const eg=new THREE.Group();eg.position.set(0.05*s,0.0,0.112);eg.rotation.z=ERZ*s;hd.add(eg);U.eyes.push(eg);eg.userData.sy=ESY;
+  add(eg,SP(0.027,12,10),0xffffff,0,0,0,false).scale.set(1,1.15,0.55);add(eg,SP(0.017,10,8),o.iris||0x3a2a1e,0,-0.002,0.012,false).scale.set(1,1.1,0.6);
+  add(eg,SP(0.0095,8,6),0x111111,0,-0.002,0.018,false);add(eg,SP(0.0055,6,6),0xffffff,0.006*s+0.004,0.008,0.022,false); // 흰자·눈동자·동공·반짝임
+  if(o.lashes)add(eg,BX(0.05,0.006,0.008),0x1c1a18,0.004*s,0.03,0.012,false).rotation.z=-0.15*s; // 속눈썹
+  const bw=o.browW||0.046,bh=o.browH||0.009,br=add(hd,BX(bw,bh,0.01),o.brow||0x3a2e26,0.052*s,0.05+(o.browY||0),0.127,false),base=(o.browA!=null?o.browA:-0.1)*s;br.rotation.z=base;
+  U.brows.push({m:br,s,base,y:br.position.y});
+  add(hd,SP(0.03,8,6),SKIN,0.133*s,-0.005,0,false).scale.set(0.5,1,0.8); // 귀
+  if(o.earring)add(hd,SP(0.008,6,6),0xd9b440,0.135*s,-0.04,0.01,false);
+  if(o.cheek)add(hd,SP(0.018,8,6),0xf2a0a0,0.075*s,-0.04,0.112,false).scale.set(1.2,0.7,0.3); // 볼
+  if(o.wrinkle){for(const k of [0,1])add(hd,BX(0.016,0.0035,0.004),0xb98f70,0.088*s,0.004-k*0.012,0.108,false).rotation.z=(0.35-k*0.7)*s; // 눈가 주름
+   add(hd,BX(0.004,0.03,0.004),0xc49a7a,0.036*s,-0.05,0.128,false).rotation.z=-0.35*s} // 팔자 주름
+  if(o.freckle)for(let i=0;i<3;i++)add(hd,SP(0.0035,5,4),0xc78a5a,(0.06+i*0.012)*s,-0.025-(i%2)*0.008,0.122,false)} // 주근깨
+ add(hd,SP(0.016*(o.nose||1),8,6),0xe3b48c,0,-0.032,0.138,false).scale.set(1,1.1,1); // 코
+ if(o.mustache)add(hd,BX(0.07,0.014,0.012),o.hair||0x2b2420,0,-0.052,0.132,false); // 콧수염
+ if(o.beard){const bd=add(hd,new THREE.TorusGeometry(0.1,0.022,6,16,Math.PI),o.hair||0x2b2420,0,-0.02,0.04,false);bd.rotation.set(-0.35,0,Math.PI)} // 짧은 턱수염
+ const MO=o.lip||0x8a4a44,arc=(r,t)=>new THREE.TorusGeometry(r,t,6,14,Math.PI);
+ U.mouth={smile:new THREE.Mesh(arc(0.026,0.0055),Mt(MO)),grin:new THREE.Mesh(arc(0.034,0.007),Mt(MO)),frown:new THREE.Mesh(arc(0.022,0.0055),Mt(MO)),
+  smirk:new THREE.Mesh(arc(0.024,0.0055),Mt(MO)),o:new THREE.Mesh(SP(0.016,10,8),Mt(0x5a2a26)),flat:new THREE.Mesh(BX(0.044,0.009,0.01),Mt(MO))};
+ U.mouth.smile.rotation.z=Math.PI;U.mouth.smile.position.set(0,-0.058,0.124);U.mouth.grin.rotation.z=Math.PI;U.mouth.grin.position.set(0,-0.054,0.122);
+ U.mouth.frown.position.set(0,-0.082,0.124);U.mouth.smirk.rotation.z=Math.PI+0.35;U.mouth.smirk.position.set(0.008,-0.062,0.124);
+ U.mouth.o.position.set(0,-0.07,0.125);U.mouth.o.scale.set(0.85,1.1,0.4);U.mouth.flat.position.set(0,-0.07,0.126);
+ for(const m of Object.values(U.mouth)){hd.add(m);m.visible=false}U.expr0=o.mouth||'smile';U.mouth[U.expr0==='angry'||U.expr0==='sad'?'frown':U.expr0].visible=true;U.expr=null;
+ const hc=o.hair||0x2b2420,hs=o.hairStyle||'short';
+ if(hs!=='bald'){const hair=add(hd,new THREE.SphereGeometry(0.149,18,8,0,Math.PI*2,0,Math.PI*0.42),hc,0,0.008,-0.006,false);hair.rotation.x=-0.12;hair.scale.set(0.98,hs==='slick'?0.95:1.05,1.03); // 앞머리 끝이 눈썹 위(이마가 보이게)
+  add(hd,SP(0.1,12,8),hc,0,-0.01,-0.07,false).scale.set(1.32,1.15,0.82); // 뒤통수
+  if(hs==='slick')add(hd,BX(0.004,0.004,0.12),0xd8b494,-0.04,0.142,0.02,false); // 넘긴 머리 가르마
+  if(hs==='bob'||hs==='bobGrey')for(const s of [-1,1])add(hd,SP(0.06,10,8),hc,0.105*s,-0.04,-0.01,false).scale.set(0.6,1.5,1.1); // 단발: 옆머리
+  if(hs==='bob'||hs==='bobGrey')add(hd,SP(0.12,12,8),hc,0,-0.05,-0.06,false).scale.set(1.15,0.9,0.75);
+  if(hs==='long'){add(hd,SP(0.05,10,8),hc,0,0.01,-0.15,false);const tail=add(hd,CY(0.035,0.02,0.2,10),hc,0,-0.1,-0.17,false);tail.rotation.x=0.25} // 묶은 머리
+  if(hs==='curly')for(let i=0;i<11;i++){const a=i/11*Math.PI*2,r=0.12;add(hd,SP(0.045,8,6),hc,Math.cos(a)*r*0.95,0.07+Math.sin(i*1.7)*0.02,Math.sin(a)*r*0.8-0.02,false)}} // 곱슬
+ if(o.glasses)for(const s of [-1,1]){const r=new THREE.Mesh(new THREE.TorusGeometry(0.032,0.005,6,14),Mt(o.glassesC||0x1c2024));r.position.set(0.05*s,0.0,0.14);hd.add(r)}
  U.add=add;U.CY=CY;U.SP=SP;U.BX=BX;U.Mt=Mt;return g}
+// 표정: smile·grin·smirk·flat·o·frown(입) + angry·sad·worried·stern(입+눈썹). squint 0~1은 눈을 가늘게
+const EXPR={smile:['smile',0,0],grin:['grin',0,0.002],smirk:['smirk',0,0],flat:['flat',0,0],o:['o',-0.15,0.012],frown:['frown',0,0],
+ angry:['frown',0.38,-0.008],stern:['flat',0.2,-0.004],sad:['frown',-0.3,0.004],worried:['flat',-0.3,0.006]};
+function faceSet(U,expr,squint){if(!U.mouth)return;const E=EXPR[expr]||EXPR.smile;if(U.expr!==expr){for(const k in U.mouth)U.mouth[k].visible=k===E[0];U.expr=expr;
+  for(const b of U.brows||[]){b.m.rotation.z=b.base+E[1]*b.s;b.m.position.y=b.y+E[2]}}U.squint=squint||0}
+function faceTick(U,dt){if(!U.eyes)return;U.blinkT=(U.blinkT??(2+Math.random()*3))-dt;let k=1-(U.squint||0)*0.75;if(U.blinkT<0){k=0.1;if(U.blinkT<-0.12)U.blinkT=2.5+Math.random()*3.5}for(const e of U.eyes)e.scale.y=k*(e.userData.sy||1)}
+// 인물 표정 정하기: 잠깐(npcFace) 또는 계속(npcMood). npcPose가 매 프레임 반영
+function npcFace(g,expr,sec){if(!g)return;const U=g.userData;U.fx_e=expr;U.fx_until=performance.now()+(sec||3)*1000}
+function npcMood(g,expr){if(g)g.userData.mood=expr}
+function npcNod(g,sec){if(g)g.userData.nodUntil=performance.now()+(sec||2)*1000}
 // 걷는 동작: 넓적다리를 흔들고, 앞으로 내딛는 다리의 무릎을 굽히고, 팔꿈치를 살짝 굽혀 흔듦
-function humanPose(U,walking,o={}){const t=performance.now()/1000,f=o.freq||8.5,k=o.k||0.5;
+function humanPose(U,walking,o={}){const t=performance.now()/1000,f=o.freq||8.5,k=o.k||0.5;if(!o.ph&&U.eyes&&!U.seated&&o.k!==0.35){const dt=Math.min(0.1,t-(U.lt||t));U.lt=t;faceTick(U,dt)}if(o.ph==null)o.ph=t*f;const PH=o.ph,AMP=o.amp||0.5;
  if(o.seated){U.legL.rotation.x=U.legR.rotation.x=-1.45;U.kneeL.rotation.x=U.kneeR.rotation.x=1.5;
   const a=walking?Math.sin(t*5):0;U.armL.rotation.x=U.armR.rotation.x=-0.25-a*0.35;U.elbowL.rotation.x=U.elbowR.rotation.x=-0.7+a*0.25;return}
- if(walking){const ph=t*f,s=Math.sin(ph)*0.5;U.legL.rotation.x+=(s-U.legL.rotation.x)*k;U.legR.rotation.x+=(-s-U.legR.rotation.x)*k;
+ if(walking){const ph=PH,s=Math.sin(ph)*AMP;U.legL.rotation.x+=(s-U.legL.rotation.x)*k;U.legR.rotation.x+=(-s-U.legR.rotation.x)*k;
   U.kneeL.rotation.x=0.08+Math.max(0,Math.sin(ph-1.3))*0.85;U.kneeR.rotation.x=0.08+Math.max(0,Math.sin(ph+Math.PI-1.3))*0.85;
   if(!o.holdL){U.armL.rotation.x=-s*0.65;U.elbowL.rotation.x=-0.2-Math.max(0,-s)*0.4}
   U.armR.rotation.x=o.cane?-0.15+s*0.25:s*0.65;U.elbowR.rotation.x=o.cane?-0.3:-0.2-Math.max(0,s)*0.4;U.head.rotation.y*=0.9}
@@ -3689,14 +3802,17 @@ function humanPose(U,walking,o={}){const t=performance.now()/1000,f=o.freq||8.5,
   if(!o.holdL){U.armL.rotation.x=Math.sin(t*1.6)*0.03;U.elbowL.rotation.x=-0.15}
   if(U.point){U.armR.rotation.x=-1.45;U.elbowR.rotation.x=0}else{U.armR.rotation.x=o.cane?-0.15:Math.sin(t*1.6+1)*0.03;U.elbowR.rotation.x=o.cane?-0.3:-0.15}
   if(!U.look&&!o.noLook)U.head.rotation.y=Math.sin(t*0.45)*0.3}
- if(o.holdL){U.armL.rotation.x=-0.35+(walking?Math.sin(t*f)*0.06:0);U.elbowL.rotation.x=-0.95}
+ if(o.holdL){U.armL.rotation.x=-0.35+(walking?Math.sin(PH)*0.06:0);U.elbowL.rotation.x=-0.95}
  U.upper.rotation.x+=((o.stoop||0)-U.upper.rotation.x)*0.2}
 function npcMake(k){const I=INS[k];
- const ST_={city:{jk:I.c,pt:0x2e333a,hair:0x2b2420,hat:'hard',hatC:0xf4f4f0,prop:'clip',shirt:0xffffff},final:{jk:0x23282e,pt:0x23282e,hair:0x3a3a3a,hat:'hard',hatC:0xf4f4f0,prop:'folder',tie:true,shirt:0xffffff,zip:false},
-  fire:{jk:I.c,pt:0x2b2f36,hair:0x2b2420,hat:'fire',hatC:0xd8401f,prop:'tab',stripe:true,zip:false},energy:{jk:I.c,pt:0x3a3f45,hair:0x3b2a1e,hat:'cap',hatC:0x3d7a4a,prop:'cam',sleeve:0xe9ecef,shirt:0xe9ecef},
-  user:{jk:I.c,pt:0x4a4f57,hair:0xb8b8b8,brow:0x9a9a9a,hat:null,prop:'paper',zip:false,shirt:0xf2efe6},client:{jk:0x5a3d22,pt:0x2a2522,hair:0x1e1a18,hat:null,prop:'brief',tie:true,shirt:0xffffff,zip:false},
-  mentor:{jk:I.c,pt:0x2f3338,hair:0x2b2420,hat:'beret',hatC:0x22252a,prop:'tube',glasses:true,scarf:0xc9853a,zip:false}}[k]||{jk:I.c,pt:0x333333,hair:0x222222,prop:null};
- const g=humanBody(ST_),U=g.userData,{add,CY,SP,BX,Mt}=U,up=U.upper,fz=U.fz;
+ const ST_={city:{jk:I.c,pt:0x2e333a,hair:0x2b2420,hat:'hard',hatC:0xf4f4f0,prop:'clip',shirt:0xffffff,mouth:'flat',faceShape:'oval',eyeShape:'narrow',browA:0,browH:0.008}, // 꼼꼼한 주무관
+  final:{jk:0x23282e,pt:0x23282e,hair:0x3a3a3a,hat:'hard',hatC:0xf4f4f0,prop:'folder',tie:true,shirt:0xffffff,zip:false,mouth:'flat',faceShape:'square',mustache:true,browW:0.052,browH:0.013,browA:0.05,nose:1.2,wrinkle:true}, // 무게감 있는 팀장
+  fire:{jk:I.c,pt:0x2b2f36,hair:0x2b2420,hat:'fire',hatC:0xd8401f,prop:'tab',stripe:true,zip:false,mouth:'flat',faceShape:'square',browW:0.05,browH:0.014,browA:0.18,skin:0xe2b48c}, // 엄격한 소방 검사관
+  energy:{jk:I.c,pt:0x3a3f45,hair:0x3b2a1e,hairStyle:'long',hat:'cap',hatC:0x3d7a4a,prop:'cam',sleeve:0xe9ecef,shirt:0xe9ecef,mouth:'smile',faceShape:'round',lashes:true,lip:0xc0565a,cheek:true,earring:true,browW:0.04,browH:0.007}, // 밝은 에너지 컨설턴트(여성)
+  user:{jk:I.c,pt:0x4a4f57,hair:0xbdbdbd,hairStyle:'bobGrey',brow:0x9a9a9a,hat:null,prop:'paper',zip:false,shirt:0xf2efe6,mouth:'smile',eyeShape:'droopy',wrinkle:true,lashes:true,lip:0xa8605c,glasses:true,glassesC:0x8a6a4a,browA:-0.2}, // 온화한 이용자 대표(나이 든 여성)
+  client:{jk:0x5a3d22,pt:0x2a2522,hair:0x1e1a18,hairStyle:'slick',hat:null,prop:'brief',tie:true,shirt:0xffffff,zip:false,mouth:'smirk',faceShape:'oval',eyeShape:'upturned',browA:0.05}, // 자신만만한 건축주
+  mentor:{jk:I.c,pt:0x2f3338,hair:0x2b2420,hat:'beret',hatC:0x22252a,prop:'tube',glasses:true,scarf:0xc9853a,zip:false,mouth:'smirk',beard:true,browA:-0.05}}[k]||{jk:I.c,pt:0x333333,hair:0x222222,prop:null};
+ const g=humanBody(ST_),U=g.userData,{add,CY,SP,BX,Mt}=U,up=U.chest,fz=U.fz;
  if(ST_.tie)add(up,BX(0.045,0.26,0.012),k==='client'?0xc9a227:0xa8322a,0,0.43,fz(0.43)+0.004,false);
  if(ST_.stripe)for(const y of [0.12,0.36]){const r=prof_r(y);add(up,CY(r+0.008,r+0.008,0.04,16),0xe8e27a,0,y,0,false).scale.z=0.68}
  if(k==='city'||k==='final'){add(up,BX(0.07,0.095,0.006),0xffffff,0.08,0.4,fz(0.4)+0.004,false);add(up,BX(0.05,0.02,0.007),I.c,0.08,0.43,fz(0.43)+0.008,false)} // 출입증
@@ -3714,7 +3830,7 @@ function npcMake(k){const I=INS[k];
  if(ST_.prop==='tube')add(H,BX(0.06,0.06,0.42),0xf2efe6,0,-0.05,0.1).rotation.x=0.2; // 말아 쥔 도면
  const hd=U.head;
  if(ST_.hat==='hard'||ST_.hat==='fire'){add(hd,new THREE.SphereGeometry(0.162,16,8,0,Math.PI*2,0,Math.PI*0.5),ST_.hatC,0,0.03,0);add(hd,CY(ST_.hat==='fire'?0.22:0.19,ST_.hat==='fire'?0.22:0.19,0.015,20),ST_.hatC,0,0.035,ST_.hat==='fire'?-0.02:0.03);
-  add(hd,BX(0.03,0.04,0.33),ST_.hatC,0,0.18,0,false)}
+  add(hd,BX(0.028,0.03,0.2),ST_.hatC,0,0.183,0,false)}
  if(ST_.hat==='cap'){add(hd,new THREE.SphereGeometry(0.15,14,8,0,Math.PI*2,0,Math.PI*0.5),ST_.hatC,0,0.03,0);add(hd,BX(0.16,0.012,0.12),ST_.hatC,0,0.035,0.16,false)}
  if(ST_.hat==='beret'){const b=add(hd,SP(0.16,14,8),ST_.hatC,0.02,0.1,-0.01);b.scale.set(1.05,0.38,1.05)}
  // 이름표와 "!" 표시
@@ -3724,7 +3840,8 @@ function npcMake(k){const I=INS[k];
  const mk=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c2),depthTest:false}));mk.scale.set(0.42,0.42,1);mk.position.y=2.5;mk.renderOrder=11;g.add(mk);U.mark=mk;return g}
 function prof_r(y){const p=[[0.163,0.02],[0.158,0.12],[0.152,0.22],[0.165,0.34],[0.19,0.46],[0.205,0.54],[0.19,0.6]];for(let i=1;i<p.length;i++)if(y<=p[i][1]){const a=p[i-1],b=p[i];return a[0]+(b[0]-a[0])*(y-a[1])/(b[1]-a[1])}return 0.19}
 // 걷는 동작과 서 있는 동작 (다리·무릎·팔·팔꿈치, 숨쉬기, 고개 돌리기)
-function npcPose(g,walking){if(!g||!g.userData.legL)return;const U=g.userData;humanPose(U,walking,{holdL:U.holdL})}
+function npcPose(g,walking){if(!g||!g.userData.legL)return;const U=g.userData,now=performance.now(),e=U.fx_until>now?U.fx_e:(U.mood||U.expr0);faceSet(U,e,e==='angry'||e==='stern'?0.25:0);humanPose(U,walking,{holdL:U.holdL});
+ if(U.nodUntil>now)U.head.rotation.x=0.05+Math.sin(now/110)*0.16;else U.head.rotation.x*=0.8}
 // 받침에 따라 이/가
 function ig(w){const c=String(w).charCodeAt(String(w).length-1);return c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28?'이':'가'}
 // ───────── 알림 카드: 이동을 막지 않음. 오른쪽으로 밀거나 ×로 닫음 ─────────
@@ -3780,7 +3897,7 @@ function pinsMake(R,kind){const g=new THREE.Group();g.userData.kind=kind;INSP.pi
 let pinT=0;
 function pinHunt(dt){pinT+=dt;if(pinT<0.3||mode!=='walk'||!INSP.pinList)return;pinT=0;
  for(const p of INSP.pinList){if(p.found||!p.s.visible)continue;const q=p.r.pos;const E=meas(),same=Math.abs(E.stAt(q.y).y-E.stAt(P.pos.y+0.05).y)<0.3||Math.abs(q.y-P.pos.y)<1.6;if(!same||Math.hypot(q.x-P.pos.x,q.z-P.pos.z)>2.0)continue; // 발 높이·눈높이와 상관없이 같은 층 2m 안이면 찾음 (어린이·휠체어도 점프 없이)
-  p.found=true;p.s.material.map=pinTex(p.r,true);p.s.material.needsUpdate=true;const n=INSP.pinList.filter(x=>x.found).length;
+  p.found=true;avReact('joy');p.s.material.map=pinTex(p.r,true);p.s.material.needsUpdate=true;const n=INSP.pinList.filter(x=>x.found).length;
   note({key:'pin',kind:'ok',title:`지적한 자리를 찾았습니다 ${n}/${INSP.pinList.length}`,sub:`${p.r.no}. ${esc(p.r.title)}`,ttl:3500});scoreShow()}}
 // ───────── 검사관 흐름: 처음 한 바퀴만 차례로, 그 뒤에는 부를 때만 ─────────
 function inspClear(){if(INSP.npc){scene.remove(INSP.npc);INSP.npc=null}}
@@ -3799,7 +3916,7 @@ function inspArrive(k){
 function inspCardArrive(){const k=INSP.kind,I=INS[k];if(k==='final'){finalArrive();return}
  const again=INSP.angry&&INSP.angry[k];
  note({key:'insp-arr',av:I.av,color:I.c,title:esc(I.nm),sub:`"${esc(again?'다시 왔습니다. 이번에는 바로 시작하죠.':I.say)} 검사 시작해도 될까요?"`,actions:[{t:'검사 시작',primary:true,fn:inspStart},{t:'조금 이따가',fn:()=>{INSP.later=performance.now();note({title:`"${esc(I.nm)}: 너무 오래는 못 기다립니다."`,ttl:2500})}}],onClose:()=>{INSP.later=performance.now()}})}
-function inspCardDone(){const k=INSP.kind,I=INS[k],R=INSP.res[k],vd=verdictOf(k,R),key=R.filter(r=>BLOCK.has(r.grade)).slice(0,3),soft=R.filter(r=>r.grade==='확인 필요'||r.grade==='권고').length,np=(INSP.pinG[k]?INSP.pinG[k].children.length:0);
+function inspCardDone(){const k=INSP.kind,I=INS[k],R=INSP.res[k],vd=verdictOf(k,R),key=R.filter(r=>BLOCK.has(r.grade)).slice(0,3),_m=npcMood(INSP.npc,key.length?(R.some(r=>r.grade==='위반')?'stern':'flat'):'grin'),soft=R.filter(r=>r.grade==='확인 필요'||r.grade==='권고').length,np=(INSP.pinG[k]?INSP.pinG[k].children.length:0);
  const col=/불가|위반|미달/.test(vd)?'#a8322a':/보완|요청/.test(vd)?'#8a5a00':'#2c6153';
  note({key:'insp-done',av:I.av,color:I.c,kind:key.length?'bad':'ok',title:`${esc(I.nm)}: "검사 끝났습니다. 검사지 드릴게요."`,
   html:`<div style="color:${col};margin:6px 0 2px"><span class="stamp sm">${vd}</span></div>${key.length?`<ol>${key.map(r=>`<li><b>${esc(r.title)}</b>${r.where?` <span class="w">${esc(r.where)}</span>`:''}<br><span class="w">→ ${esc(shortFix(r))}</span></li>`).join('')}</ol>`:'<small>고칠 것 없습니다.</small>'}${soft?`<small>참고 ${soft}건은 보고서에 있습니다.</small>`:''}${np?`<small>건물 안 번호 표시 ${np}곳을 걸어서 찾아가 보세요.</small>`:''}`,
@@ -3809,7 +3926,7 @@ function inspReceive(){if(INSP.stage!=='done')return;const k=INSP.kind,I=INS[k];
 scoreShow();
  note({kind:'ok',title:'검사지를 받았습니다',sub:'보고서에 들어갔습니다.',ttl:2400});void I}
 // 검사관이 화가 나서 돌아감
-function inspAngry(){const k=INSP.kind,I=INS[k];INSP.angry=INSP.angry||{};INSP.angry[k]=true;closeKey('insp-arr');
+function inspAngry(){const k=INSP.kind,I=INS[k];npcMood(INSP.npc,'angry');INSP.angry=INSP.angry||{};INSP.angry[k]=true;closeKey('insp-arr');
  note({key:'insp-angry',av:I.av,color:I.c,kind:'bad',title:`${esc(I.nm)}${ig(I.nm)} 화가 나서 돌아갔습니다`,sub:`"기다리다 갑니다." 다시 부르려면 "검사관"을 누르세요. 기다리게 한 일은 종합 판정 점수에서 3점 깎입니다.`,ttl:7000});
  if(INSP.pinG&&INSP.pinG[k]){scene.remove(INSP.pinG[k]);delete INSP.pinG[k];INSP.pinList=INSP.pinList.filter(p=>p.kind!==k)}
  spend(COST.angry,`${INS[k].nm}을(를) 다시 부르는 비용`);if(k!=='final')delete INSP.res[k];INSP.stage='leaving';INSP.leaveT=0;INSP.single=null;INSP.paused=true}
@@ -3993,7 +4110,7 @@ function inspTour(dt){const r=INSP.route,npc=INSP.npc;if(!npc)return;
  npc.position.y+=Math.abs(Math.sin(performance.now()/160))*0.04;
  $('inspChip').hidden=false;$('inspChip').innerHTML=`<b>${INS[INSP.kind].av}</b> 검사 중 ${Math.round(Math.min(99,INSP.done/INSP.len*100))}%`}
 // 검사관이 위반 자리에서 학생을 부름: 30초 기다리고, 오면 그 자리를 가리키며 한 줄로 설명. 안 와도 벌칙 없음, 오면 현장 확인 도장(설계 점수 +2)
-function inspCall(r){const I=INS[INSP.kind],t=meas().stAt(r.pos.y),here=meas().stAt(P.pos.y+0.05);INSP.call={r,t:30,phase:'wait'};const npc=INSP.npc;if(npc&&npc.userData.mark)npc.userData.mark.visible=true;
+function inspCall(r){avReact('surprise');npcFace(INSP.npc,'stern',40);const I=INS[INSP.kind],t=meas().stAt(r.pos.y),here=meas().stAt(P.pos.y+0.05);INSP.call={r,t:30,phase:'wait'};const npc=INSP.npc;if(npc&&npc.userData.mark)npc.userData.mark.visible=true;
  // 휠체어로 걸을 때: 위반 자리에 휠체어로 닿을 수 없으면 그 층에서 휠체어가 닿는 가장 가까운 곳으로 검사관이 옮겨 가서 부름. 그 층에 승강기가 서지 않으면 검사관이 학생에게 옴
  let how='';const ok=PID==='wheel'&&mode==='walk'?wheelReach():null;
  if(ok){const N=NAV.nodes,q=r.pos,d2=(n,p)=>Math.hypot(n.x-p.x,n.z-p.z);let m=null,far=false;
@@ -4023,7 +4140,7 @@ function callStep(dt){const C=INSP.call,npc=INSP.npc,U=npc.userData,I=INS[INSP.k
    const col=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,2.2,8),new THREE.MeshBasicMaterial({color:0xffc83d,transparent:true,opacity:0.55,depthTest:false}));col.position.y=1.1;
    ring.rotation.x=Math.PI/2;arr.rotation.x=Math.PI;arr.position.y=2.45;ring.renderOrder=arr.renderOrder=col.renderOrder=12;g.add(ring,arr,col);g.position.copy(q);g.position.y=meas().stAt(q.y).y>q.y-2.5&&C.r.pos.y-meas().stAt(q.y).y<1.6?q.y:meas().stAt(q.y).y+0.05;scene.add(g);C.fx=g;
    const p=(INSP.pinList||[]).find(x=>x.r===C.r);if(p&&!p.found){p.found=true;p.s.material.map=pinTex(p.r,true);p.s.material.needsUpdate=true}
-   INSP.field=(INSP.field||0)+1;scoreShow();
+   INSP.field=(INSP.field||0)+1;scoreShow();setTimeout(()=>avReact('joy'),1500);
    note({insp:true,kind:'bad',title:`${esc(I.av)}: "${esc(C.r.title)}"`,sub:`${C.meet?`${C.far?`${esc(meas().stAt(q.y).s)}에는 휠체어로 올라갈 수 없어 제가 내려왔습니다. `:'저기 노란 기둥이 그 자리입니다. '}`:''}${esc(C.r.where?C.r.where+' · ':'')}${esc(C.r.measured||'')}${C.r.std?` · 기준 ${esc(C.r.std)}`:''}`,ttl:C.meet?6500:5000});if(C.meet)C.t=6.5;
    setTimeout(()=>note({insp:true,kind:'ok',title:'현장 확인 도장을 받았습니다',sub:`검사관과 그 자리를 같이 봤습니다 · 설계 점수 +2 (지금 ${INSP.field}개)`,ttl:3000}),1600)}
   else if(C.t<=0){U.mark.visible=false;note({insp:true,title:`${esc(I.av)}: "나중에 번호 표시로 보세요."`,sub:'검사를 이어 갑니다.',ttl:2500});INSP.call=null;callResume();INSP.pause=0.4}
@@ -4084,7 +4201,7 @@ function clientAsk(i){CLIENT.i=i;const Q=CLIENT.qs[i];if(!Q){clientSummary();ret
  const d=note({key:'client',card:true,av:INS.client.av,color:INS.client.c,title:`건축주 질문 ${i+1}/${CLIENT.qs.length} · ${esc(Q.r.where||Q.r.title)}`,html:`<small><b>"${esc(Q.r.title)}" 이거 고칠 수 있나요?</b></small><small>${esc(Q.q)}</small><small class="w">남은 시간 <b class="cl-t">30</b>초</small>`,
   actions:ord.map(j=>({t:`${'①②③'[ord.indexOf(j)]} ${Q.a[j]}`,cls:'opt',fn:()=>clientAnswer(j)}))});
  if(CLIENT.tm)clearInterval(CLIENT.tm);CLIENT.tm=setInterval(()=>{left--;const s=d.querySelector&&d.querySelector('.cl-t');if(s)s.textContent=left;if(left<=0){clearInterval(CLIENT.tm);closeKey('client');clientAnswer(-1)}},1000)}
-function clientAnswer(j){if(CLIENT.tm)clearInterval(CLIENT.tm);const Q=CLIENT.qs[CLIENT.i],ok=j===0;if(ok)CLIENT.stamp++;else CLIENT.sat=Math.max(0,CLIENT.sat-10);budShow();
+function clientAnswer(j){if(CLIENT.tm)clearInterval(CLIENT.tm);const Q=CLIENT.qs[CLIENT.i],ok=j===0;if(ok)CLIENT.stamp++;else CLIENT.sat=Math.max(0,CLIENT.sat-10);npcFace(CLIENT.npc,ok?'grin':'sad',3);if(ok)npcNod(CLIENT.npc,1.5);npcMood(CLIENT.npc,CLIENT.sat>=80?'smirk':CLIENT.sat>=60?'flat':'sad');budShow();
  CLIENT.log.push({where:Q.r.where,title:Q.r.title,q:Q.q,pick:j<0?'(시간 초과)':Q.a[j],ans:Q.a[0],ok,e:Q.e,fix:Q.r.fix||''});
  note({key:'client',card:true,kind:ok?'ok':'bad',av:INS.client.av,color:INS.client.c,title:ok?'건축주: "그렇게 고치면 되겠군요."':(j<0?'건축주: "대답이 없으시네요…"':'건축주: "그게 맞나요? 걱정되네요."'),
   html:`<small>${ok?'정답 · 설명 도장 +1':`정답: ${esc(Q.a[0])} · 기대치 −10`}</small><small>${esc(Q.e)}</small>${Q.r.fix?`<small class="w">고치는 방법: ${esc(Q.r.fix)}</small>`:''}`,actions:[{t:CLIENT.i+1<CLIENT.qs.length?'다음 질문':'마치기',primary:true,fn:()=>clientAsk(CLIENT.i+1)}]})}
@@ -4209,6 +4326,7 @@ $('zone').addEventListener('change',()=>{ZONE_SET=true});
 ['use','pub','zone'].forEach(id=>$(id).addEventListener('change',()=>{if(M._me)M._me=null;M._sol=null;HOT=null;const had=Object.keys(INSP.res||{}).length;inspReset();if(had)note({title:'설계 조건이 바뀌어 검사 결과를 지웠습니다',sub:'검사관이 처음부터 다시 옵니다. 바로 부르려면 "검사관".',ttl:4500})}));
 $('q').value=Q;$('q').onchange=()=>{Q=$('q').value;try{localStorage.setItem('mvw-q',Q)}catch(e){}applyQ();setSun()};applyQ();
 $('who').onchange=()=>{setWho($('who').value);$('who').blur()};
+{const L=lookGet();$('lookHair').value=L.hair;$('lookHc').value=L.hc;$('lookJk').value=L.jk;$('lookEye').value=L.eye;$('lookFace').value=L.face;for(const id of ['lookHair','lookHc','lookJk','lookEye','lookFace'])$(id).onchange=()=>{const n={hair:$('lookHair').value,hc:$('lookHc').value,jk:$('lookJk').value,eye:$('lookEye').value,face:$('lookFace').value};try{localStorage.setItem('mvw-look',JSON.stringify(n))}catch(_){}AVK=null;$(id).blur()}} // 학생 꾸미기: 바꾸면 모습을 다시 만듦
 function setupOpen(on){$('setup').hidden=!on;$('tGame').setAttribute('aria-selected',String(!on));$('tSetup').setAttribute('aria-selected',String(on));if(on){K.KeyW=K.KeyA=K.KeyS=K.KeyD=false}}
 function condShow(){$('cond').textContent=`⚙ ${useOf()} · ${isPub()?'공공':'민간'} · ${PER.nm}`}
 function fold(on){document.body.classList.toggle('folded',on);$('bUnfold').hidden=!on;try{localStorage.setItem('mvw-fold',on?'1':'0')}catch(e){}size()}
@@ -4218,5 +4336,5 @@ $('bStart').onclick=()=>{setupOpen(false);toWalk()};$('bFold').onclick=()=>fold(
 try{if(localStorage.getItem('mvw-fold')==='1')fold(true)}catch(e){}
 try{if(!localStorage.getItem('mvw-seen')){localStorage.setItem('mvw-seen','1');setTimeout(()=>setupOpen(true),300)}}catch(e){}
 loadSample('lib'); condShow(); requestAnimationFrame(loop);
-window.__walk={get cam(){return cam},orbit,toOrbit,rainOn,fold:(v)=>fold(v),ifcEngine,get IFC_FROM(){return IFC_FROM},get CLIENT(){return CLIENT},clientPrep,clientAsk,clientAnswer,inspStart:()=>inspStart(),finalArrive:()=>finalArrive(),pathTo:(a,b)=>pathTo(a,b),npcMake,npcPose:(g,w)=>npcPose(g,w),avatarMake:k=>avatarMake(k),humanPose:(U,w,o)=>humanPose(U,w,o),get scene(){return scene},note,evTest:ev,reportDoc,mentArrive,mentHeard,mentAll,get MENT(){return MENT},elevFront,solarCalc,energySheet,hotRooms,setHP(v,ago){HP=v;lastHurt=performance.now()-(ago||0)*1000;hpShow()},get G(){return G},setWho,runChecks,get INSPq(){return INSP.q},meas,useKey,pdfReport,inspArrive,get INSP(){return INSP},get NAV(){return NAV},get FIRE(){return FIRE},startFire,nodeAt,warnLeaks,get RAIN(){return RAIN},showReport,get REP(){return REP},P,get M(){return M},step,whereNow,toWalk,loadIfc,get F(){return F},get HP(){return HP},loadSample};
+window.__walk={get cam(){return cam},orbit,toOrbit,rainOn,fold:(v)=>fold(v),ifcEngine,get IFC_FROM(){return IFC_FROM},get CLIENT(){return CLIENT},clientPrep,clientAsk,clientAnswer,inspStart:()=>inspStart(),finalArrive:()=>finalArrive(),pathTo:(a,b)=>pathTo(a,b),npcMake,npcPose:(g,w)=>npcPose(g,w),npcMood:(g,e)=>npcMood(g,e),avatarMake:k=>avatarMake(k),avReact:k=>avReact(k),humanPose:(U,w,o)=>humanPose(U,w,o),get scene(){return scene},note,evTest:ev,reportDoc,mentArrive,mentHeard,mentAll,get MENT(){return MENT},elevFront,solarCalc,energySheet,hotRooms,setHP(v,ago){HP=v;lastHurt=performance.now()-(ago||0)*1000;hpShow()},get G(){return G},setWho,runChecks,get INSPq(){return INSP.q},meas,useKey,pdfReport,inspArrive,get INSP(){return INSP},get NAV(){return NAV},get FIRE(){return FIRE},startFire,nodeAt,warnLeaks,get RAIN(){return RAIN},showReport,get REP(){return REP},P,get M(){return M},step,whereNow,toWalk,loadIfc,get F(){return F},get HP(){return HP},loadSample};
 </script>
