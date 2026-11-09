@@ -2712,7 +2712,7 @@ const FXTEX={};function fxTex(kind){if(FXTEX[kind])return FXTEX[kind];const c=do
  return FXTEX[kind]=new THREE.CanvasTexture(c)}
 // 반응 동작: 설계 문제를 몸으로 겪는 모습 (3인칭에서 보임)
 const REACT={head:{d:1.6,fx:'star',ex:'sad',sq:0.8},hot:{d:3,fx:'sweat',ex:'worried',sq:0.3},rain:{d:2.2,fx:'drip',ex:'worried',sq:0.5},trip:{d:1.2,fx:'bang',ex:'o'},stop:{d:1.2,ex:'worried'},
- surprise:{d:1.6,fx:'bang',ex:'o'},fall:{d:1.6,fx:'bang',ex:'o',sq:0.6},smoke:{d:1.2,fx:'smoke',ex:'worried',sq:0.7},tired:{d:2,fx:'sweat',ex:'sad',sq:0.4},joy:{d:1.6,fx:'heart',ex:'grin'},stretch:{d:1.8,ex:'smile',sq:0.9}};
+ surprise:{d:1.6,fx:'bang',ex:'o'},fall:{d:1.6,fx:'bang',ex:'o',sq:0.6},smoke:{d:1.2,fx:'smoke',ex:'worried',sq:0.7},tired:{d:2,fx:'sweat',ex:'sad',sq:0.4},joy:{d:1.6,fx:'heart',ex:'grin'},stretch:{d:1.8,ex:'smile',sq:0.9},talk:{d:1.4,ex:'smile'}};
 function avReact(kind){if(!AV||!REACT[kind])return;const U=AV.userData,R=REACT[kind];if(U.emote&&U.emote.k==='fall'&&kind!=='fall'&&U.emote.t<U.emote.d)return;U.emote={k:kind,t:0,d:R.d};if(R.fx){U.fx.material.map=fxTex(R.fx);U.fx.material.needsUpdate=true}}
 function avPose(dt){const U=AV.userData,mv=P.moving&&P.ground,t=performance.now()/1000;
  for(const j of ['armL','armR'])U[j].rotation.z=0;U.upper.rotation.z=0;AV.position.y=P.pos.y;
@@ -2771,10 +2771,12 @@ $('bWalk').onclick=toWalk; $('bOrbit').onclick=()=>{toOrbit(true);hpShow()};
 const K={};addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;K[e.code]=true;if(mode==='walk'&&e.code==='KeyV'&&!e.repeat)viewToggle();if(mode==='walk'&&e.code==='KeyH'){const el=$('keyguide');kgShow(!el||el.hidden||el.style.opacity==='0');if(el&&!el.hidden){KG.walkT=0;KG.drag=false}}if(mode==='walk'&&(e.code==='ArrowLeft'||e.code==='ArrowRight'))KG.drag=true;if(mode==='walk'&&['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault()});
 addEventListener('keyup',e=>{K[e.code]=false});
 let look=null;
-renderer.domElement.addEventListener('pointerdown',e=>{if(mode!=='walk')return;look={id:e.pointerId,x:e.clientX,y:e.clientY};renderer.domElement.setPointerCapture(e.pointerId)});
+renderer.domElement.addEventListener('pointerdown',e=>{if(mode!=='walk')return;look={id:e.pointerId,x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t0:performance.now()};renderer.domElement.setPointerCapture(e.pointerId)});
 const LOOK={dx:0,dy:0};
 renderer.domElement.addEventListener('pointermove',e=>{if(!look||e.pointerId!==look.id)return;if(Math.abs(e.clientX-look.x)+Math.abs(e.clientY-look.y)>2)KG.drag=true;LOOK.dx+=e.clientX-look.x;LOOK.dy+=e.clientY-look.y;look.x=e.clientX;look.y=e.clientY});
-renderer.domElement.addEventListener('pointerup',e=>{if(look&&e.pointerId===look.id)look=null});
+renderer.domElement.addEventListener('pointerup',e=>{if(look&&e.pointerId===look.id){const tap=Math.abs(e.clientX-look.sx)+Math.abs(e.clientY-look.sy)<8&&performance.now()-look.t0<400;look=null;if(tap)talkTap(e.clientX,e.clientY)}});
+// 검사 중인 검사관을 누르면(휴대폰은 탭) 멈춰서 이야기함. PC는 검사관 위에서 손가락 모양 (2026. 11. 10.)
+let hovT=0;renderer.domElement.addEventListener('pointermove',e=>{if(look||e.pointerType!=='mouse')return;const n=performance.now();if(n-hovT<120)return;hovT=n;renderer.domElement.style.cursor=talkPick(e.clientX,e.clientY)?'pointer':''});
 const joy={x:0,y:0,id:null};
 $('joy').addEventListener('pointerdown',e=>{joy.id=e.pointerId;$('joy').setPointerCapture(e.pointerId);joyMove(e)});
 $('joy').addEventListener('pointermove',e=>{if(e.pointerId===joy.id)joyMove(e)});
@@ -4099,9 +4101,10 @@ function inspStart(){const k=INSP.kind,R=INSP.res[k];$('insp').hidden=true;INSP.
  // 검사 중 학생 부르기: 위반만, 계단·난간·문턱·출입구처럼 서 보면 느껴지는 것 먼저, 검사관마다 최대 2곳 (2026. 11. 3.)
  const PHYS=/^(GUARD|STAIR|USR-DOOR|USR-ENTRY|USR-CORR|USR-STAIR|ELEV|DOOR|CORR|CEIL|EGR)/;
  INSP.callSet=new Set(R.filter(r=>r.grade==='위반'&&r.pos).sort((a,b)=>(PHYS.test(b.id)?1:0)-(PHYS.test(a.id)?1:0)).slice(0,2));
- note({insp:true,title:`${esc(INS[k].nm)}${ig(INS[k].nm)} 건물을 돌며 검사합니다`,sub:'검사하는 동안에는 검사관 알림만 뜹니다. 위반을 찾으면 부르니 그 자리로 가 보세요. 끝나면 현관 밖에서 검사지를 줍니다.',ttl:4000})}
+ note({insp:true,title:`${esc(INS[k].nm)}${ig(INS[k].nm)} 건물을 돌며 검사합니다`,sub:`위반을 찾으면 부르니 그 자리로 가 보세요. 돌아다니는 검사관을 ${matchMedia('(pointer:coarse)').matches?'누르면':'클릭하면'} 멈춰서 이야기해 줍니다. 끝나면 현관 밖에서 검사지를 줍니다.`,ttl:5000})}
 function inspTour(dt){const r=INSP.route,npc=INSP.npc;if(!npc)return;
  if(INSP.call){callStep(dt);return}
+ if(INSP.talk){talkStep(dt);return}
  if(INSP.pause>0){INSP.pause-=dt;npc.userData.look=true;npcPose(npc,false);npc.userData.head.rotation.y=Math.sin(performance.now()/350)*0.8;return}npc.userData.look=false;npcPose(npc,true);
  if(INSP.ri>=r.length-1){INSP.stage='done';const g=INSP.pinG[INSP.kind];g&&g.children.forEach(p=>p.visible=true);note({key:'insp-call',av:INS[INSP.kind].av,color:INS[INSP.kind].c,title:`${esc(INS[INSP.kind].nm)} 검사가 끝났습니다`,sub:'현관 밖에서 검사지를 들고 기다립니다. 나가서 받으세요.',ttl:6000});scoreShow();return}
  const a=r[INSP.ri],b=r[INSP.ri+1];const L=Math.hypot(b.x-a.x,b.z-a.z,b.y-a.y)||0.01;INSP.seg+=INSP.speed*dt/L;
@@ -4148,6 +4151,41 @@ function callStep(dt){const C=INSP.call,npc=INSP.npc,U=npc.userData,I=INS[INSP.k
  // 가리키기
  npcPose(npc,false);if(C.fx){const k=1+Math.sin(performance.now()/140)*0.12;C.fx.children[0].scale.set(k,k,k);C.fx.children[1].position.y=2.45+Math.abs(Math.sin(performance.now()/200))*0.15}
  if(C.t<=0){if(C.fx)scene.remove(C.fx);U.point=false;INSP.call=null;callResume();INSP.pause=0.4}}
+// ───────── 검사 중 말 걸기: 누르면 멈춰서 지금까지 본 것과 짧은 건축 지식을 들려줌 (2026. 11. 10.) ─────────
+// 지식은 검증해 둔 글(GUIDE의 '이 기준이 있는 이유', 면담 문제은행 QB의 해설)에서만 고름. 새 수치를 지어내지 않음
+function talkPick(x,y){if(mode!=='walk'||INSP.stage!=='touring'||INSP.call||!INSP.npc)return null;const r=renderer.domElement.getBoundingClientRect(),v=new THREE.Vector2((x-r.left)/r.width*2-1,-(y-r.top)/r.height*2+1),rc=new THREE.Raycaster();rc.setFromCamera(v,cam);
+ let h=rc.intersectObject(INSP.npc,true).find(q=>q.object.visible&&!(q.object.isSprite));
+ if(!h){const o=INSP.npc.position,a=new THREE.Vector3(o.x,o.y+0.3,o.z),b=new THREE.Vector3(o.x,o.y+1.8,o.z),pr=new THREE.Vector3(),ps=new THREE.Vector3(); // 움직이는 검사관을 조금 빗겨 눌러도 됨 (몸 둘레 0.45m)
+  rc.ray.distanceSqToSegment(a,b,pr,ps);if(pr.distanceTo(ps)<0.45)h={distance:rc.ray.origin.distanceTo(pr)}}
+ if(!h)return null; // 벽 너머인지는 카메라가 아니라 학생 눈에서 검사관 가슴까지로 봄 (3인칭 카메라가 벽에 붙어 있어도 됨)
+ const o=INSP.npc.position,e=new THREE.Vector3(P.pos.x,P.pos.y+Math.min(EYE,1.5),P.pos.z),t=new THREE.Vector3(o.x,o.y+1.2,o.z),dv=t.clone().sub(e),L=dv.length();
+ const w=new THREE.Raycaster(e,dv.normalize(),0,L).intersectObjects(M.solids,false).find(q=>!(q.object.userData&&q.object.userData.ctx)&&q.distance>0.3&&q.distance<L-0.35);return w?null:h}
+function talkTap(x,y){if(INSP.talk||!talkPick(x,y))return;const npc=INSP.npc,d=Math.hypot(npc.position.x-P.pos.x,npc.position.z-P.pos.z);
+ if(d>4.5||Math.abs(npc.position.y-P.pos.y)>1.6){note({insp:true,title:'조금 더 가까이 가서 말을 거세요',sub:`검사관까지 ${d.toFixed(1)}m · 4m 안에서 누르면 멈춥니다`,ttl:2200});return}
+ talkStart()}
+// 나올 이야기 순서: 이미 보여 준 지적의 법령 한 줄 → 그 분야 기준이 있는 이유 → 맞게 지은 항목의 법령 한 줄. 아직 안 보여 준 위반은 미리 말하지 않음
+function talkPool(k){const out=[],seen=new Set(),qe=(r,src)=>{if(!r.id)return;const q=qbFor(r);if(!QB[q.k]||seen.has(q.k))return;seen.add(q.k);out.push({t:q.e,src})};
+ for(const p of INSP.pinList||[])if(p.kind===k&&p.s.visible)qe(p.r,`${p.r.no}번 자리의 법령`);
+ for(const t of GUIDE[k]||[])out.push({t,src:'이 기준이 있는 이유'});
+ for(const r of INSP.res[k]||[])if(r.grade==='적합')qe(r,'잘 지킨 항목의 법령');
+ return out}
+function talkStart(){const k=INSP.kind,I=INS[k],npc=INSP.npc;INSP.talkN=INSP.talkN||{};INSP.talk={t:0,i:INSP.talkN[k]||0};
+ npcFace(npc,'smile',600);npcNod(npc,1.2);avReact('talk');talkCard(true)}
+function talkCard(first){const T=INSP.talk;if(!T)return;const k=INSP.kind,I=INS[k],pl=(INSP.pinList||[]).filter(p=>p.kind===k&&p.s.visible),r=INSP.route||[];
+ const left=r.slice(INSP.ri+1).filter(q=>q.stop).length,pct=Math.round(Math.min(99,(INSP.done||0)/(INSP.len||1)*100));
+ const said=pl.length?`<div style="margin:6px 0 2px;font-weight:600">지금까지 본 것 (${pl.length}곳)</div><ol style="margin:0;padding-left:18px">${pl.slice(-3).map(p=>`<li><b>${p.r.no}. ${esc(p.r.title)}</b>${p.r.grade==='확인 필요'?' <span style="color:#a46a00">확인 필요</span>':''}${shortFix(p.r)?`<br><small>${esc(shortFix(p.r))}</small>`:''}</li>`).join('')}</ol>${pl.length>3?`<small>앞의 ${pl.length-3}곳은 지도 번호로 보세요.</small>`:''}`
+  :`<div style="margin:6px 0 2px">아직 지적할 곳은 못 찾았습니다.</div>`;
+ T.pool=talkPool(k);const tip=T.pool.length?T.pool[T.i%T.pool.length]:null;
+ note({key:'insp-talk',insp:true,av:I.av,color:I.c,kind:'info',title:`${esc(I.nm)}: "${first?'네, 잠깐 이야기하죠.':'하나 더 말씀드리면요.'}"`,sub:`검사 ${pct}% · 둘러볼 곳 ${left}곳 남음`,
+  html:said+(tip?`<div style="margin-top:8px;padding:6px 8px;background:#f4f1e8;border-radius:6px"><small style="color:#7a6a3a">${tip.src}</small>${esc(tip.t)}</div>`:''),
+  actions:[...(T.pool.length>1?[{t:'다른 이야기',fn:()=>{if(!INSP.talk)return;T.i++;T.t=0;npcNod(INSP.npc,1);talkCard(false)}}]:[]),{t:'계속 검사하세요',primary:true,fn:()=>talkEnd(true)}],
+  onClose:()=>talkEnd(true),ttl:0})}
+function talkEnd(polite){const T=INSP.talk;if(!T)return;INSP.talkN[INSP.kind]=T.i+1;INSP.talk=null;closeKey('insp-talk');const npc=INSP.npc;if(npc){npc.userData.fx_until=0;if(polite)npcFace(npc,'smile',1.2)}INSP.pause=0.3;
+ if(polite)noteLite({key:'insp-talk-end',insp:true,title:`${esc(INS[INSP.kind].av)}: "그럼 계속 보겠습니다."`,ttl:1800})}
+function talkStep(dt){const T=INSP.talk,npc=INSP.npc,U=npc.userData;T.t+=dt;U.look=true;if(U.mark)U.mark.visible=false;npcPose(npc,false);
+ const want=Math.atan2(P.pos.x-npc.position.x,P.pos.z-npc.position.z);let dr=want-npc.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));npc.rotation.y+=dr*Math.min(1,dt*6);U.head.rotation.y=0;
+ $('inspChip').hidden=false;$('inspChip').innerHTML=`<b>${INS[INSP.kind].av}</b> 이야기 중 · 멈춤`;
+ const d=Math.hypot(npc.position.x-P.pos.x,npc.position.z-P.pos.z);if(d>6||mode!=='walk'||T.t>60){talkEnd(false);noteLite({key:'insp-talk-end',insp:true,title:'검사관이 검사를 이어 갑니다',ttl:1800})}}
 // ───────── 건축주 면담 (마지막 관문): 종합 판정 뒤 준비 시간 → 현관 밖에서 만나 위반·보완을 하나씩 묻는 3지선다 ─────────
 // 문제는 건축기사 출제 범위(건축법규·건축계획)의 문형을 응용해 규칙표의 기준·법령으로 만든 초안입니다(기출 문제 아님, 선생님 검수 대기).
 // 정답은 늘 첫 번째(a[0])이고 화면에서 섞어서 보여 줌
@@ -4336,5 +4374,5 @@ $('bStart').onclick=()=>{setupOpen(false);toWalk()};$('bFold').onclick=()=>fold(
 try{if(localStorage.getItem('mvw-fold')==='1')fold(true)}catch(e){}
 try{if(!localStorage.getItem('mvw-seen')){localStorage.setItem('mvw-seen','1');setTimeout(()=>setupOpen(true),300)}}catch(e){}
 loadSample('lib'); condShow(); requestAnimationFrame(loop);
-window.__walk={get cam(){return cam},orbit,toOrbit,rainOn,fold:(v)=>fold(v),ifcEngine,get IFC_FROM(){return IFC_FROM},get CLIENT(){return CLIENT},clientPrep,clientAsk,clientAnswer,inspStart:()=>inspStart(),finalArrive:()=>finalArrive(),pathTo:(a,b)=>pathTo(a,b),npcMake,npcPose:(g,w)=>npcPose(g,w),npcMood:(g,e)=>npcMood(g,e),avatarMake:k=>avatarMake(k),avReact:k=>avReact(k),humanPose:(U,w,o)=>humanPose(U,w,o),get scene(){return scene},note,evTest:ev,reportDoc,mentArrive,mentHeard,mentAll,get MENT(){return MENT},elevFront,solarCalc,energySheet,hotRooms,setHP(v,ago){HP=v;lastHurt=performance.now()-(ago||0)*1000;hpShow()},get G(){return G},setWho,runChecks,get INSPq(){return INSP.q},meas,useKey,pdfReport,inspArrive,get INSP(){return INSP},get NAV(){return NAV},get FIRE(){return FIRE},startFire,nodeAt,warnLeaks,get RAIN(){return RAIN},showReport,get REP(){return REP},P,get M(){return M},step,whereNow,toWalk,loadIfc,get F(){return F},get HP(){return HP},loadSample};
+window.__walk={get cam(){return cam},talkPick,talkTap,talkStart,talkEnd,orbit,toOrbit,rainOn,fold:(v)=>fold(v),ifcEngine,get IFC_FROM(){return IFC_FROM},get CLIENT(){return CLIENT},clientPrep,clientAsk,clientAnswer,inspStart:()=>inspStart(),finalArrive:()=>finalArrive(),pathTo:(a,b)=>pathTo(a,b),npcMake,npcPose:(g,w)=>npcPose(g,w),npcMood:(g,e)=>npcMood(g,e),avatarMake:k=>avatarMake(k),avReact:k=>avReact(k),humanPose:(U,w,o)=>humanPose(U,w,o),get scene(){return scene},note,evTest:ev,reportDoc,mentArrive,mentHeard,mentAll,get MENT(){return MENT},elevFront,solarCalc,energySheet,hotRooms,setHP(v,ago){HP=v;lastHurt=performance.now()-(ago||0)*1000;hpShow()},get G(){return G},setWho,runChecks,get INSPq(){return INSP.q},meas,useKey,pdfReport,inspArrive,get INSP(){return INSP},get NAV(){return NAV},get FIRE(){return FIRE},startFire,nodeAt,warnLeaks,get RAIN(){return RAIN},showReport,get REP(){return REP},P,get M(){return M},step,whereNow,toWalk,loadIfc,get F(){return F},get HP(){return HP},loadSample};
 </script>
