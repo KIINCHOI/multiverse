@@ -138,6 +138,7 @@ main.rep-open .notes{right:calc(min(380px,100% - 24px) + 24px)}
 .kt{font-size:10.5px;color:#5d6862}
 .kgd{position:absolute;left:calc(244px + (100% - 244px)/2);bottom:16px;transform:translateX(-50%);display:flex;gap:16px;align-items:center;padding:9px 16px;border-radius:12px;background:rgba(18,24,21,.58);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);color:#fff;font-size:12.5px;font-weight:600;pointer-events:none;transition:opacity .5s;white-space:nowrap;z-index:5}
 .kgd .it{display:flex;align-items:center;gap:7px}.kgd .kg.wasd{grid-template-columns:repeat(3,19px)}.kgd .kc{min-width:19px;height:19px;font-size:10.5px}.kgd .kc-w{min-width:42px}.kgd .kc-sp{min-width:60px}
+#xhair{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:rgba(255,255,255,.85);box-shadow:0 0 0 1.5px rgba(0,0,0,.45);pointer-events:none;z-index:4}
 .kgd .end{font-weight:400;font-size:11px;color:#d6ddd8}
 @media (max-width:900px){.kgd{left:50%;bottom:244px}}
 @media (max-width:640px),(pointer:coarse){.kgd{display:none!important}}
@@ -187,13 +188,16 @@ footer a{color:var(--accent)}
   <span class="kg"><i class="kc kc-m" aria-hidden="true"><svg viewBox="0 0 14 20" width="11" height="16"><rect x="1" y="1" width="12" height="18" rx="6" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="7" y1="1.5" x2="7" y2="7" stroke="currentColor" stroke-width="1.6"/></svg></i><span class="kt">끌기</span></span><span>둘러보기<small>화면을 끌어 보는 방향을 바꿈</small></span>
   <span class="kg"><i class="kc kc-w">Shift</i></span><span>달리기<small>누른 채 걸으면 두 배 빠르게</small></span>
   <span class="kg"><i class="kc kc-sp">Space</i></span><span>점프<small>휠체어 이용자는 점프하지 않음</small></span>
+  <span class="kg"><i class="kc">V</i></span><span>시점 바꾸기<small>내 모습이 보이는 3인칭 ↔ 눈높이 1인칭</small></span>
  </div><b>검사관</b>: 처음 한 번은 시청 건축과 → 소방 → 에너지 → 이용자 대표 → 종합 판정 순서로 현관 밖에 찾아옵니다. 나가서 만나야 검사를 시작하고, 끝나면 현관 밖에서 검사지를 줍니다. 2분 넘게 기다리게 하면 화가 나서 돌아갑니다. 그 뒤에는 "검사관"으로 원하는 검사관만 부릅니다. <b>설계 멘토</b>는 검사관이 모두 다녀간 뒤부터, 검사관이 없을 때만 들러 조언을 하나씩 줍니다. 알림은 오른쪽으로 밀면 사라집니다.<br><b>찾기</b>: 검사관이 남긴 번호 표시까지 걸어가면 "지적 자리 찾기"가 올라갑니다.<br><b>걷는 사람</b>: 휠체어 이용자·어린이·노인으로 바꿔 걸어 보세요. 휠체어는 2cm 넘는 턱과 계단을 지나가지 못합니다. 승강기는 휠체어 이용자·노인만 타고, 카 안에 들어가면 층을 고릅니다(불이 나면 멈춤).<br><b>예비비</b>: 임시 조치·하자 보수·치료비·이행강제금은 건축주 예비비(100)에서 빠집니다. 근본 해결은 IFC를 고쳐 같은 파일 이름으로 다시 올리는 것이고, 해결한 수정 과제마다 하자 해결 도장을 받습니다.<br><b>보고서</b>: "보고서"에서 PDF로 받으면 항목마다 측정값·기준·법령·고치는 방법과 층별 평면이 들어갑니다.<br><b>이 자리 햇빛</b>: 선 자리에서 오늘 하루 직사광이 드는 시간을 잽니다.<br><b>자동 화재</b>: 계단까지 가장 먼 자리에 들어서면 불이 나고 연기가 퍼집니다. 방화문과 피난계단은 연기를 막아 안전지대가 됩니다. <b>피난 미션</b>은 지금 자리에서 바로 시작합니다.<br><b>사건</b>: 바닥이 없거나 난간이 없으면 떨어지고, 천장·계단이 낮으면 머리를 부딪힙니다. <b>비·눈 오는 날</b>(동지는 눈)에는 지붕이 덮지 못한 실로 비·눈이 들어오고, 고치지 않으면 경고 5·7·9번째에 마감 젖음 → 천장재 낙하 → 바닥 붕괴로 번집니다.</div>
+ <div id="xhair" hidden aria-hidden="true"></div>
  <div class="kgd" id="keyguide" hidden aria-hidden="true">
   <span class="it"><span class="kg wasd"><i class="kc">W</i><i class="kc">A</i><i class="kc">S</i><i class="kc">D</i></span>걷기</span>
   <span class="it"><i class="kc">←</i><i class="kc">→</i>돌기</span>
   <span class="it"><i class="kc kc-m"><svg viewBox="0 0 14 20" width="10" height="14"><rect x="1" y="1" width="12" height="18" rx="6" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="7" y1="1.5" x2="7" y2="7" stroke="currentColor" stroke-width="1.6"/></svg></i>끌어서 둘러보기</span>
   <span class="it"><i class="kc kc-w">Shift</i>달리기</span>
   <span class="it"><i class="kc kc-sp">Space</i>점프</span>
+  <span class="it"><i class="kc">V</i>시점</span>
   <span class="it end"><i class="kc">H</i>안내 다시 보기</span>
  </div>
  <canvas id="map" width="440" height="440" aria-label="평면 위 현재 위치"></canvas>
@@ -2623,7 +2627,7 @@ $('day').onchange=setSun; $('hour').oninput=setSun;
 // ───────── 둘러보기 / 걷기 ─────────
 let mode='orbit';
 function toOrbit(reset){
- mode='orbit'; orbit.enabled=true; kgShow(false); $('bOrbit').setAttribute('aria-pressed','true'); $('bWalk').setAttribute('aria-pressed','false');
+ mode='orbit'; orbit.enabled=true; kgShow(false); if(AV)AV.visible=false; if($('xhair'))$('xhair').hidden=true; $('bOrbit').setAttribute('aria-pressed','true'); $('bWalk').setAttribute('aria-pressed','false');
  $('joy').style.display='none'; $('jump').style.display='none';
  if(reset){const s=M.box.getSize(new THREE.Vector3()),r=Math.max(s.x,s.y,s.z,8);cam.fov=45;cam.updateProjectionMatrix();orbit.target.set(0,s.y*0.35,0);cam.position.set(r*1.1,r*0.8,r*1.3);}
 }
@@ -2642,6 +2646,40 @@ var KG={walkT:0,drag:false,shown:0,learned:false};try{KG.learned=localStorage.ge
 function kgShow(on){const el=$('keyguide');if(!el)return;if(on){el.hidden=false;void el.offsetWidth;el.style.opacity='1';KG.shown=performance.now()}else{el.style.opacity='0';setTimeout(()=>{if(el.style.opacity==='0')el.hidden=true},550)}}
 function kgTick(dt,moving){const el=$('keyguide');if(!el||el.hidden||el.style.opacity==='0')return;if(moving)KG.walkT+=dt;const ok=KG.walkT>3&&KG.drag,age=(performance.now()-KG.shown)/1000;
  if(ok&&!KG.learned){KG.learned=true;try{localStorage.setItem('mvw-keysok','1')}catch(_){}}if(ok||age>(KG.learned?6:45))kgShow(false)}
+// 시점: 3인칭(기본, 내 모습이 보임)·1인칭(V로 바꿈). 3인칭 카메라는 등 뒤에서 따라오고, 벽에 막히면 앞으로 당김 (2026. 11. 10.)
+var VIEW='3';try{if(localStorage.getItem('mvw-view')==='1')VIEW='1'}catch(_){}
+let AV=null,AVK=null;const CAMS={d:null};
+function avatarMake(k){const C={adult:{jk:0x2f7d8c,pt:0x2b3440,hair:0x2b2420,shirt:0xffffff,shoe:0xf2f2ee,cuff:0x1f5d69},child:{jk:0xf2b632,pt:0x3d5a99,hair:0x2b2420,shoe:0xd8402f,zipC:0xc98a10},
+  elder:{jk:0x8c7a66,pt:0x4a4f57,hair:0xdedede,brow:0xc8c8c8,glasses:true,shirt:0xf2efe6,zip:false,shoe:0x3a2a1e},wheel:{jk:0x5d6fb0,pt:0x2b3440,hair:0x3b2a1e,shoe:0x1e1f22}}[k];
+ const g=humanBody(C),U=g.userData,{add,CY,BX,Mt}=U;
+ if(k==='elder'){const cane=add(U.handR,CY(0.013,0.013,0.82),0x5a3d22,0,-0.41,0.04);add(U.handR,CY(0.014,0.014,0.09),0x5a3d22,0,-0.02,0.07).rotation.x=Math.PI/2;U.stoop=0.16}
+ if(k==='child'){g.scale.setScalar(0.62);U.head.scale.setScalar(1.25)}
+ if(k==='elder')g.scale.setScalar(0.95);
+ if(k==='wheel'){U.body.position.y=-0.4;U.seated=true;U.wheels=[]; // 휠체어: 바퀴살·손잡이 바퀴가 있는 큰 바퀴, 앞바퀴, 좌석, 등받이, 발판
+  const fr=0x9aa3ad,bk=0x2a2d31;
+  for(const s of [-1,1]){const spin=new THREE.Group();spin.position.set(0.3*s,0.3,-0.06);g.add(spin);const w=new THREE.Group();w.rotation.y=Math.PI/2;spin.add(w);U.wheels.push(spin);
+   w.add(new THREE.Mesh(new THREE.TorusGeometry(0.29,0.022,8,28),Mt(bk)));const rim=new THREE.Mesh(new THREE.TorusGeometry(0.25,0.008,6,24),Mt(fr));rim.position.z=0.035*s;w.add(rim);
+   for(let i=0;i<8;i++){const sp=new THREE.Mesh(new THREE.BoxGeometry(0.008,0.54,0.004),Mt(0xc9cfd6));sp.rotation.z=i*Math.PI/8;w.add(sp)}
+   add(w,CY(0.03,0.03,0.05),fr,0,0,0).rotation.x=Math.PI/2;
+   add(g,CY(0.035,0.035,0.025),bk,0.22*s,0.06,0.36).rotation.z=Math.PI/2;add(g,CY(0.01,0.01,0.16),fr,0.22*s,0.14,0.36);
+   add(g,BX(0.025,0.025,0.46),fr,0.23*s,0.46,0.1);add(g,CY(0.013,0.013,0.55),fr,0.23*s,0.73,-0.22);add(g,BX(0.025,0.025,0.12),bk,0.23*s,1.0,-0.27)}
+  add(g,BX(0.46,0.06,0.44),bk,0,0.45,0.06);add(g,BX(0.44,0.38,0.03),bk,0,0.7,-0.22);add(g,BX(0.38,0.02,0.16),bk,0,0.09,0.42)}
+ g.traverse(o=>{if(o.isMesh){o.userData.avatar=true;o.material.transparent=true}});return g}
+function avPose(dt){const U=AV.userData,mv=P.moving&&P.ground;
+ if(U.seated){humanPose(U,mv,{seated:true});const lp=U.lp||P.pos.clone(),d=P.pos.distanceTo(lp),fwd=new THREE.Vector3(-Math.sin(P.yaw),0,-Math.cos(P.yaw)),sg=Math.sign(P.pos.clone().sub(lp).dot(fwd))||1;
+  for(const w of U.wheels)w.rotation.x+=sg*d/0.29;U.lp=P.pos.clone();return}
+ humanPose(U,mv,{freq:P.climbT>0?5:AVK==='elder'?6:AVK==='child'?10:8.5,k:0.4,cane:AVK==='elder',noLook:true,stoop:(P.duckT>0?0.6:0)+(U.stoop||0)})}
+function camUpdate(dt){const duck=P.duckT>0,eyeT=EYE*(duck?0.72:1);P.eyeS=P.eyeS==null?eyeT:P.eyeS+(eyeT-P.eyeS)*Math.min(1,dt*10);
+ const xh=$('xhair');if(xh)xh.hidden=!(mode==='walk'&&VIEW==='1');
+ if(AVK!==PID){if(AV)scene.remove(AV);AV=avatarMake(PID);AVK=PID;scene.add(AV)}
+ if(VIEW==='1'){AV.visible=false;cam.position.set(P.pos.x,P.pos.y+P.eyeS,P.pos.z);cam.rotation.set(P.pitch,P.yaw,0,'YXZ');return}
+ AV.visible=mode==='walk';AV.position.copy(P.pos);AV.rotation.y=P.yaw+Math.PI;avPose(dt);
+ const pc=Math.max(-0.75,Math.min(0.45,P.pitch)),cp=Math.cos(pc),fw=new THREE.Vector3(-Math.sin(P.yaw)*cp,Math.sin(pc),-Math.cos(P.yaw)*cp);
+ const head=new THREE.Vector3(P.pos.x,P.pos.y+P.eyeS+0.1,P.pos.z),D=PID==='child'?2.3:2.9,back=fw.clone().negate(),rt=new THREE.Vector3(Math.cos(P.yaw),0,-Math.sin(P.yaw)),want=head.clone().addScaledVector(back,D).addScaledVector(rt,0.45);want.y+=0.6; // 어깨 너머(오른쪽 뒤 위)에서 봄
+ const dir=want.clone().sub(head),L=dir.length();dir.normalize();const rc=new THREE.Raycaster(head,dir,0,L+0.25);const hit=rc.intersectObjects(M.solids,false).find(h=>!(h.object.userData&&h.object.userData.t==='CARFLOOR'));
+ let d=hit?Math.max(0.15,hit.distance-0.25):L;CAMS.d=CAMS.d==null||d<CAMS.d?d:CAMS.d+(d-CAMS.d)*Math.min(1,dt*3); // 벽에 막히면 바로 당기고, 풀리면 천천히 물러남
+ {const op=Math.max(0,Math.min(1,(CAMS.d-0.8)/0.9));if(op!==AV.userData.op){AV.userData.op=op;AV.traverse(o=>{if(o.isMesh)o.material.opacity=op})}AV.visible=mode==='walk'&&op>0.05} // 카메라가 가까워지면 내 모습을 흐리게
+ cam.position.copy(head).addScaledVector(dir,CAMS.d);const tg=head.clone().addScaledVector(fw,5).addScaledVector(rt,0.45*Math.min(1,CAMS.d/L));tg.y-=0.25;cam.lookAt(tg)}
 function toWalk(){if($('help'))$('help').hidden=true;setTimeout(()=>kgShow(true),400);if($('setup'))$('setup').hidden=true;$('tGame')&&$('tGame').setAttribute('aria-selected','true');$('tSetup')&&$('tSetup').setAttribute('aria-selected','false');
  mode='walk'; orbit.enabled=false; $('bWalk').setAttribute('aria-pressed','true'); $('bOrbit').setAttribute('aria-pressed','false');
  if(matchMedia('(pointer:coarse)').matches){$('joy').style.display='block';$('jump').style.display='block'}
@@ -2656,11 +2694,12 @@ function toWalk(){if($('help'))$('help').hidden=true;setTimeout(()=>kgShow(true)
 }
 $('bWalk').onclick=toWalk; $('bOrbit').onclick=()=>{toOrbit(true);hpShow()};
 // 입력
-const K={};addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;K[e.code]=true;if(mode==='walk'&&e.code==='KeyH'){const el=$('keyguide');kgShow(!el||el.hidden||el.style.opacity==='0');if(el&&!el.hidden){KG.walkT=0;KG.drag=false}}if(mode==='walk'&&(e.code==='ArrowLeft'||e.code==='ArrowRight'))KG.drag=true;if(mode==='walk'&&['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault()});
+const K={};addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;K[e.code]=true;if(mode==='walk'&&e.code==='KeyV'&&!e.repeat){VIEW=VIEW==='3'?'1':'3';try{localStorage.setItem('mvw-view',VIEW)}catch(_){}noteLite({key:'view',title:VIEW==='3'?'3인칭: 내 모습이 보입니다':'1인칭: 걷는 사람의 눈높이로 봅니다',sub:'V로 다시 바꿉니다',ttl:2200})}if(mode==='walk'&&e.code==='KeyH'){const el=$('keyguide');kgShow(!el||el.hidden||el.style.opacity==='0');if(el&&!el.hidden){KG.walkT=0;KG.drag=false}}if(mode==='walk'&&(e.code==='ArrowLeft'||e.code==='ArrowRight'))KG.drag=true;if(mode==='walk'&&['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault()});
 addEventListener('keyup',e=>{K[e.code]=false});
 let look=null;
 renderer.domElement.addEventListener('pointerdown',e=>{if(mode!=='walk')return;look={id:e.pointerId,x:e.clientX,y:e.clientY};renderer.domElement.setPointerCapture(e.pointerId)});
-renderer.domElement.addEventListener('pointermove',e=>{if(!look||e.pointerId!==look.id)return;if(Math.abs(e.clientX-look.x)+Math.abs(e.clientY-look.y)>2)KG.drag=true;P.yaw-=(e.clientX-look.x)*0.004;P.pitch=Math.max(-1.3,Math.min(1.3,P.pitch-(e.clientY-look.y)*0.004));look.x=e.clientX;look.y=e.clientY});
+const LOOK={dx:0,dy:0};
+renderer.domElement.addEventListener('pointermove',e=>{if(!look||e.pointerId!==look.id)return;if(Math.abs(e.clientX-look.x)+Math.abs(e.clientY-look.y)>2)KG.drag=true;LOOK.dx+=e.clientX-look.x;LOOK.dy+=e.clientY-look.y;look.x=e.clientX;look.y=e.clientY});
 renderer.domElement.addEventListener('pointerup',e=>{if(look&&e.pointerId===look.id)look=null});
 const joy={x:0,y:0,id:null};
 $('joy').addEventListener('pointerdown',e=>{joy.id=e.pointerId;$('joy').setPointerCapture(e.pointerId);joyMove(e)});
@@ -2674,13 +2713,22 @@ function hitDist(o,d,max,list){ray.set(o,d);ray.far=max;const h=ray.intersectObj
 const DOWN=new THREE.Vector3(0,-1,0),UP=new THREE.Vector3(0,1,0);
 function groundAt(x,y,z){ray.set(new THREE.Vector3(x,y+PSTEP+0.05,z),DOWN);ray.far=PSTEP+0.05+40;for(const h of ray.intersectObjects(M.solids.concat([ground]),false)){if(h.object!==ground&&inHole(h.point))continue;return h}return null}
 function settle(){const s0=PSTEP;PSTEP=0.36;const h=groundAt(P.pos.x,P.pos.y+1.2,P.pos.z);PSTEP=s0;if(h)P.pos.y=h.point.y}
-function blocked(from,dir,len){for(const hh of [Math.max(0.015,PSTEP+0.04),Math.min(1.0,EYE-0.2),EYE-0.05]){const o=new THREE.Vector3(from.x,from.y+hh,from.z),reach=hh<0.5?len+0.12:len+RAD;for(const a of [0,0.6,-0.6]){const d=dir.clone().applyAxisAngle(UP,a);if(hitDist(o,d,reach,M.solids))return true}}return false}
+// 앞을 막는지: 발목(단 높이)·허리·눈높이에서 앞으로 쏜 광선. 머리 위만 낮으면 숙여 지나가고(휠체어 제외), 어린이·노인은 성인이 오를 수 있는 단(36cm)까지 기어오름 (2026. 11. 10.)
+const DUCK={adult:1.15,elder:1.2,child:0.7};
+function rayHit(from,dir,len,hh){const o=new THREE.Vector3(from.x,from.y+hh,from.z),reach=hh<0.5?len+0.12:len+RAD;for(const a of [0,0.6,-0.6]){const d=dir.clone().applyAxisAngle(UP,a);if(hitDist(o,d,reach,M.solids))return true}return false}
+function blocked(from,dir,len){const low=Math.max(0.015,PSTEP+0.04),mid=Math.min(1.0,EYE-0.2),top=EYE-0.05;
+ if(rayHit(from,dir,len,low)){if((PID==='child'||PID==='elder')&&PSTEP<0.4&&!rayHit(from,dir,len,0.44)&&!rayHit(from,dir,len,mid)){P.climbT=0.45;PSTEP=0.4;return false}return true}
+ if(rayHit(from,dir,len,mid))return true;
+ if(rayHit(from,dir,len,top)){const dh=DUCK[PID];if(dh&&!rayHit(from,dir,len,dh)){P.duckT=0.5;return false}return true}
+ return false}
 function step(dt){
  exitWatch(); fireStep(dt); inspStep(dt); mentStep(dt); clientStep(dt); regenStep(dt);
+ if(P.climbT>0){P.climbT-=dt;PSTEP=Math.max(PER.step,0.4)}else PSTEP=PER.step;if(P.duckT>0)P.duckT-=dt;
+ {const k=Math.min(1,dt*22);if(LOOK.dx||LOOK.dy){P.yaw-=LOOK.dx*0.004*k;P.pitch=Math.max(-1.3,Math.min(1.3,P.pitch-LOOK.dy*0.004*k));LOOK.dx*=1-k;LOOK.dy*=1-k;if(Math.abs(LOOK.dx)<0.05)LOOK.dx=0;if(Math.abs(LOOK.dy)<0.05)LOOK.dy=0}}
  const f=(K.KeyW||K.ArrowUp?1:0)-(K.KeyS||K.ArrowDown?1:0)-joy.y, s=(K.KeyD?1:0)-(K.KeyA?1:0)+joy.x;
  if(K.ArrowLeft)P.yaw+=1.8*dt; if(K.ArrowRight)P.yaw-=1.8*dt;
  if(K.Space&&P.ground&&PER.jump){P.vy=4.2;P.ground=false}
- const sp=(+$('spd').value)*PER.spd*(K.ShiftLeft||K.ShiftRight?2:1)*Math.min(1,Math.hypot(f,s));kgTick(dt,Math.hypot(f,s)>0.1);
+ const sp=(+$('spd').value)*PER.spd*(K.ShiftLeft||K.ShiftRight?2:1)*Math.min(1,Math.hypot(f,s))*(P.climbT>0?0.45:1)*(P.duckT>0?0.6:1);kgTick(dt,Math.hypot(f,s)>0.1);P.moving=Math.hypot(f,s)>0.1;
  const fw=new THREE.Vector3(-Math.sin(P.yaw),0,-Math.cos(P.yaw)), rt=new THREE.Vector3(Math.cos(P.yaw),0,-Math.sin(P.yaw));
  const mv=fw.multiplyScalar(f).add(rt.multiplyScalar(s)); const before=P.pos.clone();
  if(mv.lengthSq()>1e-6){mv.normalize();const len=sp*dt;
@@ -2699,7 +2747,7 @@ function step(dt){
  if(wasG&&P.vy<=0&&!K.Space&&P.pos.y>gy&&y0-gy<=0.45){if(PID==='wheel'&&y0-gy>0.03)ev('wheeldrop'+Math.round(P.pos.x)+Math.round(P.pos.z),'턱에서 덜컹 떨어졌습니다',`휠체어가 ${Math.round((y0-gy)*100)}cm 턱을 내려가며 앞으로 쏠렸습니다. 휠체어가 다니는 길에는 2cm 넘는 높이 차를 두지 않고, 높이 차가 있으면 1/12 이하 경사로를 둡니다(장애인등편의법 시행규칙 별표1).`,4,true);P.pos.y=gy}
  if(P.pos.y<=gy+0.001&&P.vy<=0){const up=gy-P.pos.y;P.pos.y=gy;P.vy=0;P.ground=true;P.on=h&&h.object;P._climb=wasG?up:0}else {P.ground=false;P._climb=0}
  if(P.pos.y<-20){toWalk()}
- cam.position.set(P.pos.x,P.pos.y+EYE,P.pos.z); cam.rotation.set(P.pitch,P.yaw,0,'YXZ');
+ camUpdate(dt);
  mission(before); events(before.y,P._climb>0?P.pos.y-before.y:0);
 }
 // 어디에 있나
@@ -2787,13 +2835,14 @@ function events(prevY,climbed){
  if(P.ground){
   // 머리 부딪힘: 서 있는 자리 위로 1.95m 안에 무언가 있음
   const c=hitDist(new THREE.Vector3(P.pos.x,P.pos.y+0.3,P.pos.z),UP,EYE+0.05,M.solids);
-  if(c)ev('head'+Math.round(P.pos.x*2)+Math.round(P.pos.z*2),'머리를 부딪혔습니다',`이 자리의 천장 높이가 약 ${(c.distance+0.3).toFixed(2)}m입니다. 사람이 지나가는 곳은 머리 위 여유를 확인하세요.`,4,false);
+  if(c&&P.duckT>0){if(!(P.on&&M.stairs.includes(P.on)))ev('duck'+Math.round(P.pos.x)+Math.round(P.pos.z),'머리를 숙여 지나갔습니다',`머리 위가 약 ${(c.distance+0.3).toFixed(2)}m라 허리를 숙여야 했습니다. 사람이 다니는 곳은 서서 지나갈 높이를 두고, 계단은 유효높이 2.1m 이상이어야 합니다(피난·방화구조 등의 기준에 관한 규칙 제15조).`,0,false)}
+  else if(c)ev('head'+Math.round(P.pos.x*2)+Math.round(P.pos.z*2),'머리를 부딪혔습니다',`이 자리의 천장 높이가 약 ${(c.distance+0.3).toFixed(2)}m입니다. 사람이 지나가는 곳은 머리 위 여유를 확인하세요.`,4,false);
   // 계단 위 유효높이 2.1m
   if(P.on&&M.stairs.includes(P.on)){const h=hitDist(new THREE.Vector3(P.pos.x,P.pos.y+0.05,P.pos.z),UP,2.05,M.solids);
    if(h)ev('stairhead'+Math.round(P.pos.y),'계단 위가 낮습니다',`계단 바닥에서 위 구조체까지 약 ${(h.distance+0.05).toFixed(2)}m. 계단의 유효높이는 2.1m 이상이어야 합니다(피난·방화구조 등의 기준에 관한 규칙 제15조).`,3,true)}
   // 높은 단: 한 번에 0.22m 넘게 올라섬
   if(PID==='elder'&&climbed>0.05&&P.on&&M.stairs.includes(P.on))ev('elderstair'+Math.round(P.pos.y),'계단을 오르느라 숨이 찹니다',`노인은 계단을 오를 때마다 힘이 듭니다. 단높이가 낮고 계단참이 자주 있을수록 덜 지칩니다. 장애인 등이 쓰는 계단은 챌면 18cm 이하, 디딤판 28cm 이상입니다(장애인등편의법 시행규칙 별표1).`,1.2,false);
-  if((PID==='elder'||PID==='child')&&climbed>0.17&&climbed<=PSTEP+0.06)ev('hard'+Math.round(P.pos.x)+Math.round(P.pos.z),'단이 높아 오르기 힘듭니다',`한 번에 ${Math.round(climbed*100)}cm를 올라섰습니다. ${PER.nm}에게는 18cm 넘는 단이 힘듭니다.`,1.5,false);
+  if((PID==='elder'||PID==='child')&&climbed>0.17&&climbed<=PSTEP+0.06)ev('hard'+Math.round(P.pos.x)+Math.round(P.pos.z),climbed>PER.step+0.02?'단이 너무 높아 기어올랐습니다':'단이 높아 오르기 힘듭니다',`한 번에 ${Math.round(climbed*100)}cm를 올라섰습니다. ${PER.nm}에게는 18cm 넘는 단이 힘듭니다. 장애인 등이 쓰는 계단은 챌면 18cm 이하입니다(장애인등편의법 시행규칙 별표1).`,climbed>PER.step+0.02?3:1.5,false);
   if(PID==='elder'&&climbed>0.02&&climbed<0.17&&!(P.on&&M.stairs.includes(P.on)))ev('trip'+Math.round(P.pos.x)+Math.round(P.pos.z),'낮은 턱에 발이 걸렸습니다',`${Math.round(climbed*100)}cm 턱입니다. 노인은 낮은 턱에서 더 잘 넘어집니다. 문턱과 바닥 높이 차를 없애는 이유입니다.`,2,false);
   if(climbed>0.22&&climbed<=PSTEP+0.06)ev('step'+Math.round(P.pos.x)+Math.round(P.pos.z),'발이 걸렸습니다',`한 번에 ${Math.round(climbed*100)}cm를 올라섰습니다. 계단 단높이는 용도별 기준(같은 규칙 제15조제2항) 안에 있어야 하고, 실 사이 바닥 높이 차이도 걸려 넘어지는 원인이 됩니다.`,3,false);
  }
@@ -2832,9 +2881,8 @@ function elevStep(dt){elevT+=dt;if(elevT<0.25||mode!=='walk')return;elevT=0;cons
  if(!e){if(was)closeKey('elev');return}
  if(was===e)return; // 카 안에 계속 있으면 다시 묻지 않음
  if(fireOn()){note({key:'elev',kind:'bad',title:'불이 나서 승강기가 멈췄습니다',sub:'화재 때는 승강기를 쓰지 않습니다. 계단으로 대피하세요.',ttl:5000});return}
- if(PID!=='wheel'&&PID!=='elder'){note({key:'elev',title:'승강기는 휠체어 이용자·노인용으로 두었습니다',sub:'계단으로 다니세요. "설계 조건 → 걷는 사람"에서 바꾸면 탈 수 있습니다.',ttl:4500});return}
- const here=meas().stAt(P.pos.y);
- note({key:'elev',title:'승강기',sub:`지금 ${esc(here.s)} · 어느 층으로 갈까요?`,actions:e.fl.filter(t=>t!==here).map(t=>({t:t.s,fn:()=>elevGo(e,t)})),ttl:0})}
+ const here=meas().stAt(P.pos.y),tip=(PID==='adult'||PID==='child')&&!ELEV.tip;if(tip)ELEV.tip=1; // 누구나 탐 (2026. 11. 10.), 성인·어린이는 처음 한 번 계단 안내
+ note({key:'elev',title:'승강기',sub:`지금 ${esc(here.s)} · 어느 층으로 갈까요?${tip?'<br>계단으로 다니면 계단 문제를 몸으로 겪을 수 있습니다.':''}`,actions:e.fl.filter(t=>t!==here).map(t=>({t:t.s,fn:()=>elevGo(e,t)})),ttl:0})}
 function elevGo(e,t){if(fireOn()){note({kind:'bad',title:'불이 나서 승강기가 멈췄습니다',ttl:3000});return}
  const dy=t.y-meas().stAt(P.pos.y).y;P.pos.y+=dy;P.vy=0;AIR.peak=null;ELEV.inside=e; // 같은 자리, 다른 층 (카 안에 그대로 있으므로 다시 묻지 않음)
  note({key:'elev',kind:'ok',title:`${esc(t.s)}입니다`,sub:'문이 열렸습니다. 밖으로 나가세요. 다른 층으로 가려면 나갔다가 다시 타세요.',ttl:3000})}
@@ -3587,41 +3635,85 @@ function verdictOf(kind,R){const v=R.filter(r=>r.grade==='위반').length,b=R.fi
 function findNear(){if(!NAV)return null;const n0=nodeAt(P.pos);if(!n0)return null;const fw=new THREE.Vector3(-Math.sin(P.yaw),0,-Math.cos(P.yaw));let best=null,bs=-1;
  for(const n of NAV.nodes){if(Math.abs(n.y-n0.y)>0.3)continue;const dx=n.x-P.pos.x,dz=n.z-P.pos.z,d=Math.hypot(dx,dz);if(d<1.6||d>3)continue;const sc=(dx*fw.x+dz*fw.z)/d;if(sc<0.5||sc<=bs)continue;
   ray.set(new THREE.Vector3(P.pos.x,P.pos.y+1.2,P.pos.z),new THREE.Vector3(dx/d,0,dz/d));ray.far=d;if(ray.intersectObjects(M.solids,false).length)continue;bs=sc;best=n}return best}
-function npcMake(k){const I=INS[k],g=new THREE.Group(),M_=c=>new THREE.MeshLambertMaterial({color:c}),U=g.userData;
- const add=(par,geo,col,x,y,z,sh=true)=>{const m=new THREE.Mesh(geo,typeof col==='number'||typeof col==='string'?M_(col):col);m.position.set(x,y,z);m.castShadow=sh;par.add(m);return m};
- const CY=(rt,rb,h,n=12)=>new THREE.CylinderGeometry(rt,rb,h,n),SP=(r,a=14,b=10)=>new THREE.SphereGeometry(r,a,b),BX=(w,h,d)=>new THREE.BoxGeometry(w,h,d);
- const ST_={city:{jk:I.c,pt:0x2e333a,hair:0x2b2420,hat:'hard',hatC:0xf4f4f0,prop:'clip'},final:{jk:0x23282e,pt:0x23282e,hair:0x3a3a3a,hat:'hard',hatC:0xf4f4f0,prop:'folder',tie:true},
-  fire:{jk:I.c,pt:0x2b2f36,hair:0x2b2420,hat:'fire',hatC:0xd8401f,prop:'tab',stripe:true},energy:{jk:I.c,pt:0x3a3f45,hair:0x3b2a1e,hat:'cap',hatC:0x3d7a4a,prop:'cam',sleeve:0xe9ecef},
-  user:{jk:I.c,pt:0x4a4f57,hair:0xb8b8b8,hat:null,prop:'paper'},client:{jk:0x5a3d22,pt:0x2a2522,hair:0x1e1a18,hat:null,prop:'brief',tie:true},mentor:{jk:I.c,pt:0x2f3338,hair:0x2b2420,hat:'beret',hatC:0x22252a,prop:'tube',glasses:true,scarf:0xc9853a}}[k]||{jk:I.c,pt:0x333,hair:0x222,prop:null};
- const SKIN=0xf0c8a0;
- // 다리 (엉덩이에서 흔들림)
- for(const s of [-1,1]){const lg=new THREE.Group();lg.position.set(0.095*s,0.88,0);add(lg,CY(0.075,0.068,0.8),ST_.pt,0,-0.4,0);add(lg,BX(0.12,0.08,0.25),0x1e1f22,0,-0.84,0.045);g.add(lg);U[s<0?'legL':'legR']=lg}
- // 몸통
- add(g,CY(0.2,0.17,0.62,14),ST_.jk,0,1.15,0);add(g,SP(0.205,14,8),ST_.jk,0,1.44,0).scale.set(1,0.38,0.8);
- add(g,BX(0.12,0.1,0.02),0xffffff,0,1.43,0.165,false); // 셔츠 깃
- if(ST_.tie)add(g,BX(0.045,0.26,0.012),k==='client'?0xc9a227:0xa8322a,0,1.3,0.178,false);
- if(ST_.stripe)for(const y of [1.0,1.24]){const b=add(g,CY(0.205,0.2,0.04,14),0xe8e27a,0,y,0,false)}
- if(k==='city'||k==='final'){add(g,BX(0.07,0.095,0.006),0xffffff,0.08,1.28,0.19,false);add(g,BX(0.05,0.02,0.007),I.c,0.08,1.31,0.193,false)} // 출입증
- if(ST_.scarf){const sc=new THREE.Mesh(new THREE.TorusGeometry(0.1,0.035,8,16),M_(ST_.scarf));sc.rotation.x=Math.PI/2;sc.position.set(0,1.5,0);g.add(sc);add(g,BX(0.07,0.22,0.03),ST_.scarf,0.06,1.36,0.17,false)}
- if(ST_.prop==='tube'){const t=add(g,CY(0.045,0.045,0.75),0xc9a46a,-0.05,1.25,-0.2);t.rotation.z=0.6} // 등에 멘 도면통
- // 팔 (어깨에서 흔들림)
- for(const s of [-1,1]){const am=new THREE.Group();am.position.set(0.255*s,1.42,0);add(am,CY(0.058,0.05,0.6),ST_.sleeve||ST_.jk,0,-0.3,0);if(ST_.stripe)add(am,CY(0.062,0.062,0.035),0xe8e27a,0,-0.42,0,false);add(am,SP(0.052,10,8),SKIN,0,-0.63,0);g.add(am);U[s<0?'armL':'armR']=am}
- // 왼손 소품: 팔을 조금 앞으로 들고 있음
- const P_=U.armL;P_.rotation.x=-0.55;
- if(ST_.prop==='clip'){add(P_,BX(0.2,0.27,0.015),0x9b6b43,0.02,-0.62,0.1).rotation.x=0.9;add(P_,BX(0.17,0.2,0.006),0xffffff,0.02,-0.6,0.11,false).rotation.x=0.9}
- if(ST_.prop==='folder')add(P_,BX(0.22,0.29,0.025),0x2f5d8a,0.02,-0.62,0.1).rotation.x=0.9;
- if(ST_.prop==='tab'){add(P_,BX(0.18,0.25,0.015),0x1f2328,0.02,-0.62,0.1).rotation.x=0.9;add(P_,BX(0.15,0.2,0.004),0x5f9cc4,0.02,-0.61,0.112,false).rotation.x=0.9}
- if(ST_.prop==='cam'){add(P_,BX(0.09,0.14,0.1),0x2a2d31,0,-0.66,0.06);const l=add(P_,CY(0.03,0.03,0.04),0xe0702a,0,-0.62,0.12,false);l.rotation.x=Math.PI/2}
- if(ST_.prop==='brief'){add(P_,BX(0.36,0.27,0.09),0x3a2414,0,-0.78,0.06);add(P_,BX(0.12,0.03,0.03),0xc9a227,0,-0.63,0.06,false)} // 서류 가방
- if(ST_.prop==='paper')add(P_,BX(0.17,0.23,0.004),0xfafaf6,0.02,-0.62,0.1,false).rotation.x=0.9;
- if(ST_.prop==='tube')add(P_,BX(0.06,0.06,0.42),0xf2efe6,0,-0.64,0.12).rotation.x=0.2; // 말아 쥔 도면
- // 목과 머리 (돌아봄)
- add(g,CY(0.06,0.065,0.1),SKIN,0,1.52,0);const hd=new THREE.Group();hd.position.set(0,1.64,0);g.add(hd);U.head=hd;
- add(hd,SP(0.14),SKIN,0,0,0);for(const s of [-1,1]){add(hd,SP(0.023,8,6),0x1c2024,0.05*s,0.015,0.124,false);add(hd,BX(0.05,0.01,0.012),0x2b2420,0.05*s,0.055,0.13,false);add(hd,SP(0.03,8,6),SKIN,0.137*s,0,0,false)}
- add(hd,SP(0.022,8,6),0xe3b48c,0,-0.02,0.138,false);add(hd,BX(0.05,0.008,0.01),0x9a5a50,0,-0.07,0.125,false);
- const hair=add(hd,new THREE.SphereGeometry(0.146,14,8,0,Math.PI*2,0,Math.PI*0.5),ST_.hair,0,0.012,-0.012,false);hair.rotation.x=0.42;
- if(ST_.glasses)for(const s of [-1,1]){const r=new THREE.Mesh(new THREE.TorusGeometry(0.03,0.006,6,14),M_(0x1c2024));r.position.set(0.05*s,0.015,0.134);hd.add(r)}
- if(ST_.hat==='hard'||ST_.hat==='fire'){add(hd,new THREE.SphereGeometry(0.162,16,8,0,Math.PI*2,0,Math.PI*0.5),ST_.hatC,0,0.03,0);const br=add(hd,CY(ST_.hat==='fire'?0.22:0.19,ST_.hat==='fire'?0.22:0.19,0.015,20),ST_.hatC,0,0.035,ST_.hat==='fire'?-0.02:0.03);
+// ───────── 사람 몸 (검사관·멘토·건축주·내 모습이 같이 씀, 2026. 11. 10.) ─────────
+// 발바닥이 원점. 엉덩이(0.88m)에 다리, 엉덩이 위 U.upper에 몸통·팔·머리. 무릎·팔꿈치 관절이 따로 있음
+function humanBody(o){const g=new THREE.Group(),U=g.userData,Mt=c=>new THREE.MeshLambertMaterial({color:c});
+ const add=(par,geo,col,x,y,z,sh=true)=>{const m=new THREE.Mesh(geo,typeof col==='number'||typeof col==='string'?Mt(col):col);m.position.set(x,y,z);m.castShadow=sh;par.add(m);return m};
+ const CY=(a,b,h,n=12)=>new THREE.CylinderGeometry(a,b,h,n),SP=(r,a=14,b=10)=>new THREE.SphereGeometry(r,a,b),BX=(w,h,d)=>new THREE.BoxGeometry(w,h,d);
+ const SKIN=o.skin||0xf0c8a0,JK=o.jk,PT=o.pt,SH=o.shoe||0x1e1f22,SL=o.sleeve||JK,DZ=0.68;
+ const body=new THREE.Group();g.add(body);U.body=body;
+ // 다리: 넓적다리(엉덩이 관절) → 무릎 관절 → 정강이 → 신발
+ for(const s of [-1,1]){const lg=new THREE.Group();lg.position.set(0.092*s,0.88,0);body.add(lg);
+  add(lg,CY(0.083,0.066,0.43),PT,0,-0.215,0);const kn=new THREE.Group();kn.position.set(0,-0.43,0);lg.add(kn);add(kn,SP(0.066,10,8),PT,0,0,0,false);
+  add(kn,CY(0.064,0.05,0.38),PT,0,-0.19,0);const ft=new THREE.Group();ft.position.set(0,-0.4,0);kn.add(ft);
+  add(ft,BX(0.1,0.07,0.2),SH,0,-0.035,0.04);add(ft,SP(0.052,10,6),SH,0,-0.04,0.13).scale.set(0.95,0.65,1);
+  U[s<0?'legL':'legR']=lg;U[s<0?'kneeL':'kneeR']=kn}
+ // 엉덩이 위: 몸통은 어깨가 넓고 허리가 좁은 회전체
+ const up=new THREE.Group();up.position.set(0,0.88,0);body.add(up);U.upper=up;
+ add(up,SP(0.165,14,8),PT,0,0.0,0).scale.set(1,0.5,DZ);add(up,CY(0.166,0.166,0.035,16),o.belt||0x2a2522,0,0.03,0,false).scale.set(1,1,DZ);
+ const prof=[[0.163,0.02],[0.158,0.12],[0.152,0.22],[0.165,0.34],[0.19,0.46],[0.205,0.54],[0.19,0.6],[0.12,0.645],[0.06,0.66]].map(([r,y])=>new THREE.Vector2(r,y));
+ const tor=add(up,new THREE.LatheGeometry(prof,18),JK,0,0,0);tor.scale.z=DZ;U.torso=tor;
+ const fz=y=>{let r=0.16;for(let i=1;i<prof.length;i++)if(y<=prof[i].y){const a=prof[i-1],b=prof[i];r=a.x+(b.x-a.x)*(y-a.y)/(b.y-a.y);break}return r*DZ+0.004}; // 앞면 z
+ U.fz=fz;
+ if(o.zip!==false)add(up,BX(0.012,0.5,0.006),o.zipC||0x9aa3ad,0,0.33,fz(0.33),false); // 지퍼
+ if(o.shirt){add(up,BX(0.1,0.07,0.01),o.shirt,0,0.585,fz(0.585),false)} // 셔츠 깃
+ for(const s of [-1,1])add(up,BX(0.075,0.055,0.008),o.pocketC||JK,0.085*s,0.17,fz(0.17)+0.002,false); // 주머니
+ // 팔: 어깨 관절 → 팔꿈치 관절 → 아래팔 → 손
+ for(const s of [-1,1]){const am=new THREE.Group();am.position.set(0.232*s,0.54,0);up.add(am);add(am,SP(0.066,10,8),SL,0,0,0,false);
+  add(am,CY(0.06,0.052,0.29),SL,0,-0.145,0);const el=new THREE.Group();el.position.set(0,-0.29,0);am.add(el);add(el,SP(0.052,10,8),SL,0,0,0,false);
+  add(el,CY(0.051,0.044,0.25),SL,0,-0.125,0);add(el,CY(0.046,0.046,0.03),o.cuff||SL,0,-0.24,0,false);
+  const hd=new THREE.Group();hd.position.set(0,-0.27,0);el.add(hd);add(hd,BX(0.07,0.09,0.035),SKIN,0,-0.04,0).geometry.translate(0,0,0);add(hd,SP(0.022,8,6),SKIN,-0.04*s,-0.025,0.02,false);
+  U[s<0?'armL':'armR']=am;U[s<0?'elbowL':'elbowR']=el;U[s<0?'handL':'handR']=hd}
+ // 목과 머리
+ add(up,CY(0.055,0.062,0.1),SKIN,0,0.68,0);const hd=new THREE.Group();hd.position.set(0,0.76,0);up.add(hd);U.head=hd;
+ add(hd,SP(0.14,16,12),SKIN,0,0,0).scale.set(0.94,1.06,1);
+ for(const s of [-1,1]){add(hd,SP(0.02,10,8),0xffffff,0.047*s,0.014,0.115,false).scale.set(1.15,0.85,0.6);add(hd,SP(0.0105,8,6),0x2a2018,0.047*s,0.014,0.128,false); // 눈
+  add(hd,BX(0.044,0.008,0.01),o.brow||0x3a2e26,0.049*s,0.05,0.126,false).rotation.z=-0.1*s; // 눈썹
+  add(hd,SP(0.03,8,6),SKIN,0.132*s,0,0,false).scale.set(0.5,1,0.8)} // 귀
+ add(hd,SP(0.02,8,6),0xe3b48c,0,-0.018,0.14,false).scale.set(1,1.2,1); // 코
+ add(hd,BX(0.05,0.01,0.01),0x9a5a50,0,-0.068,0.124,false); // 입
+ const hc=o.hair||0x2b2420;
+ if(o.hairStyle!=='bald'){const hair=add(hd,new THREE.SphereGeometry(0.148,16,8,0,Math.PI*2,0,Math.PI*0.52),hc,0,0.012,-0.012,false);hair.rotation.x=0.42;hair.scale.set(0.96,1.05,1.02);
+  add(hd,SP(0.1,12,8),hc,0,-0.01,-0.07,false).scale.set(1.3,1.1,0.8)} // 뒤통수
+ if(o.glasses)for(const s of [-1,1]){const r=new THREE.Mesh(new THREE.TorusGeometry(0.03,0.006,6,14),Mt(0x1c2024));r.position.set(0.05*s,0.015,0.135);hd.add(r)}
+ U.add=add;U.CY=CY;U.SP=SP;U.BX=BX;U.Mt=Mt;return g}
+// 걷는 동작: 넓적다리를 흔들고, 앞으로 내딛는 다리의 무릎을 굽히고, 팔꿈치를 살짝 굽혀 흔듦
+function humanPose(U,walking,o={}){const t=performance.now()/1000,f=o.freq||8.5,k=o.k||0.5;
+ if(o.seated){U.legL.rotation.x=U.legR.rotation.x=-1.45;U.kneeL.rotation.x=U.kneeR.rotation.x=1.5;
+  const a=walking?Math.sin(t*5):0;U.armL.rotation.x=U.armR.rotation.x=-0.25-a*0.35;U.elbowL.rotation.x=U.elbowR.rotation.x=-0.7+a*0.25;return}
+ if(walking){const ph=t*f,s=Math.sin(ph)*0.5;U.legL.rotation.x+=(s-U.legL.rotation.x)*k;U.legR.rotation.x+=(-s-U.legR.rotation.x)*k;
+  U.kneeL.rotation.x=0.08+Math.max(0,Math.sin(ph-1.3))*0.85;U.kneeR.rotation.x=0.08+Math.max(0,Math.sin(ph+Math.PI-1.3))*0.85;
+  if(!o.holdL){U.armL.rotation.x=-s*0.65;U.elbowL.rotation.x=-0.2-Math.max(0,-s)*0.4}
+  U.armR.rotation.x=o.cane?-0.15+s*0.25:s*0.65;U.elbowR.rotation.x=o.cane?-0.3:-0.2-Math.max(0,s)*0.4;U.head.rotation.y*=0.9}
+ else{for(const j of ['legL','legR'])U[j].rotation.x*=0.85;U.kneeL.rotation.x=U.kneeR.rotation.x=0.05;
+  if(!o.holdL){U.armL.rotation.x=Math.sin(t*1.6)*0.03;U.elbowL.rotation.x=-0.15}
+  if(U.point){U.armR.rotation.x=-1.45;U.elbowR.rotation.x=0}else{U.armR.rotation.x=o.cane?-0.15:Math.sin(t*1.6+1)*0.03;U.elbowR.rotation.x=o.cane?-0.3:-0.15}
+  if(!U.look&&!o.noLook)U.head.rotation.y=Math.sin(t*0.45)*0.3}
+ if(o.holdL){U.armL.rotation.x=-0.35+(walking?Math.sin(t*f)*0.06:0);U.elbowL.rotation.x=-0.95}
+ U.upper.rotation.x+=((o.stoop||0)-U.upper.rotation.x)*0.2}
+function npcMake(k){const I=INS[k];
+ const ST_={city:{jk:I.c,pt:0x2e333a,hair:0x2b2420,hat:'hard',hatC:0xf4f4f0,prop:'clip',shirt:0xffffff},final:{jk:0x23282e,pt:0x23282e,hair:0x3a3a3a,hat:'hard',hatC:0xf4f4f0,prop:'folder',tie:true,shirt:0xffffff,zip:false},
+  fire:{jk:I.c,pt:0x2b2f36,hair:0x2b2420,hat:'fire',hatC:0xd8401f,prop:'tab',stripe:true,zip:false},energy:{jk:I.c,pt:0x3a3f45,hair:0x3b2a1e,hat:'cap',hatC:0x3d7a4a,prop:'cam',sleeve:0xe9ecef,shirt:0xe9ecef},
+  user:{jk:I.c,pt:0x4a4f57,hair:0xb8b8b8,brow:0x9a9a9a,hat:null,prop:'paper',zip:false,shirt:0xf2efe6},client:{jk:0x5a3d22,pt:0x2a2522,hair:0x1e1a18,hat:null,prop:'brief',tie:true,shirt:0xffffff,zip:false},
+  mentor:{jk:I.c,pt:0x2f3338,hair:0x2b2420,hat:'beret',hatC:0x22252a,prop:'tube',glasses:true,scarf:0xc9853a,zip:false}}[k]||{jk:I.c,pt:0x333333,hair:0x222222,prop:null};
+ const g=humanBody(ST_),U=g.userData,{add,CY,SP,BX,Mt}=U,up=U.upper,fz=U.fz;
+ if(ST_.tie)add(up,BX(0.045,0.26,0.012),k==='client'?0xc9a227:0xa8322a,0,0.43,fz(0.43)+0.004,false);
+ if(ST_.stripe)for(const y of [0.12,0.36]){const r=prof_r(y);add(up,CY(r+0.008,r+0.008,0.04,16),0xe8e27a,0,y,0,false).scale.z=0.68}
+ if(k==='city'||k==='final'){add(up,BX(0.07,0.095,0.006),0xffffff,0.08,0.4,fz(0.4)+0.004,false);add(up,BX(0.05,0.02,0.007),I.c,0.08,0.43,fz(0.43)+0.008,false)} // 출입증
+ if(ST_.scarf){const sc=new THREE.Mesh(new THREE.TorusGeometry(0.095,0.035,8,16),Mt(ST_.scarf));sc.rotation.x=Math.PI/2;sc.position.set(0,0.64,0);up.add(sc);add(up,BX(0.07,0.22,0.03),ST_.scarf,0.06,0.48,fz(0.48)+0.012,false)}
+ if(ST_.prop==='tube'){const t=add(up,CY(0.045,0.045,0.75),0xc9a46a,-0.05,0.37,-0.17);t.rotation.z=0.6} // 등에 멘 도면통
+ if(ST_.stripe)for(const a of [U.armL,U.armR])add(a,CY(0.064,0.064,0.035),0xe8e27a,0,-0.2,0,false);
+ // 왼손 소품: 팔꿈치를 굽혀 앞에 듦
+ const H=U.handL;U.holdL=!!ST_.prop;
+ if(ST_.prop==='clip'){add(H,BX(0.2,0.27,0.015),0x9b6b43,0.02,-0.06,0.08).rotation.x=0.9;add(H,BX(0.17,0.2,0.006),0xffffff,0.02,-0.05,0.09,false).rotation.x=0.9}
+ if(ST_.prop==='folder')add(H,BX(0.22,0.29,0.025),0x2f5d8a,0.02,-0.06,0.08).rotation.x=0.9;
+ if(ST_.prop==='tab'){add(H,BX(0.18,0.25,0.015),0x1f2328,0.02,-0.06,0.08).rotation.x=0.9;add(H,BX(0.15,0.2,0.004),0x5f9cc4,0.02,-0.05,0.092,false).rotation.x=0.9}
+ if(ST_.prop==='cam'){add(H,BX(0.09,0.14,0.1),0x2a2d31,0,-0.07,0.05);const l=add(H,CY(0.03,0.03,0.04),0xe0702a,0,-0.04,0.11,false);l.rotation.x=Math.PI/2}
+ if(ST_.prop==='brief'){add(H,BX(0.36,0.27,0.09),0x3a2414,0,-0.2,0.03);add(H,BX(0.12,0.03,0.03),0xc9a227,0,-0.06,0.03,false);U.holdL=false} // 서류 가방은 늘어뜨려 듦
+ if(ST_.prop==='paper')add(H,BX(0.17,0.23,0.004),0xfafaf6,0.02,-0.05,0.08,false).rotation.x=0.9;
+ if(ST_.prop==='tube')add(H,BX(0.06,0.06,0.42),0xf2efe6,0,-0.05,0.1).rotation.x=0.2; // 말아 쥔 도면
+ const hd=U.head;
+ if(ST_.hat==='hard'||ST_.hat==='fire'){add(hd,new THREE.SphereGeometry(0.162,16,8,0,Math.PI*2,0,Math.PI*0.5),ST_.hatC,0,0.03,0);add(hd,CY(ST_.hat==='fire'?0.22:0.19,ST_.hat==='fire'?0.22:0.19,0.015,20),ST_.hatC,0,0.035,ST_.hat==='fire'?-0.02:0.03);
   add(hd,BX(0.03,0.04,0.33),ST_.hatC,0,0.18,0,false)}
  if(ST_.hat==='cap'){add(hd,new THREE.SphereGeometry(0.15,14,8,0,Math.PI*2,0,Math.PI*0.5),ST_.hatC,0,0.03,0);add(hd,BX(0.16,0.012,0.12),ST_.hatC,0,0.035,0.16,false)}
  if(ST_.hat==='beret'){const b=add(hd,SP(0.16,14,8),ST_.hatC,0.02,0.1,-0.01);b.scale.set(1.05,0.38,1.05)}
@@ -3630,10 +3722,9 @@ function npcMake(k){const I=INS[k],g=new THREE.Group(),M_=c=>new THREE.MeshLambe
  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false}));sp.scale.set(1.15,0.29,1);sp.position.y=2.08;g.add(sp);
  const c2=document.createElement('canvas');c2.width=64;c2.height=64;const x2=c2.getContext('2d');x2.fillStyle=I.c;x2.beginPath();x2.arc(32,32,28,0,7);x2.fill();x2.fillStyle='#fff';x2.font='800 40px sans-serif';x2.textAlign='center';x2.fillText('!',32,46);
  const mk=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c2),depthTest:false}));mk.scale.set(0.42,0.42,1);mk.position.y=2.5;mk.renderOrder=11;g.add(mk);U.mark=mk;return g}
-// 걷는 동작과 서 있는 동작 (다리·팔 흔들기, 숨쉬기, 고개 돌리기)
-function npcPose(g,walking){if(!g||!g.userData.legL)return;const U=g.userData,t=performance.now()/1000;
- if(walking){const s=Math.sin(t*8.5)*0.55;U.legL.rotation.x=s;U.legR.rotation.x=-s;U.armR.rotation.x=s*0.7;U.armL.rotation.x=-0.55-s*0.15;U.head.rotation.y*=0.9}
- else{U.legL.rotation.x*=0.85;U.legR.rotation.x*=0.85;U.armR.rotation.x=U.point?-1.45:Math.sin(t*1.6)*0.04;U.armL.rotation.x=-0.55+Math.sin(t*1.6)*0.03;if(!U.look)U.head.rotation.y=Math.sin(t*0.45)*0.3}}
+function prof_r(y){const p=[[0.163,0.02],[0.158,0.12],[0.152,0.22],[0.165,0.34],[0.19,0.46],[0.205,0.54],[0.19,0.6]];for(let i=1;i<p.length;i++)if(y<=p[i][1]){const a=p[i-1],b=p[i];return a[0]+(b[0]-a[0])*(y-a[1])/(b[1]-a[1])}return 0.19}
+// 걷는 동작과 서 있는 동작 (다리·무릎·팔·팔꿈치, 숨쉬기, 고개 돌리기)
+function npcPose(g,walking){if(!g||!g.userData.legL)return;const U=g.userData;humanPose(U,walking,{holdL:U.holdL})}
 // 받침에 따라 이/가
 function ig(w){const c=String(w).charCodeAt(String(w).length-1);return c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28?'이':'가'}
 // ───────── 알림 카드: 이동을 막지 않음. 오른쪽으로 밀거나 ×로 닫음 ─────────
@@ -4127,5 +4218,5 @@ $('bStart').onclick=()=>{setupOpen(false);toWalk()};$('bFold').onclick=()=>fold(
 try{if(localStorage.getItem('mvw-fold')==='1')fold(true)}catch(e){}
 try{if(!localStorage.getItem('mvw-seen')){localStorage.setItem('mvw-seen','1');setTimeout(()=>setupOpen(true),300)}}catch(e){}
 loadSample('lib'); condShow(); requestAnimationFrame(loop);
-window.__walk={get cam(){return cam},orbit,toOrbit,rainOn,fold:(v)=>fold(v),ifcEngine,get IFC_FROM(){return IFC_FROM},get CLIENT(){return CLIENT},clientPrep,clientAsk,clientAnswer,inspStart:()=>inspStart(),finalArrive:()=>finalArrive(),pathTo:(a,b)=>pathTo(a,b),npcMake,get scene(){return scene},note,evTest:ev,reportDoc,mentArrive,mentHeard,mentAll,get MENT(){return MENT},elevFront,solarCalc,energySheet,hotRooms,setHP(v,ago){HP=v;lastHurt=performance.now()-(ago||0)*1000;hpShow()},get G(){return G},setWho,runChecks,get INSPq(){return INSP.q},meas,useKey,pdfReport,inspArrive,get INSP(){return INSP},get NAV(){return NAV},get FIRE(){return FIRE},startFire,nodeAt,warnLeaks,get RAIN(){return RAIN},showReport,get REP(){return REP},P,get M(){return M},step,whereNow,toWalk,loadIfc,get F(){return F},get HP(){return HP},loadSample};
+window.__walk={get cam(){return cam},orbit,toOrbit,rainOn,fold:(v)=>fold(v),ifcEngine,get IFC_FROM(){return IFC_FROM},get CLIENT(){return CLIENT},clientPrep,clientAsk,clientAnswer,inspStart:()=>inspStart(),finalArrive:()=>finalArrive(),pathTo:(a,b)=>pathTo(a,b),npcMake,npcPose:(g,w)=>npcPose(g,w),avatarMake:k=>avatarMake(k),humanPose:(U,w,o)=>humanPose(U,w,o),get scene(){return scene},note,evTest:ev,reportDoc,mentArrive,mentHeard,mentAll,get MENT(){return MENT},elevFront,solarCalc,energySheet,hotRooms,setHP(v,ago){HP=v;lastHurt=performance.now()-(ago||0)*1000;hpShow()},get G(){return G},setWho,runChecks,get INSPq(){return INSP.q},meas,useKey,pdfReport,inspArrive,get INSP(){return INSP},get NAV(){return NAV},get FIRE(){return FIRE},startFire,nodeAt,warnLeaks,get RAIN(){return RAIN},showReport,get REP(){return REP},P,get M(){return M},step,whereNow,toWalk,loadIfc,get F(){return F},get HP(){return HP},loadSample};
 </script>
